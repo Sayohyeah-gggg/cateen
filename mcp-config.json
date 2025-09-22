@@ -28,7 +28,7 @@
     "mcp-feedback-enhanced": {
       "command": "uvx",
       "args": [
-        "mcp-feedback-enhanced@latest"
+        "mcp-21@latest"
       ],
       "timeout": 600,
       "autoApprove": [
