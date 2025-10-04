@@ -105,5 +105,40 @@ public class StatisticsController {
         return Result.success(stats);
     }
 
+    /**
+     * 获取评分趋势数据
+     */
+    @ApiOperation(value = "获取评分趋势", notes = "获取指定天数内的评分趋势统计")
+    @GetMapping("/rating-trend")
+    public Result<List<Map<String, Object>>> getRatingTrend(
+            @ApiParam(value = "统计天数", example = "30")
+            @RequestParam(defaultValue = "30") Integer days) {
+        log.info("获取评分趋势数据: days={}", days);
+        List<Map<String, Object>> stats = statisticsService.getRatingTrend(days);
+        return Result.success(stats);
+    }
+
+    /**
+     * 获取评分分布数据
+     */
+    @ApiOperation(value = "获取评分分布", notes = "获取各评分等级的分布统计")
+    @GetMapping("/rating-distribution")
+    public Result<List<Map<String, Object>>> getRatingDistribution() {
+        log.info("获取评分分布数据");
+        List<Map<String, Object>> stats = statisticsService.getRatingDistribution();
+        return Result.success(stats);
+    }
+
+    /**
+     * 获取评分关注点分析数据
+     */
+    @ApiOperation(value = "获取评分关注点", notes = "获取用户评分时的关注点分析")
+    @GetMapping("/rating-preferences")
+    public Result<List<Map<String, Object>>> getRatingPreferences() {
+        log.info("获取评分关注点数据");
+        List<Map<String, Object>> stats = statisticsService.getRatingPreferences();
+        return Result.success(stats);
+    }
+
 }
 

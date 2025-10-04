@@ -37,6 +37,7 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentMapper commentMapper;
     private final FoodMapper foodMapper;
+    private final com.xawl.cateen.mapper.CommentPreferenceMapper commentPreferenceMapper;
 
     @Override
     public Page<CommentVO> getCommentPage(Long pageNum, Long pageSize, String keyword, 
@@ -68,12 +69,33 @@ public class CommentServiceImpl implements CommentService {
 
         commentMapper.insert(comment);
         
+        // 保存多维度评分
+        if (dto.getPreferences() != null && !dto.getPreferences().isEmpty()) {
+            saveCommentPreferences(comment.getId(), dto.getPreferences());
+        }
+        
         // 如果评论自动通过，更新美食评分统计
         if (CommentStatusConstants.APPROVED.equals(comment.getStatus())) {
             updateFoodRatingStats(dto.getFoodId());
         }
 
         return getCommentDetail(comment.getId());
+    }
+    
+    /**
+     * 保存评论的多维度评分
+     */
+    private void saveCommentPreferences(String commentId, java.util.Map<String, Integer> preferences) {
+        preferences.forEach((type, score) -> {
+            if (score != null && score > 0 && score <= 5) {
+                com.xawl.cateen.entity.CommentPreference preference = new com.xawl.cateen.entity.CommentPreference();
+                preference.setId(IdUtil.getSnowflakeNextIdStr());
+                preference.setCommentId(commentId);
+                preference.setPreferenceType(type);
+                preference.setScore(score);
+                commentPreferenceMapper.insert(preference);
+            }
+        });
     }
 
     @Override

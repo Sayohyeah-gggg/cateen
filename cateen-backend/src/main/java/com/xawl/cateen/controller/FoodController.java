@@ -11,6 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -68,8 +69,9 @@ public class FoodController {
     /**
      * 获取美食详情
      */
+    @ApiOperation(value = "获取美食详情", notes = "根据美食ID获取美食的详细信息")
     @GetMapping("/{id}")
-    public Result<FoodVO> getFoodDetail(@PathVariable String id) {
+    public Result<FoodVO> getFoodDetail(@ApiParam(value = "美食ID", required = true) @PathVariable String id) {
         log.info("获取美食详情: id={}", id);
         FoodVO foodVO = foodService.getFoodDetail(id);
         return Result.success(foodVO);
@@ -78,8 +80,9 @@ public class FoodController {
     /**
      * 创建美食
      */
+    @ApiOperation(value = "创建美食", notes = "创建新的美食信息")
     @PostMapping
-    public Result<FoodVO> createFood(@Valid @RequestBody FoodDTO dto) {
+    public Result<FoodVO> createFood(@ApiParam(value = "美食信息", required = true) @Valid @RequestBody FoodDTO dto) {
         log.info("创建美食: name={}", dto.getName());
         FoodVO foodVO = foodService.createFood(dto);
         return Result.success("美食创建成功", foodVO);
@@ -88,8 +91,11 @@ public class FoodController {
     /**
      * 更新美食
      */
+    @ApiOperation(value = "更新美食", notes = "更新指定美食的信息")
     @PutMapping("/{id}")
-    public Result<Void> updateFood(@PathVariable String id, @Valid @RequestBody FoodDTO dto) {
+    public Result<Void> updateFood(
+            @ApiParam(value = "美食ID", required = true) @PathVariable String id, 
+            @ApiParam(value = "美食信息", required = true) @Valid @RequestBody FoodDTO dto) {
         log.info("更新美食: id={}, name={}", id, dto.getName());
         foodService.updateFood(id, dto);
         return Result.success("美食更新成功", null);
@@ -98,8 +104,9 @@ public class FoodController {
     /**
      * 删除美食
      */
+    @ApiOperation(value = "删除美食", notes = "删除指定的美食")
     @DeleteMapping("/{id}")
-    public Result<Void> deleteFood(@PathVariable String id) {
+    public Result<Void> deleteFood(@ApiParam(value = "美食ID", required = true) @PathVariable String id) {
         log.info("删除美食: id={}", id);
         foodService.deleteFood(id);
         return Result.success("美食删除成功", null);
@@ -108,8 +115,11 @@ public class FoodController {
     /**
      * 更新美食状态
      */
+    @ApiOperation(value = "更新美食状态", notes = "启用或禁用美食")
     @PutMapping("/{id}/status")
-    public Result<Void> updateFoodStatus(@PathVariable String id, @Valid @RequestBody StatusDTO dto) {
+    public Result<Void> updateFoodStatus(
+            @ApiParam(value = "美食ID", required = true) @PathVariable String id, 
+            @ApiParam(value = "状态信息", required = true) @Valid @RequestBody StatusDTO dto) {
         log.info("更新美食状态: id={}, status={}", id, dto.getStatus());
         foodService.updateFoodStatus(id, dto.getStatus());
         return Result.success("状态更新成功", null);
@@ -118,8 +128,9 @@ public class FoodController {
     /**
      * 获取热门美食
      */
+    @ApiOperation(value = "获取热门美食", notes = "获取评分最高的美食列表")
     @GetMapping("/popular")
-    public Result<List<FoodVO>> getPopularFoods(@RequestParam(defaultValue = "10") Integer limit) {
+    public Result<List<FoodVO>> getPopularFoods(@ApiParam(value = "返回数量", example = "10") @RequestParam(defaultValue = "10") Integer limit) {
         log.info("获取热门美食: limit={}", limit);
         List<FoodVO> list = foodService.getPopularFoods(limit);
         return Result.success(list);

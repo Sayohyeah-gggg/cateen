@@ -61,5 +61,27 @@ public interface StatisticsService {
      */
     List<SourceStatsVO> getSourceStats();
 
+    /**
+     * 获取评分趋势数据
+     *
+     * @param days 天数
+     * @return 评分趋势统计列表
+     */
+    List<Map<String, Object>> getRatingTrend(Integer days);
+
+    /**
+     * 获取评分分布数据
+     *
+     * @return 评分分布统计列表
+     */
+    List<Map<String, Object>> getRatingDistribution();
+
+    /**
+     * 获取评分关注点分析数据
+     *
+     * @return 评分关注点统计列表
+     */
+    List<Map<String, Object>> getRatingPreferences();
+
 }
 

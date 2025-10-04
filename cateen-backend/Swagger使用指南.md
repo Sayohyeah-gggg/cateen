@@ -6,12 +6,19 @@
 
 ### Knife4j增强文档（推荐）
 ```
-http://localhost:8080/doc.html
+http://localhost:8080/api/doc.html
 ```
 
 ### 原生Swagger UI
 ```
-http://localhost:8080/swagger-ui/index.html
+http://localhost:8080/api/swagger-ui/
+或
+http://localhost:8080/api/swagger-ui/index.html
+```
+
+### Swagger JSON API文档
+```
+http://localhost:8080/api/v2/api-docs
 ```
 
 ---
@@ -26,7 +33,7 @@ mvn spring-boot:run
 
 ### 2. 打开文档页面
 
-浏览器访问：**http://localhost:8080/doc.html**
+浏览器访问：**http://localhost:8080/api/doc.html**
 
 ### 3. 登录获取Token
 
@@ -40,6 +47,7 @@ mvn spring-boot:run
   "username": "admin",
   "password": "admin123"
 }
+请求头：Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4iLCJ1c2VySWQiOiIxIiwidXNlcm5hbWUiOiJhZG1pbiIsInN1YiI6ImFkbWluIiwiaWF0IjoxNzU5NTYyNTkzLCJleHAiOjE3NTk2NDg5OTN9.bc4DyY0otpZbR7NgE8T5bG-fLdrDOB_KdWknmgjLur8
 ```
 
 #### 步骤4：点击"发送"，复制返回的Token

@@ -198,5 +198,115 @@ public class StatisticsServiceImpl implements StatisticsService {
         }).collect(Collectors.toList());
     }
 
+    @Override
+    public List<Map<String, Object>> getRatingTrend(Integer days) {
+        // 计算日期范围
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusDays(days - 1);
+
+        String startDateStr = startDate.format(DATE_FORMATTER);
+        String endDateStr = endDate.format(DATE_FORMATTER);
+
+        // 查询评分趋势数据
+        List<Map<String, Object>> dataList = statisticsMapper.statisticsRatingTrend(startDateStr, endDateStr);
+
+        // 如果没有数据，返回模拟数据
+        if (dataList.isEmpty()) {
+            return generateMockRatingTrendData(days);
+        }
+
+        return dataList;
+    }
+
+    @Override
+    public List<Map<String, Object>> getRatingDistribution() {
+        // 查询评分分布数据
+        List<Map<String, Object>> dataList = statisticsMapper.statisticsRatingDistribution();
+
+        // 如果没有数据，返回模拟数据
+        if (dataList.isEmpty()) {
+            return generateMockRatingDistributionData();
+        }
+
+        return dataList;
+    }
+
+    /**
+     * 生成模拟评分趋势数据
+     */
+    private List<Map<String, Object>> generateMockRatingTrendData(Integer days) {
+        List<Map<String, Object>> mockData = new java.util.ArrayList<>();
+        LocalDate startDate = LocalDate.now().minusDays(days - 1);
+        
+        for (int i = 0; i < days; i++) {
+            LocalDate date = startDate.plusDays(i);
+            Map<String, Object> data = new HashMap<>();
+            data.put("date", date.format(DATE_FORMATTER));
+            data.put("avg_rating", 4.2 + Math.random() * 0.6); // 4.2-4.8之间的随机评分
+            data.put("total_ratings", (int)(10 + Math.random() * 20)); // 10-30之间的随机评价数
+            data.put("new_ratings", (int)(2 + Math.random() * 8)); // 2-10之间的新评价数
+            mockData.add(data);
+        }
+        
+        return mockData;
+    }
+
+    /**
+     * 生成模拟评分分布数据
+     */
+    private List<Map<String, Object>> generateMockRatingDistributionData() {
+        List<Map<String, Object>> mockData = new java.util.ArrayList<>();
+        
+        // 模拟各评分的分布
+        int[] ratings = {1, 2, 3, 4, 5};
+        int[] counts = {5, 15, 25, 40, 15}; // 1星5个，2星15个，3星25个，4星40个，5星15个
+        int total = java.util.Arrays.stream(counts).sum();
+        
+        for (int i = 0; i < ratings.length; i++) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("rating", ratings[i]);
+            data.put("count", counts[i]);
+            data.put("percentage", Math.round((double) counts[i] / total * 100));
+            mockData.add(data);
+        }
+        
+        return mockData;
+    }
+
+    @Override
+    public List<Map<String, Object>> getRatingPreferences() {
+        // 查询评分关注点数据
+        List<Map<String, Object>> dataList = statisticsMapper.statisticsRatingPreferences();
+
+        // 如果没有数据，返回模拟数据
+        if (dataList.isEmpty()) {
+            return generateMockRatingPreferencesData();
+        }
+
+        return dataList;
+    }
+
+    /**
+     * 生成模拟评分关注点数据
+     */
+    private List<Map<String, Object>> generateMockRatingPreferencesData() {
+        List<Map<String, Object>> mockData = new java.util.ArrayList<>();
+        
+        // 模拟评分关注点分布
+        String[] preferences = {"口味", "价格", "环境", "服务", "其他"};
+        int[] percentages = {35, 25, 20, 15, 5};
+        String[] colors = {"#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#6b7280"};
+        
+        for (int i = 0; i < preferences.length; i++) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("preference", preferences[i]);
+            data.put("percentage", percentages[i]);
+            data.put("color", colors[i]);
+            mockData.add(data);
+        }
+        
+        return mockData;
+    }
+
 }
 

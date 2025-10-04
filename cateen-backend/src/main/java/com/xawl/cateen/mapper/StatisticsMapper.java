@@ -81,5 +81,28 @@ public interface StatisticsMapper {
      */
     java.util.List<Map<String, Object>> statisticsVisitData(String startDate, String endDate);
 
+    /**
+     * 统计评分趋势数据
+     *
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @return 评分趋势统计列表
+     */
+    java.util.List<Map<String, Object>> statisticsRatingTrend(String startDate, String endDate);
+
+    /**
+     * 统计评分分布数据
+     *
+     * @return 评分分布统计列表
+     */
+    java.util.List<Map<String, Object>> statisticsRatingDistribution();
+
+    /**
+     * 统计评分关注点数据
+     *
+     * @return 评分关注点统计列表
+     */
+    java.util.List<Map<String, Object>> statisticsRatingPreferences();
+
 }
 

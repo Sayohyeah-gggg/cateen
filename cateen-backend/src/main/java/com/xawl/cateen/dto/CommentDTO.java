@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.validation.constraints.*;
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * 评论DTO
@@ -36,6 +37,13 @@ public class CommentDTO implements Serializable {
     @Min(value = 1, message = "评分最低为1")
     @Max(value = 5, message = "评分最高为5")
     private Integer rating;
+
+    /**
+     * 多维度评分（可选）
+     * key: taste(口味), price(价格), environment(环境), service(服务)
+     * value: 1-5分
+     */
+    private Map<String, Integer> preferences;
 
 }
 
