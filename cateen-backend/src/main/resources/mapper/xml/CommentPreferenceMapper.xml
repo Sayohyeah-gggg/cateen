@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xawl.cateen.mapper.CommentPreferenceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.xawl.cateen.entity.CommentPreference">
+        <id column="id" property="id"/>
+        <result column="comment_id" property="commentId"/>
+        <result column="preference_type" property="preferenceType"/>
+        <result column="score" property="score"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <!-- 统计各关注点的平均评分和占比 -->
+    <select id="statisticsPreferences" resultType="java.util.HashMap">
+        SELECT
+            preference_type,
+            CASE preference_type
+                WHEN 'taste' THEN '口味'
+                WHEN 'price' THEN '价格'
+                WHEN 'environment' THEN '环境'
+                WHEN 'service' THEN '服务'
+                ELSE '其他'
+            END AS preference,
+            COUNT(*) AS count,
+            ROUND(AVG(score), 2) AS avg_score,
+            CASE 
+                WHEN (SELECT COUNT(*) FROM comment_preferences) > 0 
+                THEN ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM comment_preferences), 2)
+                ELSE 0
+            END AS percentage,
+            CASE preference_type
+                WHEN 'taste' THEN '#3b82f6'
+                WHEN 'price' THEN '#10b981'
+                WHEN 'environment' THEN '#f59e0b'
+                WHEN 'service' THEN '#8b5cf6'
+                ELSE '#6b7280'
+            END AS color
+        FROM comment_preferences
+        GROUP BY preference_type
+        ORDER BY count DESC
+    </select>
+
+    <!-- 根据食物ID统计关注点 -->
+    <select id="statisticsPreferencesByFood" resultType="java.util.HashMap">
+        SELECT
+            cp.preference_type,
+            CASE cp.preference_type
+                WHEN 'taste' THEN '口味'
+                WHEN 'price' THEN '价格'
+                WHEN 'environment' THEN '环境'
+                WHEN 'service' THEN '服务'
+                ELSE '其他'
+            END AS preference,
+            COUNT(*) AS count,
+            ROUND(AVG(cp.score), 2) AS avg_score,
+            CASE 
+                WHEN total.cnt > 0 
+                THEN ROUND(COUNT(*) * 100.0 / total.cnt, 2)
+                ELSE 0
+            END AS percentage
+        FROM comment_preferences cp
+        INNER JOIN comments c ON cp.comment_id = c.id
+        CROSS JOIN (
+            SELECT COUNT(*) AS cnt
+            FROM comment_preferences cp2
+            INNER JOIN comments c2 ON cp2.comment_id = c2.id
+            WHERE c2.food_id = #{foodId}
+        ) AS total
+        WHERE c.food_id = #{foodId}
+        GROUP BY cp.preference_type
+        ORDER BY count DESC
+    </select>
+
+    <!-- 根据分类ID统计关注点 -->
+    <select id="statisticsPreferencesByCategory" resultType="java.util.HashMap">
+        SELECT
+            cp.preference_type,
+            CASE cp.preference_type
+                WHEN 'taste' THEN '口味'
+                WHEN 'price' THEN '价格'
+                WHEN 'environment' THEN '环境'
+                WHEN 'service' THEN '服务'
+                ELSE '其他'
+            END AS preference,
+            COUNT(*) AS count,
+            ROUND(AVG(cp.score), 2) AS avg_score,
+            CASE 
+                WHEN total.cnt > 0 
+                THEN ROUND(COUNT(*) * 100.0 / total.cnt, 2)
+                ELSE 0
+            END AS percentage
+        FROM comment_preferences cp
+        INNER JOIN comments c ON cp.comment_id = c.id
+        INNER JOIN foods f ON c.food_id = f.id
+        CROSS JOIN (
+            SELECT COUNT(*) AS cnt
+            FROM comment_preferences cp2
+            INNER JOIN comments c2 ON cp2.comment_id = c2.id
+            INNER JOIN foods f2 ON c2.food_id = f2.id
+            WHERE f2.category_id = #{categoryId}
+        ) AS total
+        WHERE f.category_id = #{categoryId}
+        GROUP BY cp.preference_type
+        ORDER BY count DESC
+    </select>
+
+    <!-- 根据评论ID删除关注点 -->
+    <delete id="deleteByCommentId">
+        DELETE FROM comment_preferences WHERE comment_id = #{commentId}
+    </delete>
+
+</mapper>
+
