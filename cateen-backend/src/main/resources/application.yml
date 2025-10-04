@@ -1,0 +1,82 @@
+# ============================================
+# Spring Boot 多环境配置 - 主配置文件
+# ============================================
+# 本地开发：使用 dev 环境
+# 生产部署：使用 prod 环境
+# ============================================
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: cateen-backend
+  
+  # 激活环境配置（本地测试使用dev）
+  profiles:
+    active: dev
+
+  # Jackson配置
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    default-property-inclusion: non_null
+    # 将Java驼峰命名转换为下划线命名（与前端保持一致）
+    property-naming-strategy: SNAKE_CASE
+
+# MyBatis-Plus配置
+mybatis-plus:
+  # XML映射文件位置
+  mapper-locations: classpath*:/mapper/xml/**/*.xml
+  # 实体类包路径
+  type-aliases-package: com.xawl.cateen.entity
+  # 全局配置
+  global-config:
+    # 数据库相关配置
+    db-config:
+      # 主键类型（使用数据库自增）
+      id-type: ASSIGN_ID
+      # 逻辑删除字段名
+      logic-delete-field: deleted
+      # 逻辑删除值（默认为1）
+      logic-delete-value: 1
+      # 逻辑未删除值（默认为0）
+      logic-not-delete-value: 0
+    banner: false
+  # 配置
+  configuration:
+    # 是否开启自动驼峰命名规则映射
+    map-underscore-to-camel-case: true
+    # 开启Mybatis二级缓存，默认为 true
+    cache-enabled: false
+    # 日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# JWT配置
+jwt:
+  # 密钥
+  secret: xawl-cateen-secret-key-2025-spring-boot-jwt-token
+  # 过期时间（毫秒）24小时
+  expiration: 86400000
+  # Token前缀
+  token-prefix: Bearer 
+  # Token请求头名称
+  header: Authorization
+
+# 日志配置
+logging:
+  level:
+    com.xawl.cateen: debug
+    com.xawl.cateen.mapper: debug
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n'
+
+# Knife4j配置
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+    swagger-model-name: 数据模型
+

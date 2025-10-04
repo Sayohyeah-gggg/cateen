@@ -1,0 +1,13 @@
+# 生产环境配置
+spring:
+  datasource:
+    url: jdbc:mysql://your-production-host:3306/cateen?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=true
+    username: your-username
+    password: your-password
+
+# 日志配置
+logging:
+  level:
+    com.xawl.cateen: info
+    com.xawl.cateen.mapper: warn
+

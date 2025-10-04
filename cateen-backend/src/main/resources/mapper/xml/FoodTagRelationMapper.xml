@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xawl.cateen.mapper.FoodTagRelationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.xawl.cateen.entity.FoodTagRelation">
+        <id column="id" property="id"/>
+        <result column="food_id" property="foodId"/>
+        <result column="tag_id" property="tagId"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <!-- 批量插入标签关联 -->
+    <insert id="batchInsert">
+        INSERT INTO food_tag_relations (id, food_id, tag_id, created_at)
+        VALUES
+        <foreach collection="relations" item="item" separator=",">
+            (#{item.id}, #{item.foodId}, #{item.tagId}, #{item.createdAt})
+        </foreach>
+    </insert>
+
+    <!-- 删除美食的所有标签关联 -->
+    <delete id="deleteByFoodId">
+        DELETE FROM food_tag_relations
+        WHERE food_id = #{foodId}
+    </delete>
+
+</mapper>
+

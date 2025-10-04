@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xawl.cateen.mapper.FoodMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.xawl.cateen.entity.Food">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="description" property="description"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="image_url" property="imageUrl"/>
+        <result column="price" property="price"/>
+        <result column="rating" property="rating"/>
+        <result column="rating_count" property="ratingCount"/>
+        <result column="status" property="status"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- FoodVO结果映射 -->
+    <resultMap id="FoodVOResultMap" type="com.xawl.cateen.vo.FoodVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="description" property="description"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="image_url" property="imageUrl"/>
+        <result column="price" property="price"/>
+        <result column="rating" property="rating"/>
+        <result column="rating_count" property="ratingCount"/>
+        <result column="status" property="status"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="comments_count" property="commentsCount"/>
+        <association property="category" javaType="com.xawl.cateen.entity.FoodCategory">
+            <id column="cat_id" property="id"/>
+            <result column="cat_name" property="name"/>
+            <result column="cat_description" property="description"/>
+        </association>
+        <collection property="tags" ofType="com.xawl.cateen.entity.FoodTag">
+            <id column="tag_id" property="id"/>
+            <result column="tag_name" property="name"/>
+            <result column="tag_color" property="color"/>
+        </collection>
+    </resultMap>
+
+    <!-- 分页查询美食列表 -->
+    <select id="selectFoodPage" resultMap="FoodVOResultMap">
+        SELECT DISTINCT
+            f.id,
+            f.name,
+            f.description,
+            f.category_id,
+            f.image_url,
+            f.price,
+            f.rating,
+            f.rating_count,
+            f.status,
+            f.created_by,
+            f.created_at,
+            f.updated_at,
+            fc.id AS cat_id,
+            fc.name AS cat_name,
+            fc.description AS cat_description,
+            ft.id AS tag_id,
+            ft.name AS tag_name,
+            ft.color AS tag_color,
+            (SELECT COUNT(*) FROM comments c WHERE c.food_id = f.id) AS comments_count
+        FROM foods f
+        LEFT JOIN food_categories fc ON f.category_id = fc.id
+        LEFT JOIN food_tag_relations ftr ON f.id = ftr.food_id
+        LEFT JOIN food_tags ft ON ftr.tag_id = ft.id
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (f.name LIKE CONCAT('%', #{keyword}, '%')
+                OR f.description LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="categoryId != null and categoryId != ''">
+                AND f.category_id = #{categoryId}
+            </if>
+            <if test="status != null and status != ''">
+                AND f.status = #{status}
+            </if>
+        </where>
+        ORDER BY f.created_at DESC
+    </select>
+
+    <!-- 查询美食详情 -->
+    <select id="selectFoodDetailById" resultMap="FoodVOResultMap">
+        SELECT
+            f.id,
+            f.name,
+            f.description,
+            f.category_id,
+            f.image_url,
+            f.price,
+            f.rating,
+            f.rating_count,
+            f.status,
+            f.created_by,
+            f.created_at,
+            f.updated_at,
+            fc.id AS cat_id,
+            fc.name AS cat_name,
+            fc.description AS cat_description,
+            ft.id AS tag_id,
+            ft.name AS tag_name,
+            ft.color AS tag_color,
+            (SELECT COUNT(*) FROM comments c WHERE c.food_id = f.id) AS comments_count
+        FROM foods f
+        LEFT JOIN food_categories fc ON f.category_id = fc.id
+        LEFT JOIN food_tag_relations ftr ON f.id = ftr.food_id
+        LEFT JOIN food_tags ft ON ftr.tag_id = ft.id
+        WHERE f.id = #{id}
+    </select>
+
+    <!-- 查询热门美食 -->
+    <select id="selectPopularFoods" resultMap="FoodVOResultMap">
+        SELECT
+            f.id,
+            f.name,
+            f.rating,
+            f.rating_count,
+            f.image_url,
+            fc.id AS cat_id,
+            fc.name AS cat_name
+        FROM foods f
+        LEFT JOIN food_categories fc ON f.category_id = fc.id
+        WHERE f.status = 'active'
+        AND f.rating > 0
+        ORDER BY f.rating DESC, f.rating_count DESC
+        LIMIT #{limit}
+    </select>
+
+</mapper>
+
