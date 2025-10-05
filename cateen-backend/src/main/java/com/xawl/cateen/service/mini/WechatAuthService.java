@@ -48,7 +48,7 @@ public class WechatAuthService {
         Profile user = getOrCreateUser(openId, loginDTO.getNickName(), loginDTO.getAvatarUrl());
         
         // 3. 生成JWT token
-        String token = jwtUtil.generateToken(user.getId(), user.getNickname(), user.getRole());
+        String token = jwtUtil.generateToken(user.getId(), user.getUsername(), user.getRole());
         
         // 4. 返回结果
         return WxLoginVO.builder()
@@ -65,6 +65,13 @@ public class WechatAuthService {
      * 通过code获取openid
      */
     private String getOpenIdByCode(String code) {
+        // 开发环境测试code直接返回模拟openid
+        if ("test_code_001".equals(code) || "test_code_002".equals(code) || "test_code_003".equals(code)) {
+            String testOpenId = "test_openid_" + code.substring(code.length() - 3);
+            log.info("开发环境测试，返回模拟openid: {}", testOpenId);
+            return testOpenId;
+        }
+        
         String url = String.format(
                 "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
                 appId, appSecret, code
@@ -79,18 +86,10 @@ public class WechatAuthService {
                 return openId;
             } else {
                 log.error("获取微信openid失败: {}", response);
-                // 开发环境模拟
-                if ("test_code_123".equals(code)) {
-                    return "test_openid_" + UUID.randomUUID().toString().substring(0, 8);
-                }
-                throw new RuntimeException("获取微信openid失败");
+                throw new RuntimeException("获取微信openid失败: " + response);
             }
         } catch (Exception e) {
             log.error("调用微信接口失败", e);
-            // 开发环境模拟
-            if ("test_code_123".equals(code)) {
-                return "test_openid_" + UUID.randomUUID().toString().substring(0, 8);
-            }
             throw new RuntimeException("调用微信接口失败: " + e.getMessage());
         }
     }
@@ -108,6 +107,8 @@ public class WechatAuthService {
             // 创建新用户
             user = new Profile();
             user.setId(UUID.randomUUID().toString().replace("-", ""));
+            user.setUserId("user_" + UUID.randomUUID().toString().substring(0, 8)); // 添加user_id字段
+            user.setUsername("wx_" + UUID.randomUUID().toString().substring(0, 8)); // 添加username字段
             user.setWechatOpenid(openId);
             user.setNickname(nickName != null ? nickName : "微信用户");
             user.setAvatar(avatarUrl);
@@ -143,6 +144,6 @@ public class WechatAuthService {
         if (user == null) {
             throw new RuntimeException("用户不存在");
         }
-        return jwtUtil.generateToken(user.getId(), user.getNickname(), user.getRole());
+        return jwtUtil.generateToken(user.getId(), user.getUsername(), user.getRole());
     }
 }
