@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xawl.cateen.mapper.CommentLikeMapper">
+
+    <!-- 统计评论点赞数 -->
+    <select id="countByCommentId" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM comment_like
+        WHERE comment_id = #{commentId}
+    </select>
+
+    <!-- 统计用户获得的点赞数 -->
+    <select id="countByUserId" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM comment_like cl
+        INNER JOIN comment c ON cl.comment_id = c.id
+        WHERE c.user_id = #{userId}
+    </select>
+
+    <!-- 检查是否已点赞 -->
+    <select id="existsByUserIdAndCommentId" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM comment_like
+        WHERE user_id = #{userId} AND comment_id = #{commentId}
+    </select>
+
+</mapper>

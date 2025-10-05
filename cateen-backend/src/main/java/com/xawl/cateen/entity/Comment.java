@@ -1,7 +1,10 @@
 package com.xawl.cateen.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -13,6 +16,9 @@ import java.time.LocalDateTime;
  * @date 2025-10-03
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName("comments")
 public class Comment implements Serializable {
 
@@ -43,6 +49,11 @@ public class Comment implements Serializable {
      * 评分(1-5)
      */
     private Integer rating;
+
+    /**
+     * 评论图片（逗号分隔）
+     */
+    private String images;
 
     /**
      * 审核状态：pending-待审核，approved-已通过，rejected-已拒绝

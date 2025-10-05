@@ -8,7 +8,7 @@
 server:
   port: 8080
   servlet:
-    context-path: /api
+    context-path: /
 
 spring:
   application:
@@ -79,4 +79,19 @@ knife4j:
   setting:
     language: zh_cn
     swagger-model-name: 数据模型
+
+# 微信小程序配置
+wechat:
+  mini:
+    # 小程序AppID（需要替换为真实的）
+    appid: your_mini_program_appid
+    # 小程序AppSecret（需要替换为真实的）
+    secret: your_mini_program_secret
+
+# 文件上传配置
+upload:
+  # 本地存储路径
+  path: ./uploads
+  # 文件访问基础URL
+  base-url: http://localhost:8080
 

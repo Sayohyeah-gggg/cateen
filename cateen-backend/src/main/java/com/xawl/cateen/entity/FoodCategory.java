@@ -35,6 +35,11 @@ public class FoodCategory implements Serializable {
     private String description;
 
     /**
+     * 分类图标
+     */
+    private String icon;
+
+    /**
      * 排序
      */
     private Integer sortOrder;

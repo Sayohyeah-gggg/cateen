@@ -3,24 +3,31 @@ package com.xawl.cateen.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xawl.cateen.common.ResultCode;
 import com.xawl.cateen.constant.StatusConstants;
 import com.xawl.cateen.dto.RankingDTO;
+import com.xawl.cateen.entity.Food;
+import com.xawl.cateen.entity.FoodCategory;
 import com.xawl.cateen.entity.Ranking;
 import com.xawl.cateen.entity.RankingFood;
 import com.xawl.cateen.exception.BusinessException;
+import com.xawl.cateen.mapper.FoodCategoryMapper;
+import com.xawl.cateen.mapper.FoodMapper;
 import com.xawl.cateen.mapper.RankingFoodMapper;
 import com.xawl.cateen.mapper.RankingMapper;
 import com.xawl.cateen.service.RankingService;
 import com.xawl.cateen.util.UserContext;
 import com.xawl.cateen.vo.RankingVO;
+import com.xawl.cateen.vo.mini.MiniRankingVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -38,6 +45,8 @@ public class RankingServiceImpl implements RankingService {
 
     private final RankingMapper rankingMapper;
     private final RankingFoodMapper rankingFoodMapper;
+    private final FoodMapper foodMapper;
+    private final FoodCategoryMapper foodCategoryMapper;
 
     @Override
     public Page<RankingVO> getRankingPage(Long pageNum, Long pageSize, String keyword, String type, String status) {
@@ -149,6 +158,60 @@ public class RankingServiceImpl implements RankingService {
 
         ranking.setStatus(status);
         rankingMapper.updateById(ranking);
+    }
+
+    @Override
+    public List<MiniRankingVO> getMiniRanking(String type, String category, String timeRange, Integer limit) {
+        // 简化实现：直接从美食表查询，按照type和category筛选
+        LambdaQueryWrapper<Food> wrapper = new LambdaQueryWrapper<>();
+        
+        // 分类筛选
+        if (StrUtil.isNotBlank(category)) {
+            wrapper.eq(Food::getCategoryId, category);
+        }
+        
+        // 按类型排序
+        if ("rating".equals(type)) {
+            wrapper.orderByDesc(Food::getRating);
+        } else if ("popular".equals(type)) {
+            wrapper.orderByDesc(Food::getRatingCount);
+        } else if ("new".equals(type)) {
+            wrapper.orderByDesc(Food::getCreatedAt);
+        } else {
+            wrapper.orderByDesc(Food::getRating);
+        }
+        
+        wrapper.last("LIMIT " + limit);
+        
+        List<Food> foods = foodMapper.selectList(wrapper);
+        
+        // 转换为MiniRankingVO
+        List<MiniRankingVO> rankings = new ArrayList<>();
+        for (int i = 0; i < foods.size(); i++) {
+            Food food = foods.get(i);
+            
+            // 获取分类名称
+            String categoryName = "";
+            if (StrUtil.isNotBlank(food.getCategoryId())) {
+                FoodCategory foodCategory = foodCategoryMapper.selectById(food.getCategoryId());
+                if (foodCategory != null) {
+                    categoryName = foodCategory.getName();
+                }
+            }
+            
+            rankings.add(MiniRankingVO.builder()
+                    .rank(i + 1)
+                    .foodId(food.getId())
+                    .foodName(food.getName())
+                    .foodImage(food.getImageUrl())
+                    .categoryName(categoryName)
+                    .rating(food.getRating())
+                    .ratingCount(food.getRatingCount())
+                    .trend("same") // 简化实现，固定返回same
+                    .build());
+        }
+        
+        return rankings;
     }
 
 }

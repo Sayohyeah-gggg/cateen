@@ -1,20 +1,26 @@
 package com.xawl.cateen.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 用户表
+ * 搜索历史表
  *
  * @author xawl
- * @date 2025-10-03
+ * @date 2025-10-05
  */
 @Data
-@TableName("profiles")
-public class Profile implements Serializable {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@TableName("search_history")
+public class SearchHistory implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -25,49 +31,24 @@ public class Profile implements Serializable {
     private String id;
 
     /**
-     * 用户唯一标识
+     * 用户ID
      */
     private String userId;
 
     /**
-     * 用户名
+     * 搜索关键词
      */
-    private String username;
+    private String keyword;
 
     /**
-     * 密码哈希
+     * 搜索次数
      */
-    private String passwordHash;
+    private Integer searchCount;
 
     /**
-     * 手机号
+     * 最后搜索时间
      */
-    private String phone;
-
-    /**
-     * 角色：admin-管理员，user-普通用户
-     */
-    private String role;
-
-    /**
-     * 状态：active-启用，inactive-禁用
-     */
-    private String status;
-
-    /**
-     * 微信OpenID（小程序登录使用）
-     */
-    private String wechatOpenid;
-
-    /**
-     * 昵称
-     */
-    private String nickname;
-
-    /**
-     * 头像URL
-     */
-    private String avatar;
+    private LocalDateTime lastSearchTime;
 
     /**
      * 创建时间
@@ -80,6 +61,4 @@ public class Profile implements Serializable {
      */
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updatedAt;
-
 }
-

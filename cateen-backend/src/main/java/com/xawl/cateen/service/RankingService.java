@@ -3,6 +3,9 @@ package com.xawl.cateen.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xawl.cateen.dto.RankingDTO;
 import com.xawl.cateen.vo.RankingVO;
+import com.xawl.cateen.vo.mini.MiniRankingVO;
+
+import java.util.List;
 
 /**
  * 榜单服务接口
@@ -62,6 +65,17 @@ public interface RankingService {
      * @param status 状态
      */
     void updateRankingStatus(String id, String status);
+
+    /**
+     * 获取小程序排行榜
+     *
+     * @param type 类型（rating-评分榜，popular-人气榜，new-新品榜）
+     * @param category 分类ID
+     * @param timeRange 时间范围（week-本周，month-本月，all-全部）
+     * @param limit 返回数量
+     * @return 排行榜列表
+     */
+    List<MiniRankingVO> getMiniRanking(String type, String category, String timeRange, Integer limit);
 
 }
 
