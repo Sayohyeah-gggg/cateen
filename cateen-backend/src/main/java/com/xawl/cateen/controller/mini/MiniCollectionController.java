@@ -53,11 +53,30 @@ public class MiniCollectionController {
      */
     @ApiOperation(value = "添加收藏", notes = "收藏指定美食")
     @PostMapping
-    public Result<?> addCollection(@Valid @RequestBody CollectionDTO collectionDTO) {
-        log.info("添加收藏，foodId: {}", collectionDTO.getFoodId());
+    public Result<?> addCollection(@RequestBody(required = false) CollectionDTO collectionDTO,
+                                   @RequestParam(required = false) String foodId) {
+        log.info("添加收藏请求，接收到的DTO: {}", collectionDTO);
+        log.info("添加收藏请求，接收到的foodId参数: {}", foodId);
+        
+        // 优先使用DTO中的foodId，如果为空则使用参数中的foodId
+        String finalFoodId = null;
+        if (collectionDTO != null && collectionDTO.getFoodId() != null) {
+            finalFoodId = collectionDTO.getFoodId();
+        } else if (foodId != null) {
+            finalFoodId = foodId;
+        }
+        
+        log.info("最终使用的foodId: {}", finalFoodId);
+        
+        if (finalFoodId == null || finalFoodId.trim().isEmpty()) {
+            log.error("foodId为空或null，collectionDTO: {}, foodId参数: {}", collectionDTO, foodId);
+            return Result.error("美食ID不能为空");
+        }
         
         String userId = SecurityUtils.getCurrentUserId();
-        collectionService.addCollection(userId, collectionDTO.getFoodId());
+        log.info("当前用户ID: {}", userId);
+        
+        collectionService.addCollection(userId, finalFoodId);
         
         return Result.success("收藏成功");
     }

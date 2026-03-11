@@ -31,6 +31,11 @@ public class MiniFoodVO {
     private String name;
     
     /**
+     * 美食描述
+     */
+    private String description;
+    
+    /**
      * 美食图片
      */
     private String imageUrl;

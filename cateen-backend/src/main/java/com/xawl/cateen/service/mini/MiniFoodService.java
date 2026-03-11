@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -57,11 +59,13 @@ public class MiniFoodService {
             wrapper.eq(Food::getCategoryId, category);
         }
         
-        // 关键词搜索
+        // 关键词搜索（使用 and 嵌套避免破坏前面的条件）
         if (StrUtil.isNotBlank(keyword)) {
-            wrapper.like(Food::getName, keyword)
+            wrapper.and(w -> w
+                    .like(Food::getName, keyword)
                     .or()
-                    .like(Food::getDescription, keyword);
+                    .like(Food::getDescription, keyword)
+            );
         }
         
         // 排序
@@ -92,13 +96,18 @@ public class MiniFoodService {
                     // 获取最热评论
                     String hotComment = getHotComment(food.getId());
                     
+                    // 实时计算评分
+                    BigDecimal realRating = calculateRealRating(food.getId());
+                    Integer realRatingCount = calculateRealRatingCount(food.getId());
+                    
                     return MiniFoodVO.builder()
                             .id(food.getId())
                             .name(food.getName())
+                            .description(food.getDescription())
                             .imageUrl(food.getImageUrl())
                             .categoryName(getCategoryName(food.getCategoryId()))
-                            .rating(food.getRating())
-                            .ratingCount(food.getRatingCount())
+                            .rating(realRating)
+                            .ratingCount(realRatingCount)
                             .price(food.getPrice())
                             .isCollected(collectedMap.getOrDefault(food.getId(), false))
                             .hotComment(hotComment)
@@ -116,13 +125,18 @@ public class MiniFoodService {
      * 获取美食详情
      */
     public MiniFoodDetailVO getFoodDetail(String userId, String foodId) {
+        log.info("获取美食详情 - userId: {}, foodId: {}", userId, foodId);
+        
         Food food = foodMapper.selectById(foodId);
         if (food == null) {
+            log.warn("美食不存在 - foodId: {}", foodId);
             return null;
         }
         
         // 检查收藏状态
+        log.info("准备检查收藏状态 - userId: {}, foodId: {}", userId, foodId);
         boolean isCollected = collectionService.isCollected(userId, foodId);
+        log.info("收藏状态检查完成 - userId: {}, foodId: {}, isCollected: {}", userId, foodId, isCollected);
         
         // 统计收藏数
         Integer collectionCount = collectionService.countFoodCollections(foodId);
@@ -132,6 +146,10 @@ public class MiniFoodService {
         commentWrapper.eq(Comment::getFoodId, foodId);
         Long commentCount = commentMapper.selectCount(commentWrapper);
         
+        // 实时计算评分
+        BigDecimal realRating = calculateRealRating(foodId);
+        Integer realRatingCount = calculateRealRatingCount(foodId);
+        
         return MiniFoodDetailVO.builder()
                 .id(food.getId())
                 .name(food.getName())
@@ -140,8 +158,8 @@ public class MiniFoodService {
                 .categoryId(food.getCategoryId())
                 .categoryName(getCategoryName(food.getCategoryId()))
                 .price(food.getPrice())
-                .rating(food.getRating())
-                .ratingCount(food.getRatingCount())
+                .rating(realRating)
+                .ratingCount(realRatingCount)
                 .isCollected(isCollected)
                 .collectionCount(collectionCount)
                 .commentCount(commentCount.intValue())
@@ -227,5 +245,39 @@ public class MiniFoodService {
         
         Comment comment = commentMapper.selectOne(wrapper);
         return comment != null ? comment.getContent() : null;
+    }
+    
+    /**
+     * 实时计算评分
+     */
+    private BigDecimal calculateRealRating(String foodId) {
+        LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Comment::getFoodId, foodId)
+                .isNotNull(Comment::getRating)
+                .gt(Comment::getRating, 0);
+        
+        List<Comment> comments = commentMapper.selectList(wrapper);
+        
+        if (comments.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+        
+        double totalRating = comments.stream()
+                .mapToDouble(Comment::getRating)
+                .sum();
+        
+        return BigDecimal.valueOf(totalRating / comments.size()).setScale(1, RoundingMode.HALF_UP);
+    }
+    
+    /**
+     * 实时计算评分人数
+     */
+    private Integer calculateRealRatingCount(String foodId) {
+        LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Comment::getFoodId, foodId)
+                .isNotNull(Comment::getRating)
+                .gt(Comment::getRating, 0);
+        
+        return commentMapper.selectCount(wrapper).intValue();
     }
 }

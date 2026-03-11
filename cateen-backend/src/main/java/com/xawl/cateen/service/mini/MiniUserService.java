@@ -134,6 +134,7 @@ public class MiniUserService {
                             .likeCount(likeCount)
                             .isLiked(likedMap.getOrDefault(comment.getId(), false))
                             .createdAt(comment.getCreatedAt())
+                            .foodId(comment.getFoodId())
                             .foodName(food != null ? food.getName() : "")
                             .foodImage(food != null ? food.getImageUrl() : "")
                             .build();

@@ -13,10 +13,14 @@ import com.xawl.cateen.entity.FoodCategory;
 import com.xawl.cateen.entity.Ranking;
 import com.xawl.cateen.entity.RankingFood;
 import com.xawl.cateen.exception.BusinessException;
+import com.xawl.cateen.entity.Comment;
+import com.xawl.cateen.mapper.CommentMapper;
 import com.xawl.cateen.mapper.FoodCategoryMapper;
 import com.xawl.cateen.mapper.FoodMapper;
 import com.xawl.cateen.mapper.RankingFoodMapper;
 import com.xawl.cateen.mapper.RankingMapper;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import com.xawl.cateen.service.RankingService;
 import com.xawl.cateen.util.UserContext;
 import com.xawl.cateen.vo.RankingVO;
@@ -47,6 +51,7 @@ public class RankingServiceImpl implements RankingService {
     private final RankingFoodMapper rankingFoodMapper;
     private final FoodMapper foodMapper;
     private final FoodCategoryMapper foodCategoryMapper;
+    private final CommentMapper commentMapper;
 
     @Override
     public Page<RankingVO> getRankingPage(Long pageNum, Long pageSize, String keyword, String type, String status) {
@@ -165,31 +170,17 @@ public class RankingServiceImpl implements RankingService {
         // 简化实现：直接从美食表查询，按照type和category筛选
         LambdaQueryWrapper<Food> wrapper = new LambdaQueryWrapper<>();
         
-        // 分类筛选
-        if (StrUtil.isNotBlank(category)) {
+        // 分类筛选 - 修复undefined值处理问题
+        if (StrUtil.isNotBlank(category) && !"undefined".equals(category)) {
             wrapper.eq(Food::getCategoryId, category);
         }
         
-        // 按类型排序
-        if ("rating".equals(type)) {
-            wrapper.orderByDesc(Food::getRating);
-        } else if ("popular".equals(type)) {
-            wrapper.orderByDesc(Food::getRatingCount);
-        } else if ("new".equals(type)) {
-            wrapper.orderByDesc(Food::getCreatedAt);
-        } else {
-            wrapper.orderByDesc(Food::getRating);
-        }
-        
-        wrapper.last("LIMIT " + limit);
-        
+        // 先获取所有美食，然后按实时评分排序
         List<Food> foods = foodMapper.selectList(wrapper);
         
-        // 转换为MiniRankingVO
+        // 转换为MiniRankingVO并计算实时评分
         List<MiniRankingVO> rankings = new ArrayList<>();
-        for (int i = 0; i < foods.size(); i++) {
-            Food food = foods.get(i);
-            
+        for (Food food : foods) {
             // 获取分类名称
             String categoryName = "";
             if (StrUtil.isNotBlank(food.getCategoryId())) {
@@ -199,19 +190,87 @@ public class RankingServiceImpl implements RankingService {
                 }
             }
             
+            // 计算实时评分
+            BigDecimal realRating = calculateRealRating(food.getId());
+            Integer realRatingCount = calculateRealRatingCount(food.getId());
+            
             rankings.add(MiniRankingVO.builder()
-                    .rank(i + 1)
-                    .foodId(food.getId())
-                    .foodName(food.getName())
-                    .foodImage(food.getImageUrl())
-                    .categoryName(categoryName)
-                    .rating(food.getRating())
-                    .ratingCount(food.getRatingCount())
+                    .rank(0) // 先设置为0，后面重新排序
+                    .food_id(food.getId())
+                    .food_name(food.getName())
+                    .food_image(food.getImageUrl())
+                    .category_name(categoryName)
+                    .rating(realRating)
+                    .rating_count(realRatingCount)
                     .trend("same") // 简化实现，固定返回same
                     .build());
         }
         
+        // 按评分倒序排序
+        if ("rating".equals(type)) {
+            rankings.sort((a, b) -> b.getRating().compareTo(a.getRating()));
+        } else if ("popular".equals(type)) {
+            rankings.sort((a, b) -> b.getRating_count().compareTo(a.getRating_count()));
+        } else if ("new".equals(type)) {
+            // 按创建时间排序需要重新查询
+            rankings.sort((a, b) -> {
+                Food foodA = foods.stream().filter(f -> f.getId().equals(a.getFood_id())).findFirst().orElse(null);
+                Food foodB = foods.stream().filter(f -> f.getId().equals(b.getFood_id())).findFirst().orElse(null);
+                if (foodA != null && foodB != null) {
+                    return foodB.getCreatedAt().compareTo(foodA.getCreatedAt());
+                }
+                return 0;
+            });
+        } else {
+            // 默认按评分排序
+            rankings.sort((a, b) -> b.getRating().compareTo(a.getRating()));
+        }
+        
+        // 限制数量并重新设置排名
+        if (rankings.size() > limit) {
+            rankings = rankings.subList(0, limit);
+        }
+        
+        // 重新设置排名
+        for (int i = 0; i < rankings.size(); i++) {
+            rankings.get(i).setRank(i + 1);
+        }
+        
         return rankings;
+    }
+
+    /**
+     * 实时计算评分
+     */
+    private BigDecimal calculateRealRating(String foodId) {
+        LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Comment::getFoodId, foodId)
+                .isNotNull(Comment::getRating)
+                .gt(Comment::getRating, 0);
+        
+        List<Comment> comments = commentMapper.selectList(wrapper);
+        
+        if (comments.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+        
+        double totalRating = comments.stream()
+                .mapToDouble(Comment::getRating)
+                .sum();
+        
+        return BigDecimal.valueOf(totalRating / comments.size()).setScale(1, RoundingMode.HALF_UP);
+    }
+    
+    /**
+     * 实时计算评分人数
+     */
+    private Integer calculateRealRatingCount(String foodId) {
+        LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Comment::getFoodId, foodId)
+                .isNotNull(Comment::getRating)
+                .gt(Comment::getRating, 0);
+        
+        return commentMapper.selectCount(wrapper).intValue();
     }
 
 }

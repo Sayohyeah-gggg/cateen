@@ -1,6 +1,8 @@
 package com.xawl.cateen.dto.mini;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 
@@ -11,6 +13,8 @@ import javax.validation.constraints.NotBlank;
  * @date 2025-10-05
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CollectionDTO {
     
     /**

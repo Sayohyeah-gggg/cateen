@@ -30,4 +30,3 @@ public class AdminController {
         return Result.success("同步完成，共更新 " + count + " 个美食的评分统计");
     }
 }
-

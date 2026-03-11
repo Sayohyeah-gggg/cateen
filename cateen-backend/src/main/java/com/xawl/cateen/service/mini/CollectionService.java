@@ -141,8 +141,20 @@ public class CollectionService {
      * 检查是否已收藏
      */
     public boolean isCollected(String userId, String foodId) {
+        log.info("检查收藏状态 - userId: {}, foodId: {}", userId, foodId);
+        
+        if (userId == null) {
+            log.warn("userId为null，返回未收藏状态");
+            return false; // 未登录用户默认未收藏
+        }
+        
         Integer exists = collectionMapper.existsByUserIdAndFoodId(userId, foodId);
-        return exists > 0;
+        boolean result = exists > 0;
+        
+        log.info("收藏状态查询结果 - userId: {}, foodId: {}, exists: {}, result: {}", 
+                 userId, foodId, exists, result);
+        
+        return result;
     }
     
     /**
@@ -151,6 +163,15 @@ public class CollectionService {
     public Map<String, Boolean> batchCheckCollected(String userId, List<String> foodIds) {
         if (foodIds == null || foodIds.isEmpty()) {
             return new HashMap<>();
+        }
+        
+        if (userId == null) {
+            // 未登录用户默认全部未收藏
+            return foodIds.stream()
+                    .collect(Collectors.toMap(
+                            foodId -> foodId,
+                            foodId -> false
+                    ));
         }
         
         LambdaQueryWrapper<UserCollection> wrapper = new LambdaQueryWrapper<>();

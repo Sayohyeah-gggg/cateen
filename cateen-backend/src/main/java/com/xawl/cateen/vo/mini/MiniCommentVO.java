@@ -66,6 +66,11 @@ public class MiniCommentVO {
     private LocalDateTime createdAt;
     
     /**
+     * 美食ID（用于用户评论历史）
+     */
+    private String foodId;
+    
+    /**
      * 美食名称（用于用户评论历史）
      */
     private String foodName;

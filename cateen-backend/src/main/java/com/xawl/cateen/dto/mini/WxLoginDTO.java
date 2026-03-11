@@ -1,5 +1,6 @@
 package com.xawl.cateen.dto.mini;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -21,8 +22,10 @@ public class WxLoginDTO {
     private String code;
 
     @ApiModelProperty(value = "用户昵称", example = "微信用户")
+    @JsonProperty("nickName")  // 接收前端的驼峰命名
     private String nickName;
 
     @ApiModelProperty(value = "用户头像", example = "https://thirdwx.qlogo.cn/xxx")
+    @JsonProperty("avatarUrl")  // 接收前端的驼峰命名
     private String avatarUrl;
 }

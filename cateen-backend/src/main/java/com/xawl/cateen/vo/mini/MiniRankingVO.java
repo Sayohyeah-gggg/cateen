@@ -27,22 +27,22 @@ public class MiniRankingVO {
     /**
      * 美食ID
      */
-    private String foodId;
+    private String food_id;
     
     /**
      * 美食名称
      */
-    private String foodName;
+    private String food_name;
     
     /**
      * 美食图片
      */
-    private String foodImage;
+    private String food_image;
     
     /**
      * 分类名称
      */
-    private String categoryName;
+    private String category_name;
     
     /**
      * 评分
@@ -52,7 +52,7 @@ public class MiniRankingVO {
     /**
      * 评分人数
      */
-    private Integer ratingCount;
+    private Integer rating_count;
     
     /**
      * 排名趋势（up/down/same/new）

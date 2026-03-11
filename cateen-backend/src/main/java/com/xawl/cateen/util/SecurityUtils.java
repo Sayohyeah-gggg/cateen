@@ -18,10 +18,17 @@ public class SecurityUtils {
 
     /**
      * 获取当前登录用户ID
-     * 从请求头中解析JWT Token获取用户ID
+     * 从UserContext中获取用户ID（由AuthInterceptor设置）
      */
     public static String getCurrentUserId() {
         try {
+            // 优先从UserContext获取（由AuthInterceptor设置）
+            String userId = UserContext.getUserId();
+            if (userId != null) {
+                return userId;
+            }
+            
+            // 如果UserContext中没有，尝试从请求上下文获取
             ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             if (attributes == null) {
                 log.warn("无法获取请求上下文");
@@ -30,7 +37,7 @@ public class SecurityUtils {
             
             HttpServletRequest request = attributes.getRequest();
             
-            // 从请求属性中获取用户ID（由JWT拦截器设置）
+            // 从请求属性中获取用户ID
             Object userIdObj = request.getAttribute("userId");
             if (userIdObj != null) {
                 return userIdObj.toString();
@@ -57,6 +64,13 @@ public class SecurityUtils {
      */
     public static String getCurrentUserRole() {
         try {
+            // 优先从UserContext获取（由AuthInterceptor设置）
+            String role = UserContext.getRole();
+            if (role != null) {
+                return role;
+            }
+            
+            // 如果UserContext中没有，尝试从请求上下文获取
             ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             if (attributes == null) {
                 return null;
