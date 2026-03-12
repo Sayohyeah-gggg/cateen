@@ -133,5 +133,13 @@
         LIMIT #{limit}
     </select>
 
+    <!-- 查询平均评分 -->
+    <select id="selectAvgRating" resultType="java.lang.Double">
+        SELECT AVG(rating)
+        FROM foods
+        WHERE status = 'active'
+        AND rating > 0
+    </select>
+
 </mapper>
 

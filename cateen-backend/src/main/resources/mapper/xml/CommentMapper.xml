@@ -20,6 +20,8 @@
         <result column="food_name" property="foodName"/>
         <result column="user_id" property="userId"/>
         <result column="user_phone" property="userPhone"/>
+        <result column="user_nickname" property="userNickname"/>
+        <result column="user_avatar" property="userAvatar"/>
         <result column="content" property="content"/>
         <result column="rating" property="rating"/>
         <result column="status" property="status"/>
@@ -34,6 +36,8 @@
             f.name AS food_name,
             c.user_id,
             p.phone AS user_phone,
+            p.nickname AS user_nickname,
+            p.avatar AS user_avatar,
             c.content,
             c.rating,
             c.status,
@@ -69,6 +73,8 @@
             f.name AS food_name,
             c.user_id,
             p.phone AS user_phone,
+            p.nickname AS user_nickname,
+            p.avatar AS user_avatar,
             c.content,
             c.rating,
             c.status,

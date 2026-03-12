@@ -47,5 +47,12 @@ public interface FoodMapper extends BaseMapper<Food> {
      */
     List<FoodVO> selectPopularFoods(@Param("limit") Integer limit);
 
+    /**
+     * 查询平均评分
+     *
+     * @return 平均评分
+     */
+    Double selectAvgRating();
+
 }
 

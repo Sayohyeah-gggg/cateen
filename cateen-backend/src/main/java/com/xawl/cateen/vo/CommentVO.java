@@ -43,6 +43,16 @@ public class CommentVO implements Serializable {
     private String userPhone;
 
     /**
+     * 用户昵称
+     */
+    private String userNickname;
+
+    /**
+     * 用户头像
+     */
+    private String userAvatar;
+
+    /**
      * 评论内容
      */
     private String content;
