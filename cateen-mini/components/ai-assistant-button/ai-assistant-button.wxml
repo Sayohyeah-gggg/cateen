@@ -1,0 +1,43 @@
+<!-- components/ai-assistant-button/ai-assistant-button.wxml -->
+<view 
+  class="ai-assistant-container {{visible ? 'visible' : 'hidden'}}"
+  style="right: 30rpx; bottom: 200rpx;"
+>
+  <!-- 提示气泡 -->
+  <view class="assistant-tip {{showTip ? 'show' : ''}}" wx:if="{{showTip}}">
+    <text class="tip-text">🤖 AI美食助手</text>
+    <view class="tip-arrow"></view>
+  </view>
+
+  <!-- 悬浮按钮 -->
+  <view 
+    class="assistant-button {{isDragging ? 'dragging' : ''}}"
+    bind:touchstart="onTouchStart"
+    bind:touchmove="onTouchMove"
+    bind:touchend="onTouchEnd"
+    bind:tap="onAssistantTap"
+    bind:longpress="onLongPress"
+  >
+    <!-- 按钮图标 -->
+    <view class="button-icon">
+      <text class="icon-robot">🤖</text>
+    </view>
+    
+    <!-- 按钮文字 -->
+    <view class="button-text">
+      <text>AI助手</text>
+    </view>
+    
+    <!-- 拖拽指示器 -->
+    <view class="drag-indicator" wx:if="{{isDragging}}">
+      <view class="drag-dots">
+        <view class="dot"></view>
+        <view class="dot"></view>
+        <view class="dot"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 脉冲动画效果 -->
+  <view class="pulse-ring" wx:if="{{!isDragging}}"></view>
+</view>

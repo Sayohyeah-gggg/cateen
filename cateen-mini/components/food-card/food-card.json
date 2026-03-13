@@ -1,0 +1,17 @@
+{
+  "component": true,
+  "usingComponents": {
+    "rating-star": "/components/rating-star/rating-star"
+  }
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,104 @@
+<!--AI助手页面-->
+<view class="ai-container">
+  <!-- 自定义导航栏 -->
+  <navigation-bar title="AI美食助手" />
+  
+  <!-- 聊天消息区域 -->
+  <scroll-view 
+    class="chat-messages" 
+    scroll-y="{{true}}"
+    scroll-into-view="{{scrollToView}}"
+    scroll-with-animation="{{true}}"
+  >
+    <!-- 欢迎消息 -->
+    <view class="welcome-message" wx:if="{{chatMessages.length === 0}}">
+      <view class="welcome-icon">🤖</view>
+      <text class="welcome-title">你好！我是AI美食助手</text>
+      <text class="welcome-desc">我可以帮你推荐美食、解答烹饪问题</text>
+      
+      <!-- 快捷问题 -->
+      <view class="quick-questions">
+        <view class="quick-item" bind:tap="sendQuickQuestion" data-question="推荐一些川菜">
+          <text class="quick-icon">🌶️</text>
+          <text class="quick-text">推荐川菜</text>
+        </view>
+        <view class="quick-item" bind:tap="sendQuickQuestion" data-question="有什么清淡的美食">
+          <text class="quick-icon">🥗</text>
+          <text class="quick-text">清淡美食</text>
+        </view>
+        <view class="quick-item" bind:tap="sendQuickQuestion" data-question="宫保鸡丁怎么做">
+          <text class="quick-icon">👨‍🍳</text>
+          <text class="quick-text">烹饪教程</text>
+        </view>
+        <view class="quick-item" bind:tap="sendQuickQuestion" data-question="今天吃什么好">
+          <text class="quick-icon">🍽️</text>
+          <text class="quick-text">今天吃啥</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 消息列表 -->
+    <view class="message-list">
+      <view 
+        class="message-item {{item.type}}" 
+        wx:for="{{chatMessages}}" 
+        wx:key="id"
+        id="msg-{{item.id}}"
+      >
+        <view class="message-avatar">
+          <image 
+            class="avatar-img" 
+            src="{{item.type === 'user' ? userAvatar : '/images/ai-avatar.png'}}" 
+          />
+        </view>
+        <view class="message-content">
+          <view class="message-bubble {{item.type}}">
+            <text class="message-text" user-select="{{true}}">{{item.content}}</text>
+            <text class="message-time">{{item.time}}</text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 加载中提示 -->
+      <view class="loading-message" wx:if="{{isLoading}}">
+        <view class="loading-dots">
+          <view class="dot"></view>
+          <view class="dot"></view>
+          <view class="dot"></view>
+        </view>
+        <text class="loading-text">AI正在思考中...</text>
+      </view>
+      
+      <!-- 打字中提示 -->
+      <view class="typing-indicator" wx:if="{{isTyping}}">
+        <view class="typing-dots">
+          <view class="typing-dot"></view>
+          <view class="typing-dot"></view>
+          <view class="typing-dot"></view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 输入区域 -->
+  <view class="input-area">
+    <view class="input-wrapper">
+      <input 
+        class="message-input" 
+        placeholder="输入您的问题..."
+        value="{{inputValue}}"
+        bind:input="onInputChange"
+        bind:confirm="sendMessage"
+        confirm-type="send"
+        adjust-position="{{true}}"
+      />
+      <button 
+        class="send-button {{inputValue ? 'active' : ''}}" 
+        bind:tap="sendMessage"
+        disabled="{{!inputValue || isLoading}}"
+      >
+        发送
+      </button>
+    </view>
+  </view>
+</view>

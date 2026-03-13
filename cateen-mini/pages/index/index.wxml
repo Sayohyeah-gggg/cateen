@@ -1,0 +1,71 @@
+<!--首页-->
+<view class="index-container">
+  <!-- 自定义导航栏 -->
+  <navigation-bar title="美食展示" />
+  
+  <!-- 搜索栏 -->
+  <view class="search-section">
+    <view class="search-bar">
+      <text class="search-icon">🔍</text>
+      <input 
+        class="search-input" 
+        placeholder="搜索美食名称、分类、内容..."
+        bindinput="handleSearchInput"
+      />
+    </view>
+  </view>
+
+  <!-- 分类导航 -->
+  <view class="category-section">
+    <scroll-view class="category-scroll" scroll-x="{{true}}">
+      <view class="category-list">
+        <view 
+          class="category-item {{currentCategory === item.code ? 'active' : ''}}" 
+          wx:for="{{categories}}" 
+          wx:key="code"
+          bind:tap="switchCategory"
+          data-code="{{item.code}}"
+        >
+          <text class="category-icon">{{item.icon}}</text>
+          <text class="category-name">{{item.name}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 美食列表 -->
+  <scroll-view 
+    class="food-list" 
+    scroll-y="{{true}}" 
+    refresher-enabled="{{true}}"
+    refresher-triggered="{{refreshing}}"
+    bind:refresherrefresh="onRefresh"
+    bind:scrolltolower="loadMore"
+  >
+    <view class="food-grid">
+      <food-card 
+        wx:for="{{foodList}}" 
+        wx:key="id"
+        food-data="{{item}}"
+        bind:cardtap="goToDetail"
+        bind:collecttap="toggleCollect"
+      />
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-more" wx:if="{{loadingMore}}">
+      <text>加载中...</text>
+    </view>
+
+    <!-- 没有更多数据 -->
+    <view class="no-more" wx:if="{{noMore && foodList.length > 0}}">
+      <text>— 没有更多美食了 —</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!loading && foodList.length === 0}}">
+      <image class="empty-image" src="/images/foods/gongbao-chicken.jpg" />
+      <text class="empty-text">暂无美食数据</text>
+    </view>
+  </scroll-view>
+</view>

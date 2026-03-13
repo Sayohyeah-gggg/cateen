@@ -1,0 +1,145 @@
+/**app.wxss**/
+@import '/styles/common.wxss';
+
+/* 全局样式 - 美团风格 */
+
+/* 美团配色系统 */
+page {
+  --meituan-yellow: #FFD100;
+  --meituan-orange: #FF6600;
+  --meituan-red: #FF3B30;
+  --meituan-green: #06C160;
+  --meituan-blue: #007AFF;
+  
+  --meituan-text: #333333;
+  --meituan-text-secondary: #666666;
+  --meituan-text-light: #999999;
+  --meituan-text-lighter: #CCCCCC;
+  
+  --meituan-bg: #F5F5F5;
+  --meituan-bg-white: #FFFFFF;
+  
+  --meituan-border: #EEEEEE;
+  --meituan-shadow: rgba(0, 0, 0, 0.06);
+  
+  --meituan-card-radius: 16rpx;
+  --meituan-button-radius: 12rpx;
+  
+  background-color: var(--meituan-bg);
+  color: var(--meituan-text);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+}
+
+/* 全局容器 */
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 200rpx 0;
+  box-sizing: border-box;
+}
+
+/* 全局导航栏适配 */
+.page-container {
+  padding-top: 176rpx;
+}
+
+/* 美团卡片样式 */
+.meituan-card {
+  background: var(--meituan-bg-white);
+  border-radius: var(--meituan-card-radius);
+  box-shadow: 0 4rpx 16rpx var(--meituan-shadow);
+  overflow: hidden;
+}
+
+/* 美团按钮样式 */
+.meituan-button {
+  background: linear-gradient(135deg, var(--meituan-yellow) 0%, #FFED4E 100%);
+  color: var(--meituan-text);
+  border-radius: var(--meituan-button-radius);
+  font-size: 28rpx;
+  font-weight: 600;
+  padding: 20rpx 32rpx;
+  border: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4rpx 16rpx rgba(255, 209, 0, 0.2);
+}
+
+.meituan-button:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+
+.meituan-button-primary {
+  background: linear-gradient(135deg, var(--meituan-yellow) 0%, #FFED4E 100%);
+}
+
+.meituan-button-danger {
+  background: linear-gradient(135deg, var(--meituan-red) 0%, #FF6B5A 100%);
+  color: white;
+}
+
+.meituan-button-success {
+  background: linear-gradient(135deg, var(--meituan-green) 0%, #39D98A 100%);
+  color: white;
+}
+
+/* 美团价格样式 */
+.meituan-price {
+  color: var(--meituan-red);
+  font-weight: 700;
+}
+
+.meituan-price-large {
+  font-size: 40rpx;
+}
+
+.meituan-price-medium {
+  font-size: 32rpx;
+}
+
+.meituan-price-small {
+  font-size: 28rpx;
+}
+
+/* 美团标签样式 */
+.meituan-tag {
+  display: inline-block;
+  padding: 6rpx 12rpx;
+  border-radius: 6rpx;
+  font-size: 20rpx;
+  font-weight: 500;
+}
+
+.meituan-tag-hot {
+  background: rgba(255, 209, 0, 0.1);
+  color: var(--meituan-yellow);
+  border: 1rpx solid rgba(255, 209, 0, 0.3);
+}
+
+.meituan-tag-new {
+  background: rgba(255, 59, 48, 0.1);
+  color: var(--meituan-red);
+  border: 1rpx solid rgba(255, 59, 48, 0.2);
+}
+
+.meituan-tag-discount {
+  background: rgba(255, 102, 0, 0.1);
+  color: var(--meituan-orange);
+  border: 1rpx solid rgba(255, 102, 0, 0.2);
+}
+
+/* 兼容旧版变量 */
+:root {
+  --primary-color: #FFD100;
+  --secondary-color: #FF6600;
+  --accent-color: #FF3B30;
+  --text-color: #333333;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --border-color: #EEEEEE;
+  --background-color: #F5F5F5;
+} 

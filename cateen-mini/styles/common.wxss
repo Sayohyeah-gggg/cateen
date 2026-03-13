@@ -1,0 +1,411 @@
+/* 通用样式文件 */
+
+/* 全局重置 */
+page {
+  background-color: #f5f5f5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* 容器类 */
+.container {
+  padding: 30rpx;
+}
+
+.safe-area {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 布局类 */
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+/* 文本类 */
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-primary {
+  color: #FF6B35;
+}
+
+.text-secondary {
+  color: #666;
+}
+
+.text-muted {
+  color: #999;
+}
+
+.text-white {
+  color: #fff;
+}
+
+.text-bold {
+  font-weight: bold;
+}
+
+.text-large {
+  font-size: 36rpx;
+}
+
+.text-normal {
+  font-size: 28rpx;
+}
+
+.text-small {
+  font-size: 24rpx;
+}
+
+.text-mini {
+  font-size: 20rpx;
+}
+
+/* 间距类 */
+.m-0 { margin: 0; }
+.m-1 { margin: 10rpx; }
+.m-2 { margin: 20rpx; }
+.m-3 { margin: 30rpx; }
+.m-4 { margin: 40rpx; }
+
+.mt-0 { margin-top: 0; }
+.mt-1 { margin-top: 10rpx; }
+.mt-2 { margin-top: 20rpx; }
+.mt-3 { margin-top: 30rpx; }
+.mt-4 { margin-top: 40rpx; }
+
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: 10rpx; }
+.mb-2 { margin-bottom: 20rpx; }
+.mb-3 { margin-bottom: 30rpx; }
+.mb-4 { margin-bottom: 40rpx; }
+
+.ml-0 { margin-left: 0; }
+.ml-1 { margin-left: 10rpx; }
+.ml-2 { margin-left: 20rpx; }
+.ml-3 { margin-left: 30rpx; }
+.ml-4 { margin-left: 40rpx; }
+
+.mr-0 { margin-right: 0; }
+.mr-1 { margin-right: 10rpx; }
+.mr-2 { margin-right: 20rpx; }
+.mr-3 { margin-right: 30rpx; }
+.mr-4 { margin-right: 40rpx; }
+
+.p-0 { padding: 0; }
+.p-1 { padding: 10rpx; }
+.p-2 { padding: 20rpx; }
+.p-3 { padding: 30rpx; }
+.p-4 { padding: 40rpx; }
+
+.pt-0 { padding-top: 0; }
+.pt-1 { padding-top: 10rpx; }
+.pt-2 { padding-top: 20rpx; }
+.pt-3 { padding-top: 30rpx; }
+.pt-4 { padding-top: 40rpx; }
+
+.pb-0 { padding-bottom: 0; }
+.pb-1 { padding-bottom: 10rpx; }
+.pb-2 { padding-bottom: 20rpx; }
+.pb-3 { padding-bottom: 30rpx; }
+.pb-4 { padding-bottom: 40rpx; }
+
+.pl-0 { padding-left: 0; }
+.pl-1 { padding-left: 10rpx; }
+.pl-2 { padding-left: 20rpx; }
+.pl-3 { padding-left: 30rpx; }
+.pl-4 { padding-left: 40rpx; }
+
+.pr-0 { padding-right: 0; }
+.pr-1 { padding-right: 10rpx; }
+.pr-2 { padding-right: 20rpx; }
+.pr-3 { padding-right: 30rpx; }
+.pr-4 { padding-right: 40rpx; }
+
+/* 背景类 */
+.bg-primary {
+  background-color: #FF6B35;
+}
+
+.bg-secondary {
+  background-color: #F7931E;
+}
+
+.bg-white {
+  background-color: #fff;
+}
+
+.bg-gray {
+  background-color: #f5f5f5;
+}
+
+/* 圆角类 */
+.rounded-0 { border-radius: 0; }
+.rounded-1 { border-radius: 10rpx; }
+.rounded-2 { border-radius: 20rpx; }
+.rounded-3 { border-radius: 30rpx; }
+.rounded-full { border-radius: 50%; }
+
+/* 阴影类 */
+.shadow-sm {
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.shadow {
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.shadow-lg {
+  box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.12);
+}
+
+/* 边框类 */
+.border {
+  border: 2rpx solid #e0e0e0;
+}
+
+.border-primary {
+  border: 2rpx solid #FF6B35;
+}
+
+.border-top {
+  border-top: 2rpx solid #e0e0e0;
+}
+
+.border-bottom {
+  border-bottom: 2rpx solid #e0e0e0;
+}
+
+/* 按钮类 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx 40rpx;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: #FF6B35;
+  color: #fff;
+}
+
+.btn-primary:active {
+  background-color: #E55A2E;
+}
+
+.btn-secondary {
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+.btn-secondary:active {
+  background-color: #e0e0e0;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 2rpx solid #FF6B35;
+  color: #FF6B35;
+}
+
+.btn-outline:active {
+  background-color: #FFF4F0;
+}
+
+.btn-sm {
+  padding: 15rpx 30rpx;
+  font-size: 24rpx;
+}
+
+.btn-lg {
+  padding: 25rpx 50rpx;
+  font-size: 32rpx;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* 卡片类 */
+.card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.card-header {
+  margin-bottom: 20rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.card-body {
+  margin-bottom: 20rpx;
+}
+
+.card-footer {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 2rpx solid #f0f0f0;
+}
+
+/* 列表类 */
+.list-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx 0;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.list-item-title {
+  font-size: 30rpx;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.list-item-desc {
+  font-size: 26rpx;
+  color: #999;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 加载状态类 */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60rpx;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 60rpx;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 20rpx;
+  opacity: 0.3;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+/* 隐藏/显示类 */
+.hidden {
+  display: none !important;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+.visible {
+  visibility: visible;
+}
+
+/* 定位类 */
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.sticky {
+  position: sticky;
+}
+
+/* 层级类 */
+.z-1 { z-index: 1; }
+.z-2 { z-index: 2; }
+.z-3 { z-index: 3; }
+.z-999 { z-index: 999; }
+.z-9999 { z-index: 9999; }
+
+
+
+
+
+
+
+
+
+
+

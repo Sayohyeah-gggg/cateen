@@ -1,0 +1,82 @@
+<!--排行榜页面-->
+<view class="ranking-container">
+  <!-- 自定义导航栏 -->
+  <navigation-bar title="美食排行榜" />
+  
+  <!-- 榜单类型切换 -->
+  <view class="tab-bar">
+    <view class="tab-item {{currentTab === 'overall' ? 'active' : ''}}" bind:tap="switchTab" data-tab="overall">
+      综合排行
+    </view>
+    <view class="tab-item {{currentTab === 'category' ? 'active' : ''}}" bind:tap="switchTab" data-tab="category">
+      分类排行
+    </view>
+    <view class="tab-item {{currentTab === 'latest' ? 'active' : ''}}" bind:tap="switchTab" data-tab="latest">
+      最新上榜
+    </view>
+    <view class="tab-item {{currentTab === 'popular' ? 'active' : ''}}" bind:tap="switchTab" data-tab="popular">
+      人气排行
+    </view>
+  </view>
+
+  <!-- 筛选区域 -->
+  <view class="filter-section" wx:if="{{currentTab === 'category'}}">
+    <picker class="category-picker" range="{{categoryList}}" range-key="name" value="{{selectedCategoryIndex}}" bind:change="onCategoryChange">
+      <view class="picker-display">
+        <text>{{categoryList[selectedCategoryIndex].name}}</text>
+        <text class="picker-arrow">▼</text>
+      </view>
+    </picker>
+  </view>
+
+  <view class="filter-section">
+    <picker class="time-picker" range="{{timeRangeList}}" range-key="name" value="{{selectedTimeIndex}}" bind:change="onTimeRangeChange">
+      <view class="picker-display">
+        <text>{{timeRangeList[selectedTimeIndex].name}}</text>
+        <text class="picker-arrow">▼</text>
+      </view>
+    </picker>
+  </view>
+
+  <!-- 排行榜列表 -->
+  <scroll-view class="ranking-list" scroll-y="{{true}}">
+    <view class="ranking-item" wx:for="{{rankingList}}" wx:key="food_id" bind:tap="goToDetail" data-id="{{item.food_id}}">
+      <view class="rank-number {{item.rank <= 3 ? 'top-three' : ''}}">
+        <text class="rank-text">{{item.rank}}</text>
+      </view>
+      
+      <image class="food-image" src="{{item.food_image}}" mode="aspectFill" />
+      
+      <view class="food-info">
+        <view class="food-name">{{item.food_name}}</view>
+        <view class="food-category">{{item.category_name}}</view>
+        <view class="rating-info">
+          <rating-star rating="{{item.rating || 0}}" size="mini" />
+          <text class="rating-text">{{item.rating}}</text>
+          <text class="rating-count">({{item.rating_count}})</text>
+        </view>
+      </view>
+      
+      <view class="rank-trend">
+        <view class="trend-icon {{item.trend}}">
+          <text wx:if="{{item.trend === 'up'}}">↗</text>
+          <text wx:if="{{item.trend === 'down'}}">↘</text>
+          <text wx:if="{{item.trend === 'same'}}">→</text>
+        </view>
+        <view class="trend-value" wx:if="{{item.trendValue > 0}}">{{item.trendValue}}</view>
+      </view>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!loading && rankingList.length === 0}}">
+      <image class="empty-image" src="/images/foods/gongbao-chicken.jpg" />
+      <text class="empty-text">暂无排行数据</text>
+    </view>
+  </scroll-view>
+</view>
+

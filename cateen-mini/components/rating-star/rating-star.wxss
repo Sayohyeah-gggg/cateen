@@ -1,0 +1,60 @@
+/* components/rating-star/rating-star.wxss */
+.rating-container {
+  display: inline-block;
+}
+
+.stars {
+  display: flex;
+  align-items: center;
+  gap: 2rpx;
+}
+
+.star {
+  color: #ddd;
+  transition: color 0.2s ease;
+}
+
+.star.filled {
+  color: #FFD700;
+}
+
+.star-icon {
+  display: block;
+}
+
+/* 不同尺寸 */
+.stars.mini .star-icon {
+  font-size: 20rpx;
+}
+
+.stars.small .star-icon {
+  font-size: 24rpx;
+}
+
+.stars.normal .star-icon {
+  font-size: 28rpx;
+}
+
+.stars.large .star-icon {
+  font-size: 36rpx;
+}
+
+/* 可编辑状态 */
+.stars.editable .star {
+  cursor: pointer;
+}
+
+.stars.editable .star:hover {
+  color: #FFD700;
+}
+
+
+
+
+
+
+
+
+
+
+

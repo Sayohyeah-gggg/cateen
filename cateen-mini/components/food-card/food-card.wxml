@@ -1,0 +1,28 @@
+<!-- 美食卡片组件 -->
+<view class="food-card" bind:tap="onCardTap">
+  <!-- 美食图片 -->
+  <view class="food-image-container">
+    <image class="food-image" src="{{foodData.images[0]}}" mode="aspectFill" lazy-load="{{true}}" />
+    <!-- 收藏按钮 -->
+    <view class="collect-btn {{foodData.isCollected ? 'collected' : ''}}" bind:tap="onCollectTap" catch:tap="stopPropagation">
+      <text class="collect-icon">{{foodData.isCollected ? '❤️' : '🤍'}}</text>
+    </view>
+  </view>
+
+  <!-- 美食信息 -->
+  <view class="food-info">
+    <!-- 美食名称 -->
+    <text class="food-name">{{foodData.name}}</text>
+    
+    <!-- 分类标签 -->
+    <text class="food-category">{{foodData.category}}</text>
+    
+    <!-- 评分信息 -->
+    <view class="rating-section">
+      <rating-star rating="{{foodData.avgRating || foodData.rating || 0}}" size="mini" />
+      <text class="rating-text">{{foodData.avgRating || foodData.rating || 0}}</text>
+      <text class="rating-count">({{foodData.ratingCount}})</text>
+    </view>
+  </view>
+</view>
+

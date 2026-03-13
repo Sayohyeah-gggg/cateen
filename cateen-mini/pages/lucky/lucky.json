@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "navigation-bar": "/components/navigation-bar/navigation-bar",
+    "rating-star": "/components/rating-star/rating-star"
+  },
+  "navigationStyle": "custom",
+  "enablePullDownRefresh": true
+}

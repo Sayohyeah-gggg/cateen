@@ -1,0 +1,258 @@
+/* pages/detail/detail.wxss */
+.detail-container {
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* 图片轮播区域 */
+.image-section {
+  position: relative;
+}
+
+.food-swiper {
+  height: 400rpx;
+}
+
+.food-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 基本信息区域 */
+.info-section {
+  background: white;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.food-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.food-category {
+  font-size: 28rpx;
+  color: #FF6B35;
+  background: #FFF4F0;
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  display: inline-block;
+  margin-bottom: 20rpx;
+}
+
+.rating-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.rating-text {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #FF6B35;
+  margin-left: 10rpx;
+}
+
+.rating-count {
+  font-size: 28rpx;
+  color: #999;
+  margin-left: 10rpx;
+}
+
+.food-description {
+  font-size: 30rpx;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 20rpx;
+}
+
+.food-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+
+.tag {
+  background: #F0F0F0;
+  color: #666;
+  padding: 8rpx 16rpx;
+  border-radius: 16rpx;
+  font-size: 24rpx;
+}
+
+/* 操作按钮区域 */
+.action-section {
+  background: white;
+  padding: 20rpx 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.collect-btn {
+  background: #FF6B35;
+  color: white;
+  border-radius: 50rpx;
+  padding: 20rpx 40rpx;
+  font-size: 28rpx;
+  border: none;
+}
+
+.collect-btn.collected {
+  background: #999;
+}
+
+/* 评论区域 */
+.comment-section {
+  background: white;
+  padding: 30rpx;
+}
+
+.section-header {
+  margin-bottom: 30rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 评分输入区域 */
+.rating-input {
+  border: 2rpx solid #f0f0f0;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+}
+
+.rating-title {
+  font-size: 30rpx;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.comment-input {
+  width: 100%;
+  min-height: 120rpx;
+  border: 2rpx solid #f0f0f0;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  margin: 20rpx 0;
+  font-size: 28rpx;
+  background: #fafafa;
+}
+
+.submit-btn {
+  background: #FF6B35;
+  color: white;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  border: none;
+  width: 200rpx;
+}
+
+.submit-btn[disabled] {
+  background: #ccc;
+}
+
+/* 评论列表 */
+.comment-list {
+  margin-top: 30rpx;
+}
+
+.comment-item {
+  border-bottom: 2rpx solid #f0f0f0;
+  padding: 30rpx 0;
+}
+
+.comment-item:last-child {
+  border-bottom: none;
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15rpx;
+}
+
+.user-avatar {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-name {
+  font-size: 28rpx;
+  color: #333;
+  display: block;
+  margin-bottom: 5rpx;
+}
+
+.comment-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.comment-content {
+  font-size: 30rpx;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 15rpx;
+}
+
+.comment-images {
+  display: flex;
+  gap: 10rpx;
+  margin-bottom: 15rpx;
+}
+
+.comment-image {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 8rpx;
+}
+
+.comment-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.like-btn {
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  font-size: 26rpx;
+  color: #999;
+  padding: 5rpx 15rpx;
+  border-radius: 20rpx;
+}
+
+.like-btn.liked {
+  color: #FF6B35;
+  background: #FFF4F0;
+}
+
+.like-icon {
+  margin-right: 8rpx;
+}
+
+/* 加载更多 */
+.load-more {
+  text-align: center;
+  padding: 30rpx;
+  color: #999;
+  font-size: 28rpx;
+}
+
+
+
+

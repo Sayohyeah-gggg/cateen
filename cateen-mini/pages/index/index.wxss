@@ -1,0 +1,172 @@
+/* pages/index/index.wxss - 美团风格 */
+.index-container {
+  background-color: #F5F5F5;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* 美团黄色顶部区域 */
+.search-section {
+  background: linear-gradient(135deg, #FFD100 0%, #FFED4E 100%);
+  padding: 16rpx 32rpx 24rpx;
+  margin-top: 176rpx;
+}
+
+.search-bar {
+  background: #FFFFFF;
+  border-radius: 32rpx;
+  padding: 18rpx 28rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4rpx 16rpx rgba(255, 209, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.search-bar:active {
+  transform: scale(0.98);
+}
+
+.search-icon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+  color: #999999;
+}
+
+.search-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333333;
+}
+
+/* 分类区域 - 美团网格风格 */
+.category-section {
+  background: #FFFFFF;
+  padding: 32rpx 0 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.category-scroll {
+  white-space: nowrap;
+}
+
+.category-list {
+  display: inline-flex;
+  padding: 0 32rpx;
+  gap: 24rpx;
+}
+
+.category-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120rpx;
+  transition: all 0.2s ease;
+}
+
+.category-item:active {
+  transform: scale(0.95);
+}
+
+.category-icon-wrapper {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12rpx;
+  transition: all 0.2s ease;
+}
+
+/* 美团风格渐变背景 */
+.category-item:nth-child(1) .category-icon-wrapper {
+  background: linear-gradient(135deg, #FFD100 0%, #FFED4E 100%);
+}
+
+.category-item:nth-child(2) .category-icon-wrapper {
+  background: linear-gradient(135deg, #FF6600 0%, #FF8833 100%);
+}
+
+.category-item:nth-child(3) .category-icon-wrapper {
+  background: linear-gradient(135deg, #06C160 0%, #39D98A 100%);
+}
+
+.category-item:nth-child(4) .category-icon-wrapper {
+  background: linear-gradient(135deg, #FF3B30 0%, #FF6B5A 100%);
+}
+
+.category-item:nth-child(5) .category-icon-wrapper {
+  background: linear-gradient(135deg, #007AFF 0%, #4DA3FF 100%);
+}
+
+.category-item.active .category-icon-wrapper {
+  transform: scale(1.1);
+  box-shadow: 0 8rpx 24rpx rgba(255, 209, 0, 0.3);
+}
+
+.category-icon {
+  font-size: 48rpx;
+  filter: brightness(0) invert(1); /* 白色图标 */
+}
+
+.category-name {
+  font-size: 24rpx;
+  color: #333333;
+  font-weight: 500;
+}
+
+.category-item.active .category-name {
+  color: #FFD100;
+  font-weight: 600;
+}
+
+/* 美食列表区域 */
+.food-list {
+  height: calc(100vh - 380rpx);
+  background-color: #F5F5F5;
+}
+
+.food-grid {
+  padding: 16rpx 24rpx 32rpx;
+  background-color: #F5F5F5;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+}
+
+/* 加载状态 - 美团风格 */
+.loading-more {
+  text-align: center;
+  padding: 32rpx;
+  color: #999999;
+  font-size: 26rpx;
+  font-weight: 400;
+}
+
+.no-more {
+  text-align: center;
+  padding: 30rpx;
+  color: #ccc;
+  font-size: 24rpx;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 60rpx;
+}
+
+.empty-image {
+  width: 200rpx;
+  height: 200rpx;
+  margin-bottom: 30rpx;
+  opacity: 0.3;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+}

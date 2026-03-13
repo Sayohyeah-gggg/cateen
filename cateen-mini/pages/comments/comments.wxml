@@ -1,0 +1,93 @@
+<!--pages/comments/comments.wxml-->
+<view class="comments-container">
+  <!-- 自定义导航栏 -->
+  <navigation-bar title="我的评论" show-back="{{true}}" />
+
+  <!-- 评论列表 -->
+  <view class="comments-list">
+    <view wx:if="{{loading && comments.length === 0}}" class="loading-container">
+      <view class="loading-text">加载中...</view>
+    </view>
+
+    <view wx:elif="{{comments.length === 0}}" class="empty-container">
+      <image class="empty-image" src="/images/foods/gongbao-chicken.jpg" mode="aspectFit"></image>
+      <view class="empty-text">还没有发表任何评论</view>
+      <view class="empty-desc">去品尝美食并分享你的感受吧</view>
+      <button class="discover-btn" bindtap="goToIndex">去发现</button>
+    </view>
+
+    <view wx:else class="comment-list">
+      <view 
+        wx:for="{{comments}}" 
+        wx:key="id" 
+        class="comment-item"
+      >
+        <!-- 美食信息 -->
+        <view class="food-info" bindtap="goToDetail" data-id="{{item.foodId}}">
+          <image class="food-image" src="{{item.foodImage}}" mode="aspectFill"></image>
+          <view class="food-details">
+            <view class="food-name">{{item.foodName}}</view>
+            <view class="comment-time">{{item.createdAt}}</view>
+          </view>
+        </view>
+
+        <!-- 评分 -->
+        <view class="rating-section">
+          <view class="rating-stars">
+            <text wx:for="{{[1,2,3,4,5]}}" wx:key="*this" class="star {{item <= item.rating ? 'active' : ''}}">⭐</text>
+          </view>
+          <text class="rating-text">{{item.rating}}分</text>
+        </view>
+
+        <!-- 评论内容 -->
+        <view class="comment-content">{{item.content}}</view>
+
+        <!-- 评论图片 -->
+        <view wx:if="{{item.images}}" class="comment-images">
+          <image 
+            wx:for="{{item.images}}" 
+            wx:key="*this"
+            wx:for-item="image"
+            class="comment-image" 
+            src="{{image}}" 
+            mode="aspectFill"
+            bindtap="previewImage"
+            data-current="{{image}}"
+            data-urls="{{item.images}}"
+          ></image>
+        </view>
+
+        <!-- 操作按钮 -->
+        <view class="comment-actions">
+          <button 
+            class="action-btn like-btn {{item.isLiked ? 'liked' : ''}}"
+            bindtap="likeComment"
+            data-comment-id="{{item.id}}"
+            data-is-liked="{{item.isLiked}}"
+          >
+            <text class="btn-icon">👍</text>
+            <text class="btn-text">{{item.likeCount}}</text>
+          </button>
+          
+          <button 
+            class="action-btn delete-btn"
+            bindtap="deleteComment"
+            data-comment-id="{{item.id}}"
+          >
+            <text class="btn-icon">🗑️</text>
+            <text class="btn-text">删除</text>
+          </button>
+        </view>
+      </view>
+    </view>
+
+    <!-- 加载更多 -->
+    <view wx:if="{{comments.length > 0 && !noMore}}" class="load-more" bindtap="loadMore">
+      <text>加载更多</text>
+    </view>
+    
+    <view wx:if="{{noMore && comments.length > 0}}" class="no-more">
+      <text>没有更多了</text>
+    </view>
+  </view>
+</view>

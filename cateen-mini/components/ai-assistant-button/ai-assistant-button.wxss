@@ -1,0 +1,198 @@
+/* components/ai-assistant-button/ai-assistant-button.wxss */
+.ai-assistant-container {
+  position: fixed;
+  z-index: 9999;
+  transition: all 0.3s ease;
+}
+
+.ai-assistant-container.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.ai-assistant-container.hidden {
+  opacity: 0;
+  transform: scale(0);
+  pointer-events: none;
+}
+
+/* 提示气泡 */
+.assistant-tip {
+  position: absolute;
+  right: 120rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 16rpx 24rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-50%) translateX(20rpx);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.assistant-tip.show {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.tip-arrow {
+  position: absolute;
+  right: -10rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10rpx solid rgba(0, 0, 0, 0.8);
+  border-top: 10rpx solid transparent;
+  border-bottom: 10rpx solid transparent;
+}
+
+/* 悬浮按钮 */
+.assistant-button {
+  width: 100rpx;
+  height: 100rpx;
+  background: linear-gradient(135deg, #FF6B35 0%, #FF8E53 100%);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(255, 107, 53, 0.4);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  border: 4rpx solid #fff;
+}
+
+.assistant-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+  border-radius: 50%;
+}
+
+.assistant-button:active {
+  transform: scale(0.95);
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 53, 0.6);
+}
+
+.assistant-button.dragging {
+  transform: scale(1.1);
+  box-shadow: 0 12rpx 32rpx rgba(255, 107, 53, 0.6);
+}
+
+.assistant-button.animating {
+  animation: buttonBounce 0.2s ease;
+}
+
+@keyframes buttonBounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* 按钮图标 */
+.button-icon {
+  margin-bottom: 4rpx;
+}
+
+.icon-robot {
+  font-size: 32rpx;
+  line-height: 1;
+}
+
+/* 按钮文字 */
+.button-text {
+  font-size: 18rpx;
+  color: white;
+  font-weight: bold;
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.3);
+  line-height: 1;
+}
+
+/* 拖拽指示器 */
+.drag-indicator {
+  position: absolute;
+  top: -40rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  color: white;
+  font-size: 20rpx;
+}
+
+.drag-dots {
+  display: flex;
+  gap: 4rpx;
+}
+
+.dot {
+  width: 6rpx;
+  height: 6rpx;
+  background: white;
+  border-radius: 50%;
+  animation: dotPulse 1s infinite;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* 脉冲动画 */
+.pulse-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2rpx solid #FF6B35;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+  pointer-events: none;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* 响应式适配 */
+@media (max-width: 375px) {
+  .assistant-button {
+    width: 90rpx;
+    height: 90rpx;
+  }
+  
+  .icon-robot {
+    font-size: 28rpx;
+  }
+  
+  .button-text {
+    font-size: 16rpx;
+  }
+}

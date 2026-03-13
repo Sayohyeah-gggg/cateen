@@ -1,0 +1,60 @@
+<!--pages/collections/collections.wxml-->
+<view class="collections-container">
+  <!-- 自定义导航栏 -->
+  <navigation-bar title="我的收藏" show-back="{{true}}" />
+
+  <!-- 收藏列表 -->
+  <view class="collections-list">
+    <view wx:if="{{loading && collections.length === 0}}" class="loading-container">
+      <view class="loading-text">加载中...</view>
+    </view>
+
+    <view wx:elif="{{collections.length === 0}}" class="empty-container">
+      <image class="empty-image" src="/images/foods/gongbao-chicken.jpg" mode="aspectFit"></image>
+      <view class="empty-text">还没有收藏任何美食</view>
+      <view class="empty-desc">去发现更多美味吧</view>
+      <button class="discover-btn" bindtap="goToIndex">去发现</button>
+    </view>
+
+    <view wx:else class="food-list">
+      <view 
+        wx:for="{{collections}}" 
+        wx:key="id" 
+        class="food-item"
+        bindtap="goToDetail"
+        data-id="{{item.food.id}}"
+      >
+        <image class="food-image" src="{{item.food.images[0]}}" mode="aspectFill"></image>
+        <view class="food-info">
+          <view class="food-name">{{item.food.name}}</view>
+          <view class="food-category">{{item.food.category}}</view>
+          <view class="food-rating">
+            <text class="rating-text">{{item.food.avgRating}}</text>
+            <text class="rating-star">⭐</text>
+          </view>
+          <view class="food-price">¥{{item.food.price}}</view>
+        </view>
+        <view class="food-actions">
+          <button 
+            class="remove-btn" 
+            bindtap="removeCollection"
+            data-food-id="{{item.food.id}}"
+            data-collection-id="{{item.id}}"
+            catchtap="true"
+          >
+            取消收藏
+          </button>
+        </view>
+      </view>
+    </view>
+
+    <!-- 加载更多 -->
+    <view wx:if="{{collections.length > 0 && !noMore}}" class="load-more" bindtap="loadMore">
+      <text>加载更多</text>
+    </view>
+    
+    <view wx:if="{{noMore && collections.length > 0}}" class="no-more">
+      <text>没有更多了</text>
+    </view>
+  </view>
+</view>
