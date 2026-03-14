@@ -158,29 +158,11 @@
 
 /* 闂傚倷绀佸﹢閬嶁€﹂崼婢濇椽顢橀姀鐘殿唵?*/
 .wheel-pointer {
-  position: absolute;
-  top: -40rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 25rpx solid transparent;
-  border-right: 25rpx solid transparent;
-  border-bottom: 50rpx solid #ff6b35;
-  z-index: 200;
-  filter: drop-shadow(0 4rpx 8rpx rgba(0, 0, 0, 0.3));
+  display: none;
 }
 
 .wheel-pointer::after {
-  content: '';
-  position: absolute;
-  top: 50rpx;
-  left: -20rpx;
-  width: 0;
-  height: 0;
-  border-left: 20rpx solid transparent;
-  border-right: 20rpx solid transparent;
-  border-top: 20rpx solid #FF4757;
+  display: none;
 }
 
 /* 缂傚倸鍊搁崐鐑芥倿閿曞倸绠板┑鐘崇閸婅泛顭跨捄渚叕闁搞倖娲熼弻娑㈡晜鐠囨彃绠婚悗?*/

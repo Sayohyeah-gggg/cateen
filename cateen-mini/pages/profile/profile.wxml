@@ -35,7 +35,7 @@
       </view>
 
       <view class="menu-card glass-card">
-        <view class="menu-item" bind:tap="showAbout"><text class="menu-title">关于</text><text class="menu-arrow">></text></view>
+        <view class="menu-item" bind:tap="showAbout"><text class="menu-title">关于</text><text class="menu-extra">v1.0.0</text><text class="menu-arrow">></text></view>
         <view class="menu-item" bind:tap="showAgreement"><text class="menu-title">用户协议</text><text class="menu-arrow">></text></view>
         <view class="menu-item" bind:tap="showPrivacy"><text class="menu-title">隐私政策</text><text class="menu-arrow">></text></view>
       </view>
@@ -44,8 +44,32 @@
 
   <view class="modal {{showAboutModal ? 'show' : ''}}" bind:tap="hideModal">
     <view class="modal-content glass-card" catch:tap="stopPropagation">
-      <view class="modal-head"><text class="modal-title">关于</text><text class="modal-close" bind:tap="hideModal">x</text></view>
-      <view class="modal-body"><text class="about-text">食堂优选是一款食堂菜品浏览与分享的小程序。</text></view>
+      <view class="modal-head"><text class="modal-title">关于食堂优选</text><text class="modal-close" bind:tap="hideModal">×</text></view>
+      <view class="modal-body">
+        <view class="about-section">
+          <view class="app-icon-wrap">
+            <view class="app-icon-emoji">🍽️</view>
+            <image class="app-logo" src="/images/default-avatar.jpg" mode="aspectFit" />
+          </view>
+          <text class="app-name">食堂优选</text>
+        </view>
+        <view class="about-divider"></view>
+        <view class="about-intro">
+          <text class="about-text">食堂优选是一款专注于食堂菜品浏览与分享的小程序。</text>
+          <text class="about-text">在这里，您可以：</text>
+        </view>
+        <view class="about-features">
+          <view class="feature-item">🍽️ 浏览丰富菜品</view>
+          <view class="feature-item">⭐ 查看美食榜单</view>
+          <view class="feature-item">💬 分享用餐体验</view>
+          <view class="feature-item">🤖 AI 智能推荐</view>
+          <view class="feature-item">🎲 幸运抽签选菜</view>
+        </view>
+        <view class="about-divider"></view>
+        <view class="about-copyright">
+          <text class="about-text">© 2024 食堂优选 版权所有</text>
+        </view>
+      </view>
     </view>
   </view>
 </view>

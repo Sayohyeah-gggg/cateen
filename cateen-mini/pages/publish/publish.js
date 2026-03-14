@@ -102,16 +102,26 @@ Page({
       })
       .then(function() {
         wx.hideLoading();
-        wx.showToast({ title: '发布成功', icon: 'success' });
         // 通知上一页刷新
         var pages = getCurrentPages();
         var prevPage = pages[pages.length - 2];
-        if (prevPage && prevPage._needRefresh !== undefined) {
+        if (prevPage) {
+          // 标记需要刷新
           prevPage._needRefresh = true;
+          // 立即调用刷新方法（如果存在）
+          if (typeof prevPage.loadPosts === 'function') {
+            prevPage._needRefresh = false;
+            prevPage.loadPosts(true).then(function() {
+              wx.showToast({ title: '发布成功', icon: 'success' });
+            });
+          }
+        } else {
+          wx.showToast({ title: '发布成功', icon: 'success' });
         }
+        // 延迟返回，让用户看到提示
         setTimeout(function() {
           wx.navigateBack();
-        }, 800);
+        }, 500);
       })
       .catch(function(err) {
         wx.hideLoading();

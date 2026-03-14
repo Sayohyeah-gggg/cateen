@@ -86,6 +86,7 @@ Page({
     if (this._needRefresh) {
       this._needRefresh = false;
       this.loadPosts(true);
+      wx.showToast({ title: '发布成功', icon: 'success' });
     }
   },
 
@@ -156,13 +157,10 @@ Page({
       return;
     }
     var self = this;
+    // 重置刷新标志
+    this._needRefresh = false;
     wx.navigateTo({
-      url: '/pages/publish/publish',
-      events: {
-        onPublished: function() {
-          self._needRefresh = true;
-        }
-      }
+      url: '/pages/publish/publish'
     });
   },
 
