@@ -31,6 +31,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // 映射本地上传目录为静态资源
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + uploadPath + "/");
+
+        // 映射导出文件目录
+        registry.addResourceHandler("/exports/**")
+                .addResourceLocations("file:" + uploadPath + "/exports/");
     }
 
     @Override
@@ -59,6 +63,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         // 文件上传和静态资源
                         "/api/mini/upload/**",
                         "/uploads/**",
+                        "/exports/**",
                         // 数据库监控路径
                         "/druid/**",
                         // Swagger相关路径

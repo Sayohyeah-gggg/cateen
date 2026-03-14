@@ -10,6 +10,8 @@ import com.xawl.cateen.mapper.FoodMapper;
 import com.xawl.cateen.mapper.ForumCommentMapper;
 import com.xawl.cateen.mapper.ForumPostMapper;
 import com.xawl.cateen.mapper.ProfileMapper;
+import com.xawl.cateen.service.ExcelGeneratorService;
+import com.xawl.cateen.service.PptGeneratorService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import dev.langchain4j.agent.tool.Tool;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,8 @@ public class AdminDatabaseTools {
     private final CommentMapper commentMapper;
     private final ForumPostMapper forumPostMapper;
     private final ForumCommentMapper forumCommentMapper;
+    private final ExcelGeneratorService excelGeneratorService;
+    private final PptGeneratorService pptGeneratorService;
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -311,6 +315,36 @@ public class AdminDatabaseTools {
         } catch (Exception e) {
             log.error("查询帖子活跃统计失败", e);
             return "查询帖子活跃统计失败：" + e.getMessage();
+        }
+    }
+
+    @Tool("生成Excel报表，type参数指定类型：users=用户列表, foods=美食列表, comments=评论列表, posts=帖子列表")
+    public String generateExcel(String type) {
+        try {
+            log.info("AI调用工具：生成Excel，类型={}", type);
+            String url = switch (type) {
+                case "users"   -> excelGeneratorService.generateUserExcel();
+                case "foods"   -> excelGeneratorService.generateFoodExcel();
+                case "comments"-> excelGeneratorService.generateCommentExcel();
+                case "posts"   -> excelGeneratorService.generateForumPostExcel();
+                default        -> throw new IllegalArgumentException("不支持的类型：" + type + "，可选：users/foods/comments/posts");
+            };
+            return "Excel 已生成，下载地址：" + url;
+        } catch (Exception e) {
+            log.error("生成Excel失败", e);
+            return "生成Excel失败：" + e.getMessage();
+        }
+    }
+
+    @Tool("生成系统数据概览PPT报告，包含用户、美食、评论、帖子的统计数据")
+    public String generatePpt() {
+        try {
+            log.info("AI调用工具：生成PPT报告");
+            String url = pptGeneratorService.generateOverviewPpt();
+            return "PPT 已生成，下载地址：" + url;
+        } catch (Exception e) {
+            log.error("生成PPT失败", e);
+            return "生成PPT失败：" + e.getMessage();
         }
     }
 }

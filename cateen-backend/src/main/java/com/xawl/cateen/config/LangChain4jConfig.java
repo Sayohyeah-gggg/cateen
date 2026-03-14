@@ -109,6 +109,8 @@ public class LangChain4jConfig {
             "- searchForumPosts: 按关键词搜索帖子",
             "- getForumCommentsByPost: 指定帖子的评论",
             "- getForumActivityStatistics: 帖子活跃度统计",
+            "- generateExcel(type): 生成Excel报表，type可选 users/foods/comments/posts",
+            "- generatePpt(): 生成系统数据概览PPT报告",
             "",
             "回复要求：",
             "- 直接给出数据和结论，不加多余修饰",
