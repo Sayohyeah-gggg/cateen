@@ -168,6 +168,50 @@ public class ForumService {
         }
     }
 
+    /**
+     * 管理端分页查询帖子（支持关键词、状态筛选）
+     */
+    public PageVO<ForumPostVO> adminGetPostPage(int page, int limit, String keyword, String status) {
+        Page<ForumPostVO> pageParam = new Page<>(page, limit);
+        Page<ForumPostVO> result = postMapper.adminSelectPostPage(pageParam, keyword, status);
+        result.getRecords().forEach(vo -> {
+            vo.setImageList(parseImages(vo.getImages()));
+            vo.setImages(null);
+        });
+        return PageVO.<ForumPostVO>builder()
+                .list(result.getRecords())
+                .pageNum(result.getCurrent())
+                .pageSize(result.getSize())
+                .total(result.getTotal())
+                .pages(result.getPages())
+                .build();
+    }
+
+    /**
+     * 管理端更新帖子状态
+     */
+    @Transactional
+    public void adminUpdatePostStatus(String postId, String status) {
+        ForumPost post = postMapper.selectById(postId);
+        if (post == null || post.getDeleted() == 1) {
+            throw new RuntimeException("帖子不存在");
+        }
+        post.setStatus(status);
+        postMapper.updateById(post);
+    }
+
+    /**
+     * 管理端强制删除帖子
+     */
+    @Transactional
+    public void adminDeletePost(String postId) {
+        ForumPost post = postMapper.selectById(postId);
+        if (post == null || post.getDeleted() == 1) {
+            throw new RuntimeException("帖子不存在");
+        }
+        postMapper.deleteById(postId);
+    }
+
     private List<String> parseImages(String imagesJson) {
         if (!StringUtils.hasText(imagesJson)) {
             return Collections.emptyList();

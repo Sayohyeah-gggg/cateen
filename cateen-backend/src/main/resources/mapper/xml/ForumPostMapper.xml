@@ -35,9 +35,34 @@
                 0 AS liked
             </if>
         FROM forum_posts p
-        LEFT JOIN profiles u ON p.user_id = u.user_id
+        LEFT JOIN profiles u ON p.user_id = u.id
         WHERE p.deleted = 0
           AND p.status = 'approved'
+        ORDER BY p.created_at DESC
+    </select>
+
+    <select id="adminSelectPostPage" resultMap="PostVOMap">
+        SELECT
+            p.id,
+            p.user_id,
+            p.content,
+            p.images,
+            p.like_count,
+            p.comment_count,
+            p.status,
+            p.created_at,
+            u.nickname,
+            u.avatar,
+            0 AS liked
+        FROM forum_posts p
+        LEFT JOIN profiles u ON p.user_id = u.id
+        WHERE p.deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND p.content LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="status != null and status != ''">
+            AND p.status = #{status}
+        </if>
         ORDER BY p.created_at DESC
     </select>
 

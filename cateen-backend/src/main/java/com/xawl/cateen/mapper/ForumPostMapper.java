@@ -14,4 +14,11 @@ public interface ForumPostMapper extends BaseMapper<ForumPost> {
      * 分页查询帖子列表（带用户信息）
      */
     Page<ForumPostVO> selectPostPage(Page<ForumPostVO> page, @Param("currentUserId") String currentUserId);
+
+    /**
+     * 管理端分页查询（支持关键词、状态筛选）
+     */
+    Page<ForumPostVO> adminSelectPostPage(Page<ForumPostVO> page,
+                                          @Param("keyword") String keyword,
+                                          @Param("status") String status);
 }

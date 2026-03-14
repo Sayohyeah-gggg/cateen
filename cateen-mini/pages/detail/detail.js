@@ -35,6 +35,8 @@ function normalizeComment(raw) {
 
 Page({
   data: {
+    theme: 'light',
+    themeClass: 'theme-light',
     foodId: '',
     foodDetail: {
       id: '',
@@ -59,6 +61,7 @@ Page({
   },
 
   onLoad: function(options) {
+    this.syncTheme();
     var foodId = options.id;
     if (!foodId) {
       wx.showToast({ title: '缺少菜品ID', icon: 'none' });
@@ -71,9 +74,16 @@ Page({
   },
 
   onShow: function() {
+    this.syncTheme();
     if (this.data.foodId) {
       this.refreshCollectionStatus();
     }
+  },
+
+  syncTheme: function() {
+    var app = getApp();
+    var theme = app.getCurrentTheme ? app.getCurrentTheme() : 'light';
+    this.setData({ theme: theme, themeClass: 'theme-' + theme });
   },
 
   loadFoodDetail: function() {

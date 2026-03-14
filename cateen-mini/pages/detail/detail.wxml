@@ -1,53 +1,80 @@
 <!-- pages/detail/detail.wxml -->
-<view class="detail-container">
-  <navigation-bar title="菜品详情" show-back="{{true}}" />
+<view class="detail-page theme-shell {{themeClass}}">
+  <navigation-bar title="菜品详情" show-back="{{true}}" theme="{{theme}}" />
 
-  <view class="image-section">
-    <swiper class="food-swiper" indicator-dots="{{true}}" autoplay="{{false}}" circular="{{true}}">
-      <swiper-item wx:for="{{foodDetail.images && foodDetail.images.length ? foodDetail.images : [foodDetail.imageUrl]}}" wx:key="index">
-        <image class="food-image" src="{{item}}" mode="aspectFill" />
-      </swiper-item>
-    </swiper>
-  </view>
+  <scroll-view class="page-scroll" scroll-y="{{true}}">
+    <view class="page-content page-inner">
 
-  <view class="info-section">
-    <view class="food-name">{{foodDetail.name}}</view>
-    <view class="food-category">{{foodDetail.categoryName || foodDetail.category || '未分类'}}</view>
-    <view class="rating-info"><rating-star rating="{{foodDetail.avgRating || 0}}" size="small" /><text class="rating-text">{{foodDetail.avgRating || 0}}</text><text class="rating-count">({{foodDetail.ratingCount || 0}})</text></view>
-    <view class="food-description">{{foodDetail.description || '暂无描述'}}</view>
-    <view class="food-tags"><text class="tag" wx:for="{{foodDetail.tags}}" wx:key="index">{{item}}</text></view>
-  </view>
-
-  <view class="action-section"><button class="collect-btn {{foodDetail.isCollected ? 'collected' : ''}}" bind:tap="toggleCollect">{{foodDetail.isCollected ? '已收藏' : '收藏'}}</button></view>
-
-  <view class="comment-section">
-    <view class="section-header"><text class="section-title">评论（{{comments.total || 0}}）</text></view>
-
-    <view class="rating-input">
-      <view class="rating-title">为这道菜评分并留言</view>
-      <rating-star rating="{{userRating || 0}}" editable="{{true}}" bind:ratingchange="onRatingChange" />
-      <textarea class="comment-input" placeholder="写下你的评论..." value="{{commentText}}" bind:input="onCommentInput" />
-      <button class="submit-btn" bind:tap="submitComment" disabled="{{!userRating}}">提交</button>
-    </view>
-
-    <view class="comment-list">
-      <view class="comment-item" wx:for="{{comments.list}}" wx:key="id">
-        <view class="comment-header">
-          <image class="user-avatar" src="{{item.userAvatar}}" />
-          <view class="user-info"><text class="user-name">{{item.userNickName}}</text><rating-star rating="{{item.rating || 0}}" size="mini" /></view>
-          <text class="comment-time">{{item.createTime}}</text>
-        </view>
-
-        <view class="comment-content">{{item.content}}</view>
-
-        <view class="comment-images" wx:if="{{item.images && item.images.length > 0}}">
-          <image class="comment-image" wx:for="{{item.images}}" wx:for-item="img" wx:key="index" src="{{img}}" mode="aspectFill" />
-        </view>
-
-        <view class="comment-actions"><button class="like-btn {{item.isLiked ? 'liked' : ''}}" bind:tap="toggleCommentLike" data-id="{{item.id}}"><text class="like-icon">L</text><text class="like-count">{{item.likeCount || 0}}</text></button></view>
+      <!-- 图片轮播 -->
+      <view class="swiper-wrap glass-card">
+        <swiper class="food-swiper" indicator-dots="{{true}}" autoplay="{{false}}" circular="{{true}}">
+          <swiper-item wx:for="{{foodDetail.images && foodDetail.images.length ? foodDetail.images : [foodDetail.imageUrl]}}" wx:key="index">
+            <image class="food-image" src="{{item}}" mode="aspectFill" />
+          </swiper-item>
+        </swiper>
       </view>
-    </view>
 
-    <view class="load-more" wx:if="{{comments.hasMore}}" bind:tap="loadMoreComments"><text>加载更多</text></view>
-  </view>
+      <!-- 基本信息 + 收藏按钮 -->
+      <view class="info-card glass-card">
+        <view class="food-name title-24">{{foodDetail.name}}</view>
+        <view class="food-category-tag">{{foodDetail.categoryName || foodDetail.category || '未分类'}}</view>
+        <view class="rating-row">
+          <rating-star rating="{{foodDetail.avgRating || 0}}" size="small" />
+          <text class="rating-score">{{foodDetail.avgRating || 0}}</text>
+          <text class="rating-count text-12">({{foodDetail.ratingCount || 0}})</text>
+          <button size="mini" class="collect-btn motion-press {{foodDetail.isCollected ? 'collected' : ''}}" bind:tap="toggleCollect">
+            <text class="collect-icon">{{foodDetail.isCollected ? '★' : '☆'}}</text>
+            <text>{{foodDetail.isCollected ? '已收藏' : '收藏'}}</text>
+          </button>
+        </view>
+        <view class="food-desc text-14">{{foodDetail.description || '暂无描述'}}</view>
+        <view class="food-tags" wx:if="{{foodDetail.tags && foodDetail.tags.length}}">
+          <text class="tag text-12" wx:for="{{foodDetail.tags}}" wx:key="index">{{item}}</text>
+        </view>
+      </view>
+
+      <!-- 评论区 -->
+      <view class="comment-card glass-card">
+        <view class="section-row">
+          <text class="section-title title-20">评论（{{comments.total || 0}}）</text>
+        </view>
+
+        <!-- 发表评论 -->
+        <view class="rating-input-wrap">
+          <view class="rating-label text-14">为这道菜评分并留言</view>
+          <rating-star rating="{{userRating || 0}}" editable="{{true}}" bind:ratingchange="onRatingChange" />
+          <textarea class="comment-textarea" placeholder="写下你的评论..." placeholder-class="textarea-placeholder" value="{{commentText}}" bind:input="onCommentInput" />
+          <button class="submit-btn motion-press" bind:tap="submitComment" disabled="{{!userRating}}">提交</button>
+        </view>
+
+        <!-- 评论列表 -->
+        <view class="comment-list" wx:if="{{comments.list.length}}">
+          <view class="comment-item" wx:for="{{comments.list}}" wx:key="id">
+            <view class="comment-header">
+              <image class="user-avatar" src="{{item.userAvatar}}" mode="aspectFill" />
+              <view class="user-meta">
+                <text class="user-name text-14">{{item.userNickName}}</text>
+                <rating-star rating="{{item.rating || 0}}" size="mini" />
+              </view>
+              <text class="comment-time text-12">{{item.createTime}}</text>
+            </view>
+            <view class="comment-content text-14">{{item.content}}</view>
+            <view class="comment-imgs" wx:if="{{item.images && item.images.length}}">
+              <image class="comment-img" wx:for="{{item.images}}" wx:for-item="img" wx:key="index" src="{{img}}" mode="aspectFill" />
+            </view>
+            <view class="comment-footer">
+              <button class="like-btn {{item.isLiked ? 'liked' : ''}}" bind:tap="toggleCommentLike" data-id="{{item.id}}">
+                <text class="like-icon">♥</text>
+                <text class="text-12">{{item.likeCount || 0}}</text>
+              </button>
+            </view>
+          </view>
+        </view>
+
+        <view class="load-more text-14" wx:if="{{comments.hasMore}}" bind:tap="loadMoreComments">加载更多</view>
+        <view class="empty-comments text-12" wx:if="{{!comments.list.length}}">暂无评论，来第一个留言吧</view>
+      </view>
+
+    </view>
+  </scroll-view>
 </view>
