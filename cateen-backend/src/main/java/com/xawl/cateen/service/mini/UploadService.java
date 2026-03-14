@@ -58,8 +58,10 @@ public class UploadService {
         
         // 4. 保存文件
         try {
-            Path targetPath = Paths.get(fullPath, newFilename);
-            file.transferTo(targetPath.toFile());
+            Path targetPath = Paths.get(fullPath, newFilename).toAbsolutePath();
+            // 确保父目录存在
+            Files.createDirectories(targetPath.getParent());
+            Files.copy(file.getInputStream(), targetPath);
             log.info("文件上传成功: {}", targetPath);
         } catch (IOException e) {
             log.error("文件保存失败", e);

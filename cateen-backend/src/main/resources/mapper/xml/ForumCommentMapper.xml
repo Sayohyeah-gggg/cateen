@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xawl.cateen.mapper.ForumCommentMapper">
+
+    <resultMap id="CommentVOMap" type="com.xawl.cateen.vo.ForumCommentVO">
+        <id column="id" property="id"/>
+        <result column="post_id" property="postId"/>
+        <result column="user_id" property="userId"/>
+        <result column="content" property="content"/>
+        <result column="like_count" property="likeCount"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="nickname" property="userNickname"/>
+        <result column="avatar" property="userAvatar"/>
+    </resultMap>
+
+    <select id="selectCommentPage" resultMap="CommentVOMap">
+        SELECT
+            c.id,
+            c.post_id,
+            c.user_id,
+            c.content,
+            c.like_count,
+            c.created_at,
+            u.nickname,
+            u.avatar
+        FROM forum_comments c
+        LEFT JOIN profiles u ON c.user_id = u.user_id
+        WHERE c.post_id = #{postId}
+          AND c.deleted = 0
+        ORDER BY c.created_at ASC
+    </select>
+
+</mapper>

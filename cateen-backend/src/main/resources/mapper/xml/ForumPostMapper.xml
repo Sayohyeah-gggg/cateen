@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xawl.cateen.mapper.ForumPostMapper">
+
+    <resultMap id="PostVOMap" type="com.xawl.cateen.vo.ForumPostVO">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="content" property="content"/>
+        <result column="images" property="images"/>
+        <result column="like_count" property="likeCount"/>
+        <result column="comment_count" property="commentCount"/>
+        <result column="status" property="status"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="nickname" property="userNickname"/>
+        <result column="avatar" property="userAvatar"/>
+    </resultMap>
+
+    <select id="selectPostPage" resultMap="PostVOMap">
+        SELECT
+            p.id,
+            p.user_id,
+            p.content,
+            p.images,
+            p.like_count,
+            p.comment_count,
+            p.status,
+            p.created_at,
+            u.nickname,
+            u.avatar,
+            <if test="currentUserId != null">
+                (SELECT COUNT(1) FROM forum_likes fl WHERE fl.post_id = p.id AND fl.user_id = #{currentUserId}) AS liked
+            </if>
+            <if test="currentUserId == null">
+                0 AS liked
+            </if>
+        FROM forum_posts p
+        LEFT JOIN profiles u ON p.user_id = u.user_id
+        WHERE p.deleted = 0
+          AND p.status = 'approved'
+        ORDER BY p.created_at DESC
+    </select>
+
+</mapper>

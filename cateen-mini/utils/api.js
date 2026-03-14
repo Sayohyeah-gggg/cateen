@@ -204,8 +204,7 @@ var api = {
         var token = wx.getStorageSync('token');
 
         wx.uploadFile({
-          url: config.getBaseUrl() + '/upload/image',
-          filePath: filePath,
+          url: config.getBaseUrl() + '/upload/image',          filePath: filePath,
           name: 'file',
           formData: { type: uploadType },
           header: {
@@ -249,6 +248,27 @@ var api = {
     },
     getStatus: function() {
       return request('/ai/status');
+    }
+  },
+
+  forum: {
+    getPosts: function(params) {
+      return request('/forum/posts', { data: mapPageParams(params) });
+    },
+    createPost: function(data) {
+      return request('/forum/posts', { method: 'POST', data: data });
+    },
+    deletePost: function(postId) {
+      return request('/forum/posts/' + postId, { method: 'DELETE' });
+    },
+    getComments: function(postId, params) {
+      return request('/forum/posts/' + postId + '/comments', { data: mapPageParams(params) });
+    },
+    createComment: function(postId, content) {
+      return request('/forum/posts/' + postId + '/comments', { method: 'POST', data: { content: content } });
+    },
+    toggleLike: function(postId) {
+      return request('/forum/posts/' + postId + '/like', { method: 'POST' });
     }
   },
 

@@ -1,15 +1,12 @@
 // pages/ranking/ranking.js
 var auth = require('../../utils/auth');
+var api = require('../../utils/api');
 
-var STORAGE_KEY = 'mini_share_posts';
 var DEFAULT_AVATAR = '/images/default-avatar.jpg';
 
-function now() {
-  return Date.now();
-}
-
-function formatTime(timestamp) {
-  var date = new Date(timestamp);
+function formatTime(dateStr) {
+  if (!dateStr) return '';
+  var date = new Date(dateStr);
   var month = date.getMonth() + 1;
   var day = date.getDate();
   var hour = date.getHours();
@@ -23,74 +20,38 @@ function formatTime(timestamp) {
   return mm + '-' + dd + ' ' + hh + ':' + mi;
 }
 
-function ensureComment(comment) {
-  var createTime = comment.createTime || now();
-  var user = comment.user || {};
+/** 将后端返回的帖子数据规范化为前端格式（兼容驼峰和下划线字段） */
+function normalizePost(item) {
+  var comments = (item.comments || []).map(function(c) {
+    return {
+      id: c.id,
+      content: c.content,
+      displayTime: formatTime(c.created_at || c.createdAt),
+      user: {
+        nickName: c.user_nickname || c.userNickname || '食客',
+        avatarUrl: c.user_avatar || c.userAvatar || DEFAULT_AVATAR
+      }
+    };
+  });
+
+  // 图片列表：兼容 image_list（下划线）和 imageList（驼峰）
+  var imageList = item.image_list || item.imageList;
 
   return {
-    id: comment.id || ('c_' + createTime + '_' + Math.floor(Math.random() * 1000)),
-    content: comment.content || '',
-    createTime: createTime,
-    displayTime: formatTime(createTime),
-    user: {
-      nickName: user.nickName || comment.userNickName || '食客',
-      avatarUrl: user.avatarUrl || comment.userAvatar || DEFAULT_AVATAR
-    }
-  };
-}
-
-function ensurePost(post) {
-  var createTime = post.createTime || now();
-  var author = post.author || {};
-
-  return {
-    id: post.id || ('post_' + createTime),
-    content: post.content || '',
-    images: Array.isArray(post.images) ? post.images : [],
-    createTime: createTime,
-    displayTime: formatTime(createTime),
+    id: item.id,
+    content: item.content || '',
+    images: Array.isArray(imageList) ? imageList : [],
+    displayTime: formatTime(item.created_at || item.createdAt),
     author: {
-      nickName: author.nickName || '食客',
-      avatarUrl: author.avatarUrl || DEFAULT_AVATAR
+      nickName: item.user_nickname || item.userNickname || '食客',
+      avatarUrl: item.user_avatar || item.userAvatar || DEFAULT_AVATAR
     },
-    likeCount: Number(post.likeCount || 0),
-    liked: !!post.liked,
-    comments: Array.isArray(post.comments) ? post.comments.map(ensureComment) : []
+    likeCount: Number(item.like_count != null ? item.like_count : (item.likeCount || 0)),
+    liked: !!(item.liked),
+    commentCount: Number(item.comment_count != null ? item.comment_count : (item.commentCount || 0)),
+    comments: comments,
+    commentsLoaded: false
   };
-}
-
-function getSeedPosts() {
-  var time = now();
-
-  return [
-    {
-      id: 'seed_1',
-      content: '今天的红烧肉超香，配米饭一绝！',
-      images: ['/images/foods/hongshao-pork.jpg'],
-      createTime: time - 1000 * 60 * 28,
-      author: { nickName: '食客A', avatarUrl: DEFAULT_AVATAR },
-      likeCount: 12,
-      liked: false,
-      comments: [
-        {
-          id: 'seed_c1',
-          content: '看着就很下饭！',
-          createTime: time - 1000 * 60 * 25,
-          user: { nickName: '食客B', avatarUrl: DEFAULT_AVATAR }
-        }
-      ]
-    },
-    {
-      id: 'seed_2',
-      content: '晚餐来一份宫保鸡丁，酸甜又带点辣。',
-      images: ['/images/foods/gongbao-chicken.jpg', '/images/foods/mapo-tofu.jpg'],
-      createTime: time - 1000 * 60 * 95,
-      author: { nickName: '食客C', avatarUrl: DEFAULT_AVATAR },
-      likeCount: 8,
-      liked: false,
-      comments: []
-    }
-  ];
 }
 
 Page({
@@ -107,19 +68,38 @@ Page({
     publishing: false,
 
     posts: [],
-    commentDrafts: {}
+    total: 0,
+    page: 1,
+    limit: 20,
+    loading: false,
+    noMore: false,
+
+    commentDrafts: {},
+    uploadingImages: false
   },
 
   onLoad: function() {
     this.syncTheme();
     this.syncUser();
-    this.loadPosts();
+    this.loadPosts(true);
   },
 
   onShow: function() {
     this.syncTheme();
     this.syncUser();
     this.syncCustomTabBar();
+  },
+
+  onPullDownRefresh: function() {
+    this.loadPosts(true).finally(function() {
+      wx.stopPullDownRefresh();
+    });
+  },
+
+  onReachBottom: function() {
+    if (!this.data.noMore && !this.data.loading) {
+      this.loadPosts(false);
+    }
   },
 
   syncTheme: function() {
@@ -129,14 +109,9 @@ Page({
   },
 
   syncCustomTabBar: function() {
-    if (typeof this.getTabBar !== 'function') {
-      return;
-    }
-
+    if (typeof this.getTabBar !== 'function') return;
     var tabBar = this.getTabBar();
-    if (tabBar && tabBar.updateSelected) {
-      tabBar.updateSelected();
-    }
+    if (tabBar && tabBar.updateSelected) tabBar.updateSelected();
   },
 
   syncUser: function() {
@@ -160,7 +135,6 @@ Page({
   chooseImages: function() {
     var self = this;
     var left = 9 - this.data.selectedImages.length;
-
     if (left <= 0) {
       wx.showToast({ title: '最多选择9张图片', icon: 'none' });
       return;
@@ -171,7 +145,7 @@ Page({
       mediaType: ['image'],
       sourceType: ['album', 'camera'],
       success: function(res) {
-        var files = (res.tempFiles || []).map(function(file) { return file.tempFilePath; });
+        var files = (res.tempFiles || []).map(function(f) { return f.tempFilePath; });
         self.setData({ selectedImages: self.data.selectedImages.concat(files) });
         self.updatePublishState();
       }
@@ -191,88 +165,124 @@ Page({
     wx.previewImage({ current: current, urls: this.data.selectedImages });
   },
 
-  savePosts: function(posts) {
-    wx.setStorageSync(STORAGE_KEY, posts);
+  /** 上传图片到服务器，返回 URL 数组 */
+  uploadImages: function(localPaths) {
+    if (!localPaths || !localPaths.length) return Promise.resolve([]);
+
+    var tasks = localPaths.map(function(path) {
+      return api.upload.image(path, 'forum');
+    });
+
+    return Promise.all(tasks).then(function(results) {
+      return results.map(function(r) {
+        return typeof r === 'string' ? r : (r.url || r.imageUrl || r);
+      });
+    });
   },
 
-  loadPosts: function() {
-    var stored = wx.getStorageSync(STORAGE_KEY);
-    var source = Array.isArray(stored) && stored.length ? stored : getSeedPosts();
-    var posts = source.map(ensurePost).sort(function(a, b) { return b.createTime - a.createTime; });
+  /** 加载帖子列表 */
+  loadPosts: function(refresh) {
+    var self = this;
+    if (this.data.loading) return Promise.resolve();
 
-    if (!stored || !stored.length) {
-      this.savePosts(posts);
-    }
+    var page = refresh ? 1 : this.data.page;
+    this.setData({ loading: true });
 
-    this.setData({ posts: posts, commentDrafts: {} });
+    return api.forum.getPosts({ page: page, limit: this.data.limit })
+      .then(function(result) {
+        var list = (result.list || []).map(normalizePost);
+        var posts = refresh ? list : self.data.posts.concat(list);
+        var total = result.total || 0;
+
+        self.setData({
+          posts: posts,
+          total: total,
+          page: page + 1,
+          noMore: posts.length >= total,
+          loading: false
+        });
+      })
+      .catch(function(err) {
+        console.error('加载帖子失败:', err);
+        self.setData({ loading: false });
+        wx.showToast({ title: '加载失败', icon: 'none' });
+      });
   },
 
+  /** 发布帖子 */
   publishPost: function() {
-    if (!this.data.canPublish || this.data.publishing) {
+    var self = this;
+    if (!this.data.canPublish || this.data.publishing) return;
+
+    if (!this.data.isLoggedIn) {
+      wx.showToast({ title: '请先登录', icon: 'none' });
       return;
     }
 
     var content = (this.data.draftText || '').trim();
-    var images = this.data.selectedImages.slice();
-    var user = this.data.userInfo || {};
-    var createTime = now();
-
-    var post = ensurePost({
-      id: 'post_' + createTime,
-      content: content,
-      images: images,
-      createTime: createTime,
-      author: {
-        nickName: user.nickName || '食客',
-        avatarUrl: user.avatarUrl || DEFAULT_AVATAR
-      },
-      likeCount: 0,
-      liked: false,
-      comments: []
-    });
-
-    var posts = [post].concat(this.data.posts);
+    var localImages = this.data.selectedImages.slice();
 
     this.setData({ publishing: true });
-    this.savePosts(posts);
+    wx.showLoading({ title: '发布中...' });
 
-    this.setData({
-      posts: posts,
-      draftText: '',
-      selectedImages: [],
-      canPublish: false,
-      publishing: false
-    });
-
-    wx.showToast({ title: '已发布', icon: 'success' });
+    // 先上传图片，再发布帖子
+    this.uploadImages(localImages)
+      .then(function(imageUrls) {
+        return api.forum.createPost({ content: content, images: imageUrls });
+      })
+      .then(function() {
+        wx.hideLoading();
+        self.setData({
+          draftText: '',
+          selectedImages: [],
+          canPublish: false,
+          publishing: false
+        });
+        wx.showToast({ title: '发布成功', icon: 'success' });
+        // 刷新列表
+        return self.loadPosts(true);
+      })
+      .catch(function(err) {
+        wx.hideLoading();
+        console.error('发布失败:', err);
+        self.setData({ publishing: false });
+        wx.showToast({ title: err.message || '发布失败', icon: 'none' });
+      });
   },
 
+  /** 点赞/取消点赞 */
   toggleLike: function(e) {
+    var self = this;
     var postId = e.currentTarget.dataset.id;
 
+    if (!this.data.isLoggedIn) {
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      return;
+    }
+
+    // 乐观更新 UI
     var posts = this.data.posts.map(function(post) {
-      if (post.id !== postId) {
-        return post;
-      }
-
+      if (post.id !== postId) return post;
       var liked = !post.liked;
-      var count = post.likeCount + (liked ? 1 : -1);
-
       return Object.assign({}, post, {
         liked: liked,
-        likeCount: count < 0 ? 0 : count
+        likeCount: post.likeCount + (liked ? 1 : -1)
       });
     });
-
     this.setData({ posts: posts });
-    this.savePosts(posts);
+
+    api.forum.toggleLike(postId).catch(function(err) {
+      console.error('点赞失败:', err);
+      // 回滚
+      self.loadPosts(true);
+    });
   },
 
   previewPostImage: function(e) {
     var postId = e.currentTarget.dataset.postId;
     var current = e.currentTarget.dataset.current;
-
     var target = null;
+
     for (var i = 0; i < this.data.posts.length; i++) {
       if (this.data.posts[i].id === postId) {
         target = this.data.posts[i];
@@ -280,10 +290,7 @@ Page({
       }
     }
 
-    if (!target || !target.images || !target.images.length) {
-      return;
-    }
-
+    if (!target || !target.images || !target.images.length) return;
     wx.previewImage({ current: current, urls: target.images });
   },
 
@@ -295,46 +302,57 @@ Page({
     this.setData(patch);
   },
 
+  /** 提交评论 */
   submitComment: function(e) {
+    var self = this;
     var postId = e.currentTarget.dataset.id;
     var text = (this.data.commentDrafts[postId] || '').trim();
-    var user = this.data.userInfo || {};
 
     if (!text) {
       wx.showToast({ title: '请输入评论', icon: 'none' });
       return;
     }
 
-    var createTime = now();
-    var comment = ensureComment({
-      id: 'c_' + createTime,
+    if (!this.data.isLoggedIn) {
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      return;
+    }
+
+    var user = this.data.userInfo || {};
+
+    // 乐观更新
+    var tempComment = {
+      id: 'temp_' + Date.now(),
       content: text,
-      createTime: createTime,
+      displayTime: '',
       user: {
         nickName: user.nickName || '食客',
         avatarUrl: user.avatarUrl || DEFAULT_AVATAR
       }
-    });
+    };
 
     var posts = this.data.posts.map(function(post) {
-      if (post.id !== postId) {
-        return post;
-      }
-      var comments = [comment].concat(post.comments || []);
-      return Object.assign({}, post, { comments: comments });
+      if (post.id !== postId) return post;
+      return Object.assign({}, post, {
+        comments: (post.comments || []).concat([tempComment]),
+        commentCount: post.commentCount + 1
+      });
     });
 
     var patch = { posts: posts };
     patch['commentDrafts.' + postId] = '';
     this.setData(patch);
-    this.savePosts(posts);
 
-    wx.showToast({ title: '已评论', icon: 'success' });
-  },
-
-  onPullDownRefresh: function() {
-    this.loadPosts();
-    wx.stopPullDownRefresh();
+    api.forum.createComment(postId, text)
+      .then(function() {
+        wx.showToast({ title: '评论成功', icon: 'success' });
+      })
+      .catch(function(err) {
+        console.error('评论失败:', err);
+        wx.showToast({ title: '评论失败', icon: 'none' });
+        // 回滚
+        self.loadPosts(true);
+      });
   },
 
   onShareAppMessage: function() {

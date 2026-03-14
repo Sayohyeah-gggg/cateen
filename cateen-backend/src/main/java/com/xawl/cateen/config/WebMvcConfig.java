@@ -3,9 +3,11 @@ package com.xawl.cateen.config;
 import com.xawl.cateen.interceptor.AuthInterceptor;
 import com.xawl.cateen.interceptor.OptionalAuthInterceptor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -21,12 +23,23 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private final AuthInterceptor authInterceptor;
     private final OptionalAuthInterceptor optionalAuthInterceptor;
 
+    @Value("${upload.path:./uploads}")
+    private String uploadPath;
+
+    @Override
+    public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
+        // 映射本地上传目录为静态资源
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:" + uploadPath + "/");
+    }
+
     @Override
     public void addInterceptors(@NonNull InterceptorRegistry registry) {
 //         可选认证拦截器 - 用于美食相关API（有Token时解析，无Token也允许访问）
         registry.addInterceptor(optionalAuthInterceptor)
                 .addPathPatterns("/api/mini/foods/**")
-                .order(1); // 优先级高，先执行
+                .addPathPatterns("/api/mini/forum/**")
+                .order(1);
 
         // 必须认证拦截器 - 用于需要登录的API
         registry.addInterceptor(authInterceptor)
@@ -42,6 +55,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/api/mini/ranking/**",
                         "/api/mini/categories/**",
                         "/api/mini/foods/**", // 美食API使用可选认证拦截器
+                        "/api/mini/forum/**", // 论坛API使用可选认证拦截器
+                        // 文件上传和静态资源
+                        "/api/mini/upload/**",
+                        "/uploads/**",
                         // 数据库监控路径
                         "/druid/**",
                         // Swagger相关路径
