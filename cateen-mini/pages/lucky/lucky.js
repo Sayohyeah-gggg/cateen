@@ -263,8 +263,66 @@ Page({
   },
 
   loadTodayRecommendations: function() {
-    var list = (mockData.todayRecommendations || mockData.foods || []).map(withSelected);
-    this.setData({ todayRecommendations: list.slice(0, 4) });
+    var self = this;
+    
+    // 先显示模拟数据作为占位
+    var mockList = (mockData.todayRecommendations || mockData.foods || []).map(withSelected);
+    self.setData({ 
+      todayRecommendations: mockList.slice(0, 4) 
+    });
+    
+    // 然后尝试从排行榜 API 获取真实数据
+    wx.showLoading({ title: '加载中...' });
+
+    api.ranking.getRanking({ type: 'rating', page: 1, pageSize: 10 })
+      .then(function(result) {
+        wx.hideLoading();
+        console.log('排行榜数据:', result);
+        
+        // result 可能是数组（直接返回 list）或对象（包含 list 属性）
+        var rankingList = Array.isArray(result) ? result : (result.list || []);
+        
+        if (rankingList.length === 0) {
+          console.warn('排行榜数据为空');
+          return;
+        }
+        
+        // 将排行榜数据转换为食物格式
+        var foods = rankingList.map(function(item) {
+          return withSelected({
+            id: item.food_id,
+            name: item.food_name,
+            images: [item.food_image],
+            category: item.category_name,
+            description: '',
+            avgRating: item.rating,
+            ratingCount: item.rating_count
+          });
+        });
+
+        // 去重并取前 4 个
+        var uniqueFoods = [];
+        var ids = {};
+        for (var i = 0; i < foods.length; i++) {
+          if (!ids[foods[i].id]) {
+            ids[foods[i].id] = true;
+            uniqueFoods.push(foods[i]);
+          }
+        }
+
+        // 只有获取到真实数据才更新
+        if (uniqueFoods.length > 0) {
+          self.setData({ 
+            todayRecommendations: uniqueFoods.slice(0, 4) 
+          });
+          console.log('今日推荐已更新为排行榜数据:', uniqueFoods);
+        }
+      })
+      .catch(function(error) {
+        wx.hideLoading();
+        console.error('加载推荐失败:', error);
+        // 已经显示了模拟数据，不需要额外处理
+      });
   },
 
   loadLuckyHistory: function() {
