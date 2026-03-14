@@ -22,7 +22,7 @@
   display: block;
 }
 
-/* 不同尺寸 */
+/* 婵犵數鍋為崹鍫曞箰閸濄儳鐭撻柟缁㈠枛缁犳牠鏌熼悙顒佹瀯闁绘帒锕弻娑樷攽閸℃浼岄梺?*/
 .stars.mini .star-icon {
   font-size: 20rpx;
 }
@@ -39,7 +39,7 @@
   font-size: 36rpx;
 }
 
-/* 可编辑状态 */
+/* 闂傚倷绀侀幉锟犳偡椤栫偛鍨傜€规洖娲﹂～鏇熴亜韫囨挻鍣虹紓宥呮喘閺岀喓鈧數顭堝瓭缂佹鍨垮?*/
 .stars.editable .star {
   cursor: pointer;
 }

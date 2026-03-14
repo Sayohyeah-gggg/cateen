@@ -1,17 +1,16 @@
-<!-- 自定义导航栏组件 -->
-<view class="nav-bar" style="padding-top: {{statusBarHeight}}px;">
-  <view class="nav-content">
-    <!-- 返回按钮 -->
-    <view class="nav-left" wx:if="{{showBack}}" bind:tap="goBack">
-      <view class="back-icon">←</view>
-    </view>
-    
-    <!-- 标题 -->
-    <view class="nav-title">{{title}}</view>
-    
-    <!-- 右侧操作区域 -->
-    <view class="nav-right">
-      <slot name="right"></slot>
+<!-- components/navigation-bar/navigation-bar.wxml -->
+<view class="nav-bar">
+  <view class="nav-content theme-{{theme}}" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-main" style="height: {{navBarHeight}}px;">
+      <view class="nav-left" wx:if="{{showBack}}" bind:tap="goBack">
+        <view class="back-icon">返回</view>
+      </view>
+
+      <view class="nav-title">{{title}}</view>
+
+      <view class="nav-right">
+        <slot name="right"></slot>
+      </view>
     </view>
   </view>
 </view>

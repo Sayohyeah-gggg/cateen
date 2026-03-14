@@ -1,71 +1,61 @@
-<!--首页-->
-<view class="index-container">
-  <!-- 自定义导航栏 -->
-  <navigation-bar title="美食展示" />
-  
-  <!-- 搜索栏 -->
-  <view class="search-section">
-    <view class="search-bar">
-      <text class="search-icon">🔍</text>
-      <input 
-        class="search-input" 
-        placeholder="搜索美食名称、分类、内容..."
-        bindinput="handleSearchInput"
-      />
+<!-- pages/index/index.wxml -->
+<view class="index-page theme-shell {{themeClass}}">
+  <navigation-bar title="舌尖优选" theme="{{theme}}">
+    <view slot="right" class="nav-tag glass-icon">
+      <image class="nav-icon" src="/styles/icon/homePage.svg" mode="aspectFit" />
     </view>
-  </view>
+  </navigation-bar>
 
-  <!-- 分类导航 -->
-  <view class="category-section">
-    <scroll-view class="category-scroll" scroll-x="{{true}}">
-      <view class="category-list">
-        <view 
-          class="category-item {{currentCategory === item.code ? 'active' : ''}}" 
-          wx:for="{{categories}}" 
-          wx:key="code"
-          bind:tap="switchCategory"
-          data-code="{{item.code}}"
-        >
-          <text class="category-icon">{{item.icon}}</text>
-          <text class="category-name">{{item.name}}</text>
+  <scroll-view class="page-scroll" scroll-y="{{true}}" refresher-enabled="{{true}}" refresher-triggered="{{refreshing}}" bind:refresherrefresh="onRefresh" bind:scrolltolower="loadMore">
+    <view class="page-content page-inner">
+      <view class="search-section glass-card">
+        <view class="search-bar">
+          <image class="search-icon" src="/styles/icon/search.svg" mode="aspectFit" />
+          <input class="search-input" placeholder="搜索菜品..." placeholder-class="search-placeholder" value="{{searchKeyword}}" bindinput="handleSearchInput" />
         </view>
       </view>
-    </scroll-view>
-  </view>
 
-  <!-- 美食列表 -->
-  <scroll-view 
-    class="food-list" 
-    scroll-y="{{true}}" 
-    refresher-enabled="{{true}}"
-    refresher-triggered="{{refreshing}}"
-    bind:refresherrefresh="onRefresh"
-    bind:scrolltolower="loadMore"
-  >
-    <view class="food-grid">
-      <food-card 
-        wx:for="{{foodList}}" 
-        wx:key="id"
-        food-data="{{item}}"
-        bind:cardtap="goToDetail"
-        bind:collecttap="toggleCollect"
-      />
-    </view>
+      <view class="section-block">
+        <view class="section-row"><text class="section-title">人气推荐</text><text class="section-sub">实时更新</text></view>
+        <swiper class="popular-swiper glass-card" indicator-dots="{{true}}" autoplay="{{true}}" circular="{{true}}" interval="4200" duration="420">
+          <swiper-item wx:for="{{popularFoods}}" wx:key="id">
+            <view class="popular-card" bind:tap="onBannerTap" data-id="{{item.id}}">
+              <image class="popular-image" src="{{item.images[0]}}" mode="aspectFill" />
+              <view class="popular-mask">
+                <text class="popular-name">{{item.name}}</text>
+                <text class="popular-meta">{{item.category}} | {{item.avgRating}}</text>
+              </view>
+            </view>
+          </swiper-item>
+        </swiper>
+      </view>
 
-    <!-- 加载状态 -->
-    <view class="loading-more" wx:if="{{loadingMore}}">
-      <text>加载中...</text>
-    </view>
+      <view class="section-block">
+        <view class="section-row"><text class="section-title">分类</text></view>
+        <scroll-view class="category-scroll" scroll-x="{{true}}" enable-flex="{{true}}">
+          <view class="category-list">
+            <view class="category-item {{currentCategory === item.code ? 'active' : ''}}" wx:for="{{categories}}" wx:key="code" bind:tap="switchCategory" data-code="{{item.code}}">
+              <view class="category-icon-wrap" style="background: {{item.bgColor}};"><image class="category-icon" src="{{item.icon}}" mode="aspectFit" /></view>
+              <text class="category-name">{{item.name}}</text>
+            </view>
+          </view>
+        </scroll-view>
+      </view>
 
-    <!-- 没有更多数据 -->
-    <view class="no-more" wx:if="{{noMore && foodList.length > 0}}">
-      <text>— 没有更多美食了 —</text>
-    </view>
+      <view class="section-block recommend-block">
+        <view class="section-row"><text class="section-title">推荐菜品</text><text class="section-sub">共{{foodList.length}}道菜</text></view>
+        <view class="food-grid">
+          <food-card wx:for="{{foodList}}" wx:key="id" food-data="{{item}}" theme="{{theme}}" bind:cardtap="goToDetail" bind:collecttap="toggleCollect" />
+        </view>
+      </view>
 
-    <!-- 空状态 -->
-    <view class="empty-state" wx:if="{{!loading && foodList.length === 0}}">
-      <image class="empty-image" src="/images/foods/gongbao-chicken.jpg" />
-      <text class="empty-text">暂无美食数据</text>
+      <view class="loading-state" wx:if="{{loadingMore}}">加载中...</view>
+      <view class="loading-state muted" wx:if="{{noMore && foodList.length > 0}}">没有更多了</view>
+
+      <view class="empty-state glass-card" wx:if="{{!loading && foodList.length === 0}}">
+        <image class="empty-image" src="/images/foods/gongbao-chicken.jpg" mode="aspectFill" />
+        <text class="empty-text">暂无数据</text>
+      </view>
     </view>
   </scroll-view>
 </view>

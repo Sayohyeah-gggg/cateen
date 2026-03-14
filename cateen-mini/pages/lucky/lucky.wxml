@@ -1,120 +1,89 @@
-<!--幸运转盘页面-->
+<!-- pages/lucky/lucky.wxml -->
 <view class="lucky-container">
-  <!-- 自定义导航栏 -->
+  <image class="bg-img" src="/styles/background/74b1e1d021d8e0b7d9afb6b3056219cd.jpg" mode="aspectFill" lazy-load="true" />
   <navigation-bar title="幸运转盘" show-back="{{showBack}}" />
-  
-  <!-- 页面标题 -->
-  <view class="page-header">
-    <text class="title">今天吃什么？</text>
-    <text class="subtitle">让幸运转盘为你决定</text>
-  </view>
 
-  <!-- 转盘区域 -->
+  <view class="page-header"><text class="title">幸运转盘</text><text class="subtitle">转一转马上决定</text></view>
+
   <view class="wheel-section">
     <view class="wheel-container">
-      <!-- 转盘背景 -->
-      <view class="wheel-bg" style="transform: rotate({{wheelRotation}}deg); background: {{wheelBackground}};">
-      </view>
-      
-      <!-- 菜品名称层 - 跟随转盘旋转 -->
+      <view class="wheel-pointer"></view>
+      <view class="wheel-bg" style="transform: rotate({{wheelRotation}}deg); background: {{wheelBackground}};"></view>
       <view class="food-names-layer" style="transform: rotate({{wheelRotation}}deg);">
         <view class="food-name-item" wx:for="{{wheelFoods}}" wx:key="id" style="transform: rotate({{item.labelAngle}}deg) translateY(-{{labelRadius}}rpx) rotate(-{{item.labelAngle}}deg);">
           <text class="food-name">{{item.name}}</text>
         </view>
       </view>
-      
-      <!-- 中心按钮 -->
-      <view class="center-button {{spinning ? 'spinning' : ''}}" bind:tap="startSpin">
-        <text class="button-text">{{spinning ? '...' : 'GO'}}</text>
+      <view class="center-button {{spinning ? 'spinning' : ''}}" bind:tap="startSpin"><text class="button-text">{{spinning ? '...' : '开转'}}</text></view>
+    </view>
+  </view>
+
+  <view class="custom-controls"><button class="custom-btn" bind:tap="showCustomDialog">自定义转盘</button></view>
+
+  <view class="recommendations-section" wx:if="{{todayRecommendations.length > 0}}">
+    <view class="section-title">今日推荐</view>
+    <view class="recommendations-list">
+      <view class="recommendation-item" wx:for="{{todayRecommendations}}" wx:key="id" bind:tap="goToDetail" data-id="{{item.id}}">
+        <image class="recommendation-image" src="{{item.images[0]}}" mode="aspectFill"></image>
+        <view class="recommendation-info">
+          <view class="recommendation-name">{{item.name}}</view>
+          <view class="recommendation-desc">{{item.description}}</view>
+          <view class="recommendation-rating"><rating-star rating="{{item.avgRating || 0}}" size="mini" /><text class="rating-text">{{item.avgRating || 0}}</text></view>
+        </view>
       </view>
     </view>
   </view>
 
-  <!-- 自定义转盘控制 -->
-  <view class="custom-controls">
-    <button class="custom-btn" bind:tap="showCustomDialog">自定义转盘</button>
+  <view class="history-section" wx:if="{{luckyHistory.length > 0}}">
+    <view class="section-title">历史记录</view>
+    <view class="history-list">
+      <view class="history-item" wx:for="{{luckyHistory}}" wx:key="index">
+        <view class="history-info"><text class="history-name">{{item.name}}</text><text class="history-time">{{item.spinTime}}</text></view>
+        <text class="history-category">{{item.category}}</text>
+      </view>
+    </view>
   </view>
-
-  
 </view>
 
-<!-- 自定义转盘弹窗 -->
 <view class="custom-modal {{showCustomModal ? 'show' : ''}}" bind:tap="hideCustomDialog">
   <view class="custom-content" catch:tap="stopPropagation">
-    <view class="custom-header">
-      <text class="custom-title">自定义转盘</text>
-      <text class="custom-close" bind:tap="hideCustomDialog">✕</text>
-    </view>
-    
-    <!-- 输入菜品数量 -->
+    <view class="custom-header"><text class="custom-title">自定义转盘</text><text class="custom-close" bind:tap="hideCustomDialog">x</text></view>
+
     <view class="input-section">
-      <text class="input-label">请输入菜品数量 (2-12个)</text>
-      <input 
-        class="number-input" 
-        type="number" 
-        placeholder="请输入数字"
-        value="{{customCount}}"
-        bindinput="onCountInput"
-        maxlength="2"
-      />
+      <text class="input-label">设置选项数量（2-12）</text>
+      <input class="number-input" type="number" placeholder="输入数量" value="{{customCountInput}}" bind:input="onCountInput" maxlength="2" />
     </view>
-    
-    <!-- 菜品选择区域 -->
+
     <view class="food-selector" wx:if="{{customCount > 0}}">
-      <text class="selector-title">选择菜品 (已选择 {{selectedFoods.length}}/{{customCount}} 个)</text>
+      <text class="selector-title">选择菜品（{{selectedFoods.length}} / {{customCount}}）</text>
       <scroll-view class="food-list" scroll-y="{{true}}">
-        <view 
-          class="food-item {{item.selected ? 'selected' : ''}}" 
-          wx:for="{{availableFoods}}" 
-          wx:key="id"
-          bind:tap="toggleFoodSelection"
-          data-id="{{item.id}}"
-        >
+        <view class="food-item {{item.selected ? 'selected' : ''}}" wx:for="{{availableFoods}}" wx:key="id" bind:tap="toggleFoodSelection" data-id="{{item.id}}">
           <image class="food-thumb" src="{{item.images[0]}}" mode="aspectFill" />
-          <view class="food-info">
-            <text class="food-name">{{item.name}}</text>
-            <text class="food-category">{{item.category}}</text>
-          </view>
-          <view class="food-check {{item.selected ? 'checked' : ''}}">
-            <text wx:if="{{item.selected}}">✓</text>
-          </view>
+          <view class="food-info"><text class="food-name">{{item.name}}</text><text class="food-category">{{item.category}}</text></view>
+          <view class="food-check {{item.selected ? 'checked' : ''}}"><text wx:if="{{item.selected}}">选</text></view>
         </view>
       </scroll-view>
     </view>
-    
-    <!-- 操作按钮 -->
+
     <view class="custom-actions">
       <button class="custom-action-btn cancel-btn" bind:tap="hideCustomDialog">取消</button>
-      <button 
-        class="custom-action-btn confirm-btn {{selectedFoods.length === customCount ? 'active' : ''}}" 
-        bind:tap="confirmCustomWheel"
-        disabled="{{selectedFoods.length !== customCount}}"
-      >
-        确认 ({{selectedFoods.length}}/{{customCount}})
-      </button>
+      <button class="custom-action-btn confirm-btn {{selectedFoods.length === customCount ? 'active' : ''}}" bind:tap="confirmCustomWheel" disabled="{{selectedFoods.length !== customCount}}">确认</button>
     </view>
   </view>
 </view>
 
-<!-- 结果弹窗 -->
 <view class="result-modal {{showResult ? 'show' : ''}}" bind:tap="hideResult">
   <view class="result-content" catch:tap="stopPropagation">
-    <view class="result-header">
-      <text class="result-title">🎉 恭喜你抽中了</text>
-    </view>
+    <view class="result-header"><text class="result-title">抽取结果</text></view>
+
     <view class="result-food" wx:if="{{spinResult}}">
       <image class="result-image" src="{{spinResult.images[0]}}" mode="aspectFill" />
       <text class="result-name">{{spinResult.name}}</text>
       <text class="result-category">{{spinResult.category}}</text>
-      <view class="result-rating">
-        <rating-star rating="{{spinResult.avgRating || 0}}" size="small" />
-        <text class="rating-text">{{spinResult.avgRating}}</text>
-      </view>
+      <view class="result-rating"><rating-star rating="{{spinResult.avgRating || 0}}" size="small" /><text class="rating-text">{{spinResult.avgRating || 0}}</text></view>
       <text class="result-description">{{spinResult.description}}</text>
     </view>
-    <view class="result-actions">
-      <button class="result-btn view-btn" bind:tap="viewDetail">查看详情</button>
-      <button class="result-btn close-btn" bind:tap="hideResult">再转一次</button>
-    </view>
+
+    <view class="result-actions"><button class="result-btn view-btn" bind:tap="viewDetail">查看详情</button><button class="result-btn close-btn" bind:tap="hideResult">关闭</button></view>
   </view>
 </view>

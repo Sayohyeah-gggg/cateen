@@ -4,7 +4,7 @@
   min-height: 100vh;
 }
 
-/* 图片轮播区域 */
+/* 闂傚倷鐒﹂幃鍫曞磿鏉堛劍娅犻柤鎭掑劜濞呯娀鏌″鍐ㄥ濠殿喗绮嶉妵鍕籍閸ヮ灝鎾绘倶韫囥儳绡€闁哄本鐩鍊燁槼闁诡垰鐗撻弻?*/
 .image-section {
   position: relative;
 }
@@ -19,7 +19,7 @@
   object-fit: cover;
 }
 
-/* 基本信息区域 */
+/* 闂傚倷鑳剁涵鍫曞疾濠靛纾块柕鍫濇嫅閼板潡鏌ｅΔ鈧悧蹇涘煘瀹ュ鐓冮柍杞扮閺嗘洜绱掓潏銊у⒌闁哄本鐩鍊燁槼闁诡垰鐗撻弻?*/
 .info-section {
   background: white;
   padding: 30rpx;
@@ -83,7 +83,7 @@
   font-size: 24rpx;
 }
 
-/* 操作按钮区域 */
+/* 闂傚倷鑳堕幊鎾绘倶濠靛牏鐭撶€规洖娲ㄧ粈濠囨煛閸愩劎澧曠紒鐘虫緲椤潡鎳滈棃娑橆潔闁诲繐楠忕粻鎾诲蓟濞戙垹鍐€鐟滃酣骞嗛崼銉︾厽?*/
 .action-section {
   background: white;
   padding: 20rpx 30rpx;
@@ -103,7 +103,7 @@
   background: #999;
 }
 
-/* 评论区域 */
+/* 闂備浇宕垫慨鏉懨洪妶鍥ｅ亾濮樼厧鐏︽い銏＄懇楠炲鏁冮埀顒傜矆瀹€鍕厱婵犻潧妫楅顐︽煕?*/
 .comment-section {
   background: white;
   padding: 30rpx;
@@ -119,7 +119,7 @@
   color: #333;
 }
 
-/* 评分输入区域 */
+/* 闂備浇宕垫慨鏉懨洪妶鍥ｅ亾濮樼厧澧寸€规洝顫夐幆鏃堝閿涘嫮肖闂備浇顫夐崕鎶藉疮閸噮鍤曢柟鎯板Г閻撴洟鏌″畵顔煎閸庢捇姊?*/
 .rating-input {
   border: 2rpx solid #f0f0f0;
   border-radius: 20rpx;
@@ -158,7 +158,7 @@
   background: #ccc;
 }
 
-/* 评论列表 */
+/* 闂備浇宕垫慨鏉懨洪妶鍥ｅ亾濮樼厧鐏︽い銏＄懇楠炲鏁冮埀顒傜矆閸℃ü绻嗛柕鍫濇噹椤忋儵鏌?*/
 .comment-list {
   margin-top: 30rpx;
 }
@@ -245,7 +245,7 @@
   margin-right: 8rpx;
 }
 
-/* 加载更多 */
+/* 闂傚倷绀侀幉鈥愁潖缂佹ɑ鍙忛柟顖ｇ亹瑜版帒鐐婃い鎺嗗亾闁告濞婇弻鈩冨緞鐎ｎ亞鍔稿┑?*/
 .load-more {
   text-align: center;
   padding: 30rpx;

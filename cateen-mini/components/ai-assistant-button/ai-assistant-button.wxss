@@ -16,7 +16,7 @@
   pointer-events: none;
 }
 
-/* 提示气泡 */
+/* 闂傚倷绀佸﹢杈╁垝椤栫偛绀夋俊銈呮噹妗呭┑顔斤供閸擄箑顭囬埡鍛厸闁告劧绲芥禍楣冩⒑?*/
 .assistant-tip {
   position: absolute;
   right: 120rpx;
@@ -51,7 +51,7 @@
   border-bottom: 10rpx solid transparent;
 }
 
-/* 悬浮按钮 */
+/* 闂傚倷娴囬鏍闯椤曗偓瀹曟粌顫濇潏銊ョ彴闂佺粯鍔曢幖顐ょ不閺夋鐔嗛柤鎼佹涧婵牓鎮?*/
 .assistant-button {
   width: 100rpx;
   height: 100rpx;
@@ -99,7 +99,7 @@
   100% { transform: scale(1); }
 }
 
-/* 按钮图标 */
+/* 闂傚倷绀佸﹢閬嶁€﹂崼銉嬪洭鎮界粙璺唶闂佽鍎煎Λ鍕倷婵犲洦鐓熼柟浼存涧婢т即鏌?*/
 .button-icon {
   margin-bottom: 4rpx;
 }
@@ -109,7 +109,7 @@
   line-height: 1;
 }
 
-/* 按钮文字 */
+/* 闂傚倷绀佸﹢閬嶁€﹂崼銉嬪洭鎮界粙璺唶闂佽鍎煎Λ鍕涘鈧弻娑㈠Ψ閹存繃鍣洪柟?*/
 .button-text {
   font-size: 18rpx;
   color: white;
@@ -118,7 +118,7 @@
   line-height: 1;
 }
 
-/* 拖拽指示器 */
+/* 闂傚倷绀佺紞濠囧绩闁秵鍋嬫俊銈呭暊閸嬫挸顫濋浣镐淮濡ょ姷鍋為崝娆忕暦閸洖鐓樺璺烘憸妞规娊姊?*/
 .drag-indicator {
   position: absolute;
   top: -40rpx;
@@ -157,7 +157,7 @@
   50% { opacity: 1; }
 }
 
-/* 脉冲动画 */
+/* 闂傚倷绀侀崥瀣焽濞嗘拲鍥敍閻愯尙鏌堥梺绉嗗嫷娈旂紒鈧径鎰厪濠电倯鍐仾婵?*/
 .pulse-ring {
   position: absolute;
   top: 0;
@@ -181,7 +181,7 @@
   }
 }
 
-/* 响应式适配 */
+/* 闂傚倷绀侀幉锛勬崲閸屾粎鐭撻悗鍨摃婵娊鏌熺紒妯轰刊闁搞倖娲熼悡顐﹀炊閵娧€鏋旈梺绋款儐閹瑰洤鐣烽幒妤佸€烽柟缁樺笩缁?*/
 @media (max-width: 375px) {
   .assistant-button {
     width: 90rpx;

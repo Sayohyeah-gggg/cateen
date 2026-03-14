@@ -1,6 +1,6 @@
-/* 通用样式文件 */
+/* 闂傚倸鍊风欢锟犲磻閸涱収娼╅柕濞炬櫅閺嬩線鏌曢崼婵愭Ц闁告劏鍋撻柣搴ｆ嚀鐎氼厽绔熼崱娆愬厹闁逞屽墴濮婃椽宕崟顐熷亾缁嬫５娲晲閸涱亝鐎?*/
 
-/* 全局重置 */
+/* 闂傚倷鑳堕…鍫㈡崲閸儱绀夌€光偓閸曨剙鍓冲銈嗗笒鐎氼參鎮￠崒婧惧亾楠炲灝鍔氭繛灞傚姂瀵?*/
 page {
   background-color: #f5f5f5;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
@@ -8,7 +8,7 @@ page {
   color: #333;
 }
 
-/* 容器类 */
+/* 闂備浇顕ф绋匡耿闁秴绠犻柟鐐灱閺嬪秹鏌熼悜妯烩拻閻?*/
 .container {
   padding: 30rpx;
 }
@@ -17,7 +17,7 @@ page {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* 布局类 */
+/* 闂備焦鐪归崺鍕垂娴兼潙鐤い鎰堕檮閸庢垶銇勯幒鎴濃偓鑽や焊?*/
 .flex {
   display: flex;
 }
@@ -47,7 +47,7 @@ page {
   flex: 1;
 }
 
-/* 文本类 */
+/* 闂傚倷绀侀幖顐﹀磹缁嬫５娲晝閳ь剟鏁冮姀銈呯妞ゆ梹鍎抽弳?*/
 .text-center {
   text-align: center;
 }
@@ -96,7 +96,7 @@ page {
   font-size: 20rpx;
 }
 
-/* 间距类 */
+/* 闂傚倸鍊搁崐鎼佸磹婵犳澶愬箛椤斿墽骞撳┑鐐村灦濮樸劎浜?*/
 .m-0 { margin: 0; }
 .m-1 { margin: 10rpx; }
 .m-2 { margin: 20rpx; }
@@ -157,7 +157,7 @@ page {
 .pr-3 { padding-right: 30rpx; }
 .pr-4 { padding-right: 40rpx; }
 
-/* 背景类 */
+/* 闂傚倷鑳堕崢褔宕崸妤€瀚夋い鎺嗗亾闁宠绉撮埢搴ㄥ箣閻樺弶娈?*/
 .bg-primary {
   background-color: #FF6B35;
 }
@@ -174,14 +174,14 @@ page {
   background-color: #f5f5f5;
 }
 
-/* 圆角类 */
+/* 闂傚倷绶氬鑽ょ不閹存惊娑橆煥閸剛绋忓┑掳鍊曢崯鎵焊?*/
 .rounded-0 { border-radius: 0; }
 .rounded-1 { border-radius: 10rpx; }
 .rounded-2 { border-radius: 20rpx; }
 .rounded-3 { border-radius: 30rpx; }
 .rounded-full { border-radius: 50%; }
 
-/* 阴影类 */
+/* 闂傚倸鍊搁崐鎼佸疮椤栨凹鐒芥繛鍡樺姉闂勫嫰鏌″搴′簽閻?*/
 .shadow-sm {
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
 }
@@ -194,7 +194,7 @@ page {
   box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.12);
 }
 
-/* 边框类 */
+/* 闂備礁鎼ˇ顖炴偋閹板府缍栧鑸靛姂閳ь兛鑳堕埀顒婄秵閸撴稓浜?*/
 .border {
   border: 2rpx solid #e0e0e0;
 }
@@ -211,7 +211,7 @@ page {
   border-bottom: 2rpx solid #e0e0e0;
 }
 
-/* 按钮类 */
+/* 闂傚倷绀佸﹢閬嶁€﹂崼銉嬪洭鎮界粙璺唶閻庤娲栧ú銊т焊?*/
 .btn {
   display: inline-flex;
   align-items: center;
@@ -271,7 +271,7 @@ page {
   pointer-events: none;
 }
 
-/* 卡片类 */
+/* 闂傚倷绀侀幉锟犮€冮幇顔筋潟闁哄洨鍠愬▍鐘绘煛瀹ュ骸浜為悘?*/
 .card {
   background: #fff;
   border-radius: 20rpx;
@@ -302,7 +302,7 @@ page {
   border-top: 2rpx solid #f0f0f0;
 }
 
-/* 列表类 */
+/* 闂傚倷绀侀幉锛勬暜濡ゅ懌鈧啯寰勯幇顑┿儵鏌涢幇鍏哥敖閻?*/
 .list-item {
   display: flex;
   align-items: center;
@@ -333,7 +333,7 @@ page {
   white-space: nowrap;
 }
 
-/* 加载状态类 */
+/* 闂傚倷绀侀幉鈥愁潖缂佹ɑ鍙忛柟顖ｇ亹瑜版帒鐐婃い鎺嶇娴滃綊姊洪悡搴㈡喐妞わ絼绮欏畷鎴﹀箻鐎涙ê顎撴俊銈忛檮椤戞瑥顭?*/
 .loading {
   display: flex;
   align-items: center;
@@ -362,7 +362,7 @@ page {
   color: #999;
 }
 
-/* 隐藏/显示类 */
+/* 闂傚倸鍊搁崐鎼佸箠韫囨稑绀夋俊顖欑秿?闂傚倷绀侀幖顐も偓姘煎墯閺呰埖绂掔€ｎ€附鎱ㄥΟ澶稿惈閻?*/
 .hidden {
   display: none !important;
 }
@@ -375,7 +375,7 @@ page {
   visibility: visible;
 }
 
-/* 定位类 */
+/* 闂備浇顕у锕傦綖婢舵劖鍎楁い鏂垮⒔缁€濠囨煕濞戝崬鐏ｉ悘?*/
 .relative {
   position: relative;
 }
@@ -392,7 +392,7 @@ page {
   position: sticky;
 }
 
-/* 层级类 */
+/* 闂備浇顕х换鎺楀磻濞戙垹纾圭紓浣癸供濞堜粙鏌涢妷銏℃珖閻?*/
 .z-1 { z-index: 1; }
 .z-2 { z-index: 2; }
 .z-3 { z-index: 3; }

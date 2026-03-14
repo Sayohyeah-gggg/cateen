@@ -1,7 +1,7 @@
 {
   "name": "cateen-mini",
   "version": "1.0.0",
-  "description": "食堂美食小程序 - 美团风格",
+  "description": "canteen mini program",
   "main": "app.js",
   "dependencies": {
     "@vant/weapp": "^1.11.6"

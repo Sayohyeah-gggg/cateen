@@ -1,131 +1,347 @@
 // pages/ranking/ranking.js
-var api = require('../../utils/api');
+var auth = require('../../utils/auth');
+
+var STORAGE_KEY = 'mini_share_posts';
+var DEFAULT_AVATAR = '/images/default-avatar.jpg';
+
+function now() {
+  return Date.now();
+}
+
+function formatTime(timestamp) {
+  var date = new Date(timestamp);
+  var month = date.getMonth() + 1;
+  var day = date.getDate();
+  var hour = date.getHours();
+  var minute = date.getMinutes();
+
+  var mm = month < 10 ? '0' + month : '' + month;
+  var dd = day < 10 ? '0' + day : '' + day;
+  var hh = hour < 10 ? '0' + hour : '' + hour;
+  var mi = minute < 10 ? '0' + minute : '' + minute;
+
+  return mm + '-' + dd + ' ' + hh + ':' + mi;
+}
+
+function ensureComment(comment) {
+  var createTime = comment.createTime || now();
+  var user = comment.user || {};
+
+  return {
+    id: comment.id || ('c_' + createTime + '_' + Math.floor(Math.random() * 1000)),
+    content: comment.content || '',
+    createTime: createTime,
+    displayTime: formatTime(createTime),
+    user: {
+      nickName: user.nickName || comment.userNickName || '食客',
+      avatarUrl: user.avatarUrl || comment.userAvatar || DEFAULT_AVATAR
+    }
+  };
+}
+
+function ensurePost(post) {
+  var createTime = post.createTime || now();
+  var author = post.author || {};
+
+  return {
+    id: post.id || ('post_' + createTime),
+    content: post.content || '',
+    images: Array.isArray(post.images) ? post.images : [],
+    createTime: createTime,
+    displayTime: formatTime(createTime),
+    author: {
+      nickName: author.nickName || '食客',
+      avatarUrl: author.avatarUrl || DEFAULT_AVATAR
+    },
+    likeCount: Number(post.likeCount || 0),
+    liked: !!post.liked,
+    comments: Array.isArray(post.comments) ? post.comments.map(ensureComment) : []
+  };
+}
+
+function getSeedPosts() {
+  var time = now();
+
+  return [
+    {
+      id: 'seed_1',
+      content: '今天的红烧肉超香，配米饭一绝！',
+      images: ['/images/foods/hongshao-pork.jpg'],
+      createTime: time - 1000 * 60 * 28,
+      author: { nickName: '食客A', avatarUrl: DEFAULT_AVATAR },
+      likeCount: 12,
+      liked: false,
+      comments: [
+        {
+          id: 'seed_c1',
+          content: '看着就很下饭！',
+          createTime: time - 1000 * 60 * 25,
+          user: { nickName: '食客B', avatarUrl: DEFAULT_AVATAR }
+        }
+      ]
+    },
+    {
+      id: 'seed_2',
+      content: '晚餐来一份宫保鸡丁，酸甜又带点辣。',
+      images: ['/images/foods/gongbao-chicken.jpg', '/images/foods/mapo-tofu.jpg'],
+      createTime: time - 1000 * 60 * 95,
+      author: { nickName: '食客C', avatarUrl: DEFAULT_AVATAR },
+      likeCount: 8,
+      liked: false,
+      comments: []
+    }
+  ];
+}
 
 Page({
   data: {
-    currentTab: 'overall',
-    categoryList: [
-      { name: '全部分类', code: 'all' },
-      { name: '主食类', code: 'staple' },
-      { name: '菜肴类', code: 'dish' },
-      { name: '汤羹类', code: 'soup' }
-    ],
-    timeRangeList: [
-      { name: '全部时间', code: 'all' },
-      { name: '本周', code: 'week' },
-      { name: '本月', code: 'month' }
-    ],
-    selectedCategoryIndex: 0,
-    selectedTimeIndex: 0,
-    rankingList: [],
-    loading: false
+    theme: 'light',
+    themeClass: 'theme-light',
+
+    isLoggedIn: false,
+    userInfo: null,
+
+    draftText: '',
+    selectedImages: [],
+    canPublish: false,
+    publishing: false,
+
+    posts: [],
+    commentDrafts: {}
   },
 
   onLoad: function() {
-    console.log('排行榜页面加载');
-    this.loadRankingData();
+    this.syncTheme();
+    this.syncUser();
+    this.loadPosts();
   },
 
   onShow: function() {
-    console.log('排行榜页面显示');
-    // 页面显示时刷新数据
-    this.loadRankingData();
+    this.syncTheme();
+    this.syncUser();
+    this.syncCustomTabBar();
   },
 
-  // 切换榜单类型
-  switchTab: function(e) {
-    var tab = e.currentTarget.dataset.tab;
+  syncTheme: function() {
+    var app = getApp();
+    var theme = app.getCurrentTheme ? app.getCurrentTheme() : 'light';
+    this.setData({ theme: theme, themeClass: 'theme-' + theme });
+  },
+
+  syncCustomTabBar: function() {
+    if (typeof this.getTabBar !== 'function') {
+      return;
+    }
+
+    var tabBar = this.getTabBar();
+    if (tabBar && tabBar.updateSelected) {
+      tabBar.updateSelected();
+    }
+  },
+
+  syncUser: function() {
     this.setData({
-      currentTab: tab,
-      selectedCategoryIndex: 0,
-      selectedTimeIndex: 0
+      isLoggedIn: auth.isLoggedIn(),
+      userInfo: auth.getCurrentUser()
     });
-    this.loadRankingData();
   },
 
-  // 选择分类
-  onCategoryChange: function(e) {
-    this.setData({
-      selectedCategoryIndex: parseInt(e.detail.value)
-    });
-    this.loadRankingData();
+  updatePublishState: function() {
+    var content = (this.data.draftText || '').trim();
+    var hasImage = this.data.selectedImages.length > 0;
+    this.setData({ canPublish: !!content || hasImage });
   },
 
-  // 选择时间范围
-  onTimeRangeChange: function(e) {
-    this.setData({
-      selectedTimeIndex: parseInt(e.detail.value)
-    });
-    this.loadRankingData();
+  onDraftInput: function(e) {
+    this.setData({ draftText: e.detail.value || '' });
+    this.updatePublishState();
   },
 
-  // 加载排行榜数据
-  loadRankingData: function() {
+  chooseImages: function() {
     var self = this;
-    console.log('开始加载排行榜数据...');
-    this.setData({ loading: true });
+    var left = 9 - this.data.selectedImages.length;
 
-    // 从 API 获取排行榜数据
-    var params = {
-      type: this.data.currentTab,
-      category: this.data.selectedCategoryIndex > 0 ? this.data.categoryList[this.data.selectedCategoryIndex].code : undefined,
-      timeRange: this.data.timeRangeList[this.data.selectedTimeIndex].code
-    };
-    
-    console.log('排行榜API参数:', params);
-    
-    return api.ranking.getRanking(params).then(function(data) {
-      console.log('API获取排行榜数据成功:', data);
-      self.setData({
-        rankingList: data,
-        loading: false
-      });
-      return data;
-    }).catch(function(apiError) {
-      console.error('API调用失败:', apiError);
-      wx.showToast({
-        title: '加载排行榜失败',
-        icon: 'error'
-      });
-      
-      self.setData({
-        rankingList: [],
-        loading: false
-      });
-      
-      return Promise.reject(apiError);
+    if (left <= 0) {
+      wx.showToast({ title: '最多选择9张图片', icon: 'none' });
+      return;
+    }
+
+    wx.chooseMedia({
+      count: left,
+      mediaType: ['image'],
+      sourceType: ['album', 'camera'],
+      success: function(res) {
+        var files = (res.tempFiles || []).map(function(file) { return file.tempFilePath; });
+        self.setData({ selectedImages: self.data.selectedImages.concat(files) });
+        self.updatePublishState();
+      }
     });
   },
 
-
-  // 跳转到美食详情页
-  goToDetail: function(e) {
-    var foodId = e.currentTarget.dataset.id;
-    console.log('跳转到美食详情页，foodId:', foodId);
-    wx.navigateTo({
-      url: '/pages/detail/detail?id=' + foodId
-    });
+  removeSelectedImage: function(e) {
+    var index = Number(e.currentTarget.dataset.index);
+    var images = this.data.selectedImages.slice();
+    images.splice(index, 1);
+    this.setData({ selectedImages: images });
+    this.updatePublishState();
   },
 
-  // 下拉刷新
+  previewSelectedImage: function(e) {
+    var current = e.currentTarget.dataset.current;
+    wx.previewImage({ current: current, urls: this.data.selectedImages });
+  },
+
+  savePosts: function(posts) {
+    wx.setStorageSync(STORAGE_KEY, posts);
+  },
+
+  loadPosts: function() {
+    var stored = wx.getStorageSync(STORAGE_KEY);
+    var source = Array.isArray(stored) && stored.length ? stored : getSeedPosts();
+    var posts = source.map(ensurePost).sort(function(a, b) { return b.createTime - a.createTime; });
+
+    if (!stored || !stored.length) {
+      this.savePosts(posts);
+    }
+
+    this.setData({ posts: posts, commentDrafts: {} });
+  },
+
+  publishPost: function() {
+    if (!this.data.canPublish || this.data.publishing) {
+      return;
+    }
+
+    var content = (this.data.draftText || '').trim();
+    var images = this.data.selectedImages.slice();
+    var user = this.data.userInfo || {};
+    var createTime = now();
+
+    var post = ensurePost({
+      id: 'post_' + createTime,
+      content: content,
+      images: images,
+      createTime: createTime,
+      author: {
+        nickName: user.nickName || '食客',
+        avatarUrl: user.avatarUrl || DEFAULT_AVATAR
+      },
+      likeCount: 0,
+      liked: false,
+      comments: []
+    });
+
+    var posts = [post].concat(this.data.posts);
+
+    this.setData({ publishing: true });
+    this.savePosts(posts);
+
+    this.setData({
+      posts: posts,
+      draftText: '',
+      selectedImages: [],
+      canPublish: false,
+      publishing: false
+    });
+
+    wx.showToast({ title: '已发布', icon: 'success' });
+  },
+
+  toggleLike: function(e) {
+    var postId = e.currentTarget.dataset.id;
+
+    var posts = this.data.posts.map(function(post) {
+      if (post.id !== postId) {
+        return post;
+      }
+
+      var liked = !post.liked;
+      var count = post.likeCount + (liked ? 1 : -1);
+
+      return Object.assign({}, post, {
+        liked: liked,
+        likeCount: count < 0 ? 0 : count
+      });
+    });
+
+    this.setData({ posts: posts });
+    this.savePosts(posts);
+  },
+
+  previewPostImage: function(e) {
+    var postId = e.currentTarget.dataset.postId;
+    var current = e.currentTarget.dataset.current;
+
+    var target = null;
+    for (var i = 0; i < this.data.posts.length; i++) {
+      if (this.data.posts[i].id === postId) {
+        target = this.data.posts[i];
+        break;
+      }
+    }
+
+    if (!target || !target.images || !target.images.length) {
+      return;
+    }
+
+    wx.previewImage({ current: current, urls: target.images });
+  },
+
+  onCommentInput: function(e) {
+    var postId = e.currentTarget.dataset.id;
+    var value = (e.detail.value || '').slice(0, 120);
+    var patch = {};
+    patch['commentDrafts.' + postId] = value;
+    this.setData(patch);
+  },
+
+  submitComment: function(e) {
+    var postId = e.currentTarget.dataset.id;
+    var text = (this.data.commentDrafts[postId] || '').trim();
+    var user = this.data.userInfo || {};
+
+    if (!text) {
+      wx.showToast({ title: '请输入评论', icon: 'none' });
+      return;
+    }
+
+    var createTime = now();
+    var comment = ensureComment({
+      id: 'c_' + createTime,
+      content: text,
+      createTime: createTime,
+      user: {
+        nickName: user.nickName || '食客',
+        avatarUrl: user.avatarUrl || DEFAULT_AVATAR
+      }
+    });
+
+    var posts = this.data.posts.map(function(post) {
+      if (post.id !== postId) {
+        return post;
+      }
+      var comments = [comment].concat(post.comments || []);
+      return Object.assign({}, post, { comments: comments });
+    });
+
+    var patch = { posts: posts };
+    patch['commentDrafts.' + postId] = '';
+    this.setData(patch);
+    this.savePosts(posts);
+
+    wx.showToast({ title: '已评论', icon: 'success' });
+  },
+
   onPullDownRefresh: function() {
-    var self = this;
-    this.loadRankingData().then(function() {
-      wx.stopPullDownRefresh();
-    }).catch(function(error) {
-      console.error('下拉刷新失败:', error);
-      wx.stopPullDownRefresh();
-    });
+    this.loadPosts();
+    wx.stopPullDownRefresh();
   },
 
-  // 分享
   onShareAppMessage: function() {
     return {
-      title: '美食排行榜 - 发现最受欢迎的美食',
+      title: '食友分享',
       path: '/pages/ranking/ranking',
-      imageUrl: '/images/foods/gongbao-chicken.jpg'
+      imageUrl: '/images/foods/hongshao-pork.jpg'
     };
   }
 });
-
-

@@ -3,20 +3,11 @@ Component({
   properties: {
     rating: {
       type: Number,
-      value: 0,
-      observer: function(newVal) {
-        // 确保rating始终是数字类型，并正确处理小数
-        var numericValue = Number(newVal) || 0;
-        console.log('评分星星组件 - 接收到的评分:', newVal, '转换后:', numericValue);
-        this.setData({
-          currentRating: Math.round(numericValue)
-        });
-        console.log('评分星星组件 - 最终显示的星星数:', Math.round(numericValue));
-      }
+      value: 0
     },
     size: {
       type: String,
-      value: 'normal' // mini, small, normal, large
+      value: 'normal'
     },
     editable: {
       type: Boolean,
@@ -28,35 +19,40 @@ Component({
     currentRating: 0
   },
 
+  observers: {
+    rating: function(newVal) {
+      var numeric = Number(newVal) || 0;
+      this.setData({
+        currentRating: Math.max(0, Math.min(5, Math.round(numeric)))
+      });
+    }
+  },
 
   lifetimes: {
     attached: function() {
-      // 初始化时触发observer处理
-      var rating = this.properties.rating;
-      var numericValue = Number(rating) || 0;
+      var numeric = Number(this.properties.rating) || 0;
       this.setData({
-        currentRating: Math.round(numericValue)
+        currentRating: Math.max(0, Math.min(5, Math.round(numeric)))
       });
     }
   },
 
   methods: {
-    // 点击星星
     onStarTap: function(e) {
-      if (!this.properties.editable) return;
-      
-      var index = e.currentTarget.dataset.index;
+      if (!this.properties.editable) {
+        return;
+      }
+
+      var index = Number(e.currentTarget.dataset.index) || 0;
       var newRating = index + 1;
-      
+
       this.setData({
         currentRating: newRating
       });
 
-      // 触发自定义事件
       this.triggerEvent('ratingchange', {
         rating: newRating
       });
     }
   }
 });
-

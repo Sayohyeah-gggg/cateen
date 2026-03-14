@@ -6,7 +6,7 @@
 
 .comments-list {
   padding: 20rpx;
-  margin-top: 176rpx; /* 导航栏高度 */
+  margin-top: 176rpx; /* 闂備浇顕х花鑲╁緤缂佹鐝堕柛顐犲劚閺勩儵鏌涘☉娆愮稇闁告劏鍋撻梻濠庡亜濞诧妇绮欓幘骞夸汗妞ゆ牜鍋涚粻?*/
 }
 
 .loading-container {

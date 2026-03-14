@@ -12,29 +12,38 @@
   "window": {
     "navigationBarTextStyle": "black",
     "navigationStyle": "custom",
-    "backgroundColor": "#FF6B35"
+    "backgroundColor": "#EDF2F9"
   },
   "tabBar": {
-    "color": "#999999",
-    "selectedColor": "#FFD100",
-    "backgroundColor": "#ffffff",
+    "custom": true,
+    "color": "#64748B",
+    "selectedColor": "#2563EB",
+    "backgroundColor": "#FFFFFF",
     "borderStyle": "white",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页"
+        "text": "首页",
+        "iconPath": "images/tab/home.png",
+        "selectedIconPath": "images/tab/home-active.png"
       },
       {
         "pagePath": "pages/ranking/ranking",
-        "text": "排行榜"
+        "text": "分享",
+        "iconPath": "images/tab/ranking.png",
+        "selectedIconPath": "images/tab/ranking-active.png"
       },
       {
         "pagePath": "pages/ai-assistant/ai-assistant",
-        "text": "AI助手"
+        "text": "AI",
+        "iconPath": "images/tab/lucky.png",
+        "selectedIconPath": "images/tab/lucky-active.png"
       },
       {
         "pagePath": "pages/profile/profile",
-        "text": "我的"
+        "text": "我的",
+        "iconPath": "images/tab/profile.png",
+        "selectedIconPath": "images/tab/profile-active.png"
       }
     ]
   },

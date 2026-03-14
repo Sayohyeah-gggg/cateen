@@ -1,145 +1,205 @@
-/**app.wxss**/
 @import '/styles/common.wxss';
 
-/* 全局样式 - 美团风格 */
-
-/* 美团配色系统 */
 page {
-  --meituan-yellow: #FFD100;
-  --meituan-orange: #FF6600;
-  --meituan-red: #FF3B30;
-  --meituan-green: #06C160;
-  --meituan-blue: #007AFF;
-  
-  --meituan-text: #333333;
-  --meituan-text-secondary: #666666;
-  --meituan-text-light: #999999;
-  --meituan-text-lighter: #CCCCCC;
-  
-  --meituan-bg: #F5F5F5;
-  --meituan-bg-white: #FFFFFF;
-  
-  --meituan-border: #EEEEEE;
-  --meituan-shadow: rgba(0, 0, 0, 0.06);
-  
-  --meituan-card-radius: 16rpx;
-  --meituan-button-radius: 12rpx;
-  
-  background-color: var(--meituan-bg);
-  color: var(--meituan-text);
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  /* 8pt Grid */
+  --space-1: 8rpx;
+  --space-2: 16rpx;
+  --space-3: 24rpx;
+  --space-4: 32rpx;
+  --space-5: 48rpx;
+  --space-6: 64rpx;
+  --space-7: 80rpx;
+  --space-8: 96rpx;
+
+  /* Radius */
+  --radius-sm: 16rpx;
+  --radius-md: 24rpx;
+  --radius-lg: 32rpx;
+  --radius-xl: 40rpx;
+  --radius-pill: 999rpx;
+
+  /* Typography */
+  --font-32: 64rpx;
+  --font-24: 48rpx;
+  --font-20: 40rpx;
+  --font-16: 32rpx;
+  --font-14: 28rpx;
+  --font-12: 24rpx;
+
+  --line-32: 1.2;
+  --line-24: 1.3;
+  --line-20: 1.35;
+  --line-16: 1.45;
+  --line-14: 1.5;
+  --line-12: 1.6;
+
+  /* Motion */
+  --motion-fast: 180ms;
+  --motion-mid: 260ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Light Tokens */
+  --bg-page: #edf2f9;
+  --bg-surface: rgba(255, 255, 255, 0.72);
+  --bg-surface-strong: rgba(255, 255, 255, 0.92);
+  --bg-soft: rgba(247, 250, 255, 0.85);
+  --bg-glass: rgba(255, 255, 255, 0.2);
+  --bg-glass-strong: rgba(255, 255, 255, 0.36);
+
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-inverse: #f8fafc;
+
+  --color-primary: #2563eb;
+  --color-secondary: #14b8a6;
+  --color-accent: #f97316;
+  --color-danger: #ef4444;
+
+  --border-soft: rgba(148, 163, 184, 0.25);
+  --border-strong: rgba(148, 163, 184, 0.42);
+
+  --shadow-sm: 0 8rpx 20rpx rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 14rpx 40rpx rgba(15, 23, 42, 0.1);
+
+  min-height: 100%;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: 'PingFang SC', 'SF Pro Display', 'Helvetica Neue', sans-serif;
 }
 
-/* 全局容器 */
-.container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  padding: 200rpx 0;
-  box-sizing: border-box;
+.theme-light {
+  --bg-page: #edf2f9;
+  --bg-surface: rgba(255, 255, 255, 0.72);
+  --bg-surface-strong: rgba(255, 255, 255, 0.92);
+  --bg-soft: rgba(247, 250, 255, 0.85);
+  --bg-glass: rgba(255, 255, 255, 0.2);
+  --bg-glass-strong: rgba(255, 255, 255, 0.36);
+
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-inverse: #f8fafc;
+
+  --color-primary: #2563eb;
+  --color-secondary: #14b8a6;
+  --color-accent: #f97316;
+  --color-danger: #ef4444;
+
+  --border-soft: rgba(148, 163, 184, 0.25);
+  --border-strong: rgba(148, 163, 184, 0.42);
+
+  --shadow-sm: 0 8rpx 20rpx rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 14rpx 40rpx rgba(15, 23, 42, 0.1);
 }
 
-/* 全局导航栏适配 */
-.page-container {
-  padding-top: 176rpx;
+.theme-dark {
+  --bg-page: #0b1220;
+  --bg-surface: rgba(15, 23, 42, 0.6);
+  --bg-surface-strong: rgba(15, 23, 42, 0.86);
+  --bg-soft: rgba(30, 41, 59, 0.72);
+  --bg-glass: rgba(148, 163, 184, 0.16);
+  --bg-glass-strong: rgba(148, 163, 184, 0.24);
+
+  --text-primary: #e2e8f0;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-inverse: #020617;
+
+  --color-primary: #60a5fa;
+  --color-secondary: #2dd4bf;
+  --color-accent: #fb923c;
+  --color-danger: #f87171;
+
+  --border-soft: rgba(148, 163, 184, 0.3);
+  --border-strong: rgba(148, 163, 184, 0.46);
+
+  --shadow-sm: 0 10rpx 24rpx rgba(2, 6, 23, 0.35);
+  --shadow-md: 0 18rpx 50rpx rgba(2, 6, 23, 0.5);
 }
 
-/* 美团卡片样式 */
-.meituan-card {
-  background: var(--meituan-bg-white);
-  border-radius: var(--meituan-card-radius);
-  box-shadow: 0 4rpx 16rpx var(--meituan-shadow);
-  overflow: hidden;
+.theme-shell {
+  position: relative;
+  min-height: 100vh;
+  color: var(--text-primary);
+  background: var(--bg-page);
 }
 
-/* 美团按钮样式 */
-.meituan-button {
-  background: linear-gradient(135deg, var(--meituan-yellow) 0%, #FFED4E 100%);
-  color: var(--meituan-text);
-  border-radius: var(--meituan-button-radius);
-  font-size: 28rpx;
-  font-weight: 600;
-  padding: 20rpx 32rpx;
-  border: none;
-  transition: all 0.2s ease;
-  box-shadow: 0 4rpx 16rpx rgba(255, 209, 0, 0.2);
+.theme-shell::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(249, 115, 22, 0.2), transparent 40%),
+    radial-gradient(circle at 88% 16%, rgba(37, 99, 235, 0.22), transparent 42%),
+    linear-gradient(140deg, rgba(15, 23, 42, 0.08) 0%, rgba(15, 23, 42, 0) 55%);
+  z-index: 0;
 }
 
-.meituan-button:active {
-  transform: scale(0.96);
-  opacity: 0.9;
+.page-content {
+  position: relative;
+  z-index: 1;
 }
 
-.meituan-button-primary {
-  background: linear-gradient(135deg, var(--meituan-yellow) 0%, #FFED4E 100%);
+.glass-card {
+  background: var(--bg-surface);
+  border: 1rpx solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(18rpx);
+  -webkit-backdrop-filter: blur(18rpx);
 }
 
-.meituan-button-danger {
-  background: linear-gradient(135deg, var(--meituan-red) 0%, #FF6B5A 100%);
-  color: white;
+.glass-icon {
+  background: var(--bg-glass-strong);
+  border: 1rpx solid var(--border-soft);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(20rpx);
+  -webkit-backdrop-filter: blur(20rpx);
 }
 
-.meituan-button-success {
-  background: linear-gradient(135deg, var(--meituan-green) 0%, #39D98A 100%);
-  color: white;
-}
-
-/* 美团价格样式 */
-.meituan-price {
-  color: var(--meituan-red);
+.title-32 {
+  font-size: var(--font-32);
+  line-height: var(--line-32);
   font-weight: 700;
 }
 
-.meituan-price-large {
-  font-size: 40rpx;
+.title-24 {
+  font-size: var(--font-24);
+  line-height: var(--line-24);
+  font-weight: 700;
 }
 
-.meituan-price-medium {
-  font-size: 32rpx;
+.title-20 {
+  font-size: var(--font-20);
+  line-height: var(--line-20);
+  font-weight: 600;
 }
 
-.meituan-price-small {
-  font-size: 28rpx;
+.text-16 {
+  font-size: var(--font-16);
+  line-height: var(--line-16);
 }
 
-/* 美团标签样式 */
-.meituan-tag {
-  display: inline-block;
-  padding: 6rpx 12rpx;
-  border-radius: 6rpx;
-  font-size: 20rpx;
-  font-weight: 500;
+.text-14 {
+  font-size: var(--font-14);
+  line-height: var(--line-14);
 }
 
-.meituan-tag-hot {
-  background: rgba(255, 209, 0, 0.1);
-  color: var(--meituan-yellow);
-  border: 1rpx solid rgba(255, 209, 0, 0.3);
+.text-12 {
+  font-size: var(--font-12);
+  line-height: var(--line-12);
 }
 
-.meituan-tag-new {
-  background: rgba(255, 59, 48, 0.1);
-  color: var(--meituan-red);
-  border: 1rpx solid rgba(255, 59, 48, 0.2);
+.motion-press {
+  transition: transform var(--motion-fast) var(--ease-out), box-shadow var(--motion-fast) var(--ease-out);
 }
 
-.meituan-tag-discount {
-  background: rgba(255, 102, 0, 0.1);
-  color: var(--meituan-orange);
-  border: 1rpx solid rgba(255, 102, 0, 0.2);
+.motion-press:active {
+  transform: scale(0.97);
 }
 
-/* 兼容旧版变量 */
-:root {
-  --primary-color: #FFD100;
-  --secondary-color: #FF6600;
-  --accent-color: #FF3B30;
-  --text-color: #333333;
-  --text-secondary: #666666;
-  --text-muted: #999999;
-  --border-color: #EEEEEE;
-  --background-color: #F5F5F5;
-} 
+.hairline {
+  border: 1rpx solid var(--border-soft);
+}

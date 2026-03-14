@@ -1,15 +1,8 @@
-<!-- 星级评分组件 -->
+<!-- components/rating-star/rating-star.wxml -->
 <view class="rating-container">
-  <view class="stars {{size}}">
-    <view 
-      class="star {{index < currentRating ? 'filled' : ''}}" 
-      wx:for="{{5}}" 
-      wx:key="index"
-      bind:tap="onStarTap"
-      data-index="{{index}}"
-    >
-      <text class="star-icon">★</text>
+  <view class="stars {{size}} {{editable ? 'editable' : ''}}">
+    <view class="star {{index < currentRating ? 'filled' : ''}}" wx:for="{{5}}" wx:key="index" bind:tap="onStarTap" data-index="{{index}}">
+      <text class="star-icon">*</text>
     </view>
   </view>
 </view>
-

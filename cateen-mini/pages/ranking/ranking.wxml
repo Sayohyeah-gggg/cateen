@@ -1,82 +1,81 @@
-<!--排行榜页面-->
-<view class="ranking-container">
-  <!-- 自定义导航栏 -->
-  <navigation-bar title="美食排行榜" />
-  
-  <!-- 榜单类型切换 -->
-  <view class="tab-bar">
-    <view class="tab-item {{currentTab === 'overall' ? 'active' : ''}}" bind:tap="switchTab" data-tab="overall">
-      综合排行
+<!-- pages/ranking/ranking.wxml -->
+<view class="share-page theme-shell {{themeClass}}">
+  <navigation-bar title="食友分享" theme="{{theme}}">
+    <view slot="right" class="nav-tag glass-icon">
+      <image class="nav-icon" src="/styles/icon/share.svg" mode="aspectFit" />
     </view>
-    <view class="tab-item {{currentTab === 'category' ? 'active' : ''}}" bind:tap="switchTab" data-tab="category">
-      分类排行
-    </view>
-    <view class="tab-item {{currentTab === 'latest' ? 'active' : ''}}" bind:tap="switchTab" data-tab="latest">
-      最新上榜
-    </view>
-    <view class="tab-item {{currentTab === 'popular' ? 'active' : ''}}" bind:tap="switchTab" data-tab="popular">
-      人气排行
-    </view>
-  </view>
+  </navigation-bar>
 
-  <!-- 筛选区域 -->
-  <view class="filter-section" wx:if="{{currentTab === 'category'}}">
-    <picker class="category-picker" range="{{categoryList}}" range-key="name" value="{{selectedCategoryIndex}}" bind:change="onCategoryChange">
-      <view class="picker-display">
-        <text>{{categoryList[selectedCategoryIndex].name}}</text>
-        <text class="picker-arrow">▼</text>
-      </view>
-    </picker>
-  </view>
+  <scroll-view class="page-scroll" scroll-y="{{true}}">
+    <view class="page-content page-inner">
+      <view class="composer glass-card">
+        <view class="composer-user">
+          <image class="avatar" src="{{(userInfo && userInfo.avatarUrl) || '/images/default-avatar.jpg'}}" mode="aspectFill" />
+          <view class="user-meta">
+            <text class="user-name">{{(userInfo && userInfo.nickName) || '食客'}}</text>
+            <text class="user-tip">发布文字和图片</text>
+          </view>
+        </view>
 
-  <view class="filter-section">
-    <picker class="time-picker" range="{{timeRangeList}}" range-key="name" value="{{selectedTimeIndex}}" bind:change="onTimeRangeChange">
-      <view class="picker-display">
-        <text>{{timeRangeList[selectedTimeIndex].name}}</text>
-        <text class="picker-arrow">▼</text>
-      </view>
-    </picker>
-  </view>
+        <textarea class="composer-input" placeholder="想说点什么..." placeholder-class="composer-placeholder" value="{{draftText}}" maxlength="300" bindinput="onDraftInput" />
 
-  <!-- 排行榜列表 -->
-  <scroll-view class="ranking-list" scroll-y="{{true}}">
-    <view class="ranking-item" wx:for="{{rankingList}}" wx:key="food_id" bind:tap="goToDetail" data-id="{{item.food_id}}">
-      <view class="rank-number {{item.rank <= 3 ? 'top-three' : ''}}">
-        <text class="rank-text">{{item.rank}}</text>
-      </view>
-      
-      <image class="food-image" src="{{item.food_image}}" mode="aspectFill" />
-      
-      <view class="food-info">
-        <view class="food-name">{{item.food_name}}</view>
-        <view class="food-category">{{item.category_name}}</view>
-        <view class="rating-info">
-          <rating-star rating="{{item.rating || 0}}" size="mini" />
-          <text class="rating-text">{{item.rating}}</text>
-          <text class="rating-count">({{item.rating_count}})</text>
+        <view class="selected-grid" wx:if="{{selectedImages.length > 0}}">
+          <view class="selected-item" wx:for="{{selectedImages}}" wx:key="*this">
+            <image class="selected-image" src="{{item}}" mode="aspectFill" bind:tap="previewSelectedImage" data-current="{{item}}" />
+            <view class="remove-btn" bind:tap="removeSelectedImage" data-index="{{index}}">x</view>
+          </view>
+        </view>
+
+        <view class="composer-actions">
+          <view class="pick-btn motion-press" bind:tap="chooseImages">
+            <text class="pick-icon">+</text>
+            <text class="pick-text">图片</text>
+          </view>
+
+          <button class="publish-btn {{canPublish ? 'enabled' : ''}}" bind:tap="publishPost" disabled="{{!canPublish || publishing}}">{{publishing ? '发布中...' : '发布'}}</button>
         </view>
       </view>
-      
-      <view class="rank-trend">
-        <view class="trend-icon {{item.trend}}">
-          <text wx:if="{{item.trend === 'up'}}">↗</text>
-          <text wx:if="{{item.trend === 'down'}}">↘</text>
-          <text wx:if="{{item.trend === 'same'}}">→</text>
+
+      <view class="feed-section">
+        <view class="section-row"><text class="section-title">最新动态</text><text class="section-sub">共{{posts.length}}条</text></view>
+
+        <view class="feed-list" wx:if="{{posts.length > 0}}">
+          <view class="feed-card glass-card" wx:for="{{posts}}" wx:for-item="post" wx:key="id">
+            <view class="feed-head">
+              <image class="avatar" src="{{post.author.avatarUrl || '/images/default-avatar.jpg'}}" mode="aspectFill" />
+              <view class="feed-user"><text class="feed-name">{{post.author.nickName}}</text><text class="feed-time">{{post.displayTime}}</text></view>
+            </view>
+
+            <text class="feed-content" wx:if="{{post.content}}">{{post.content}}</text>
+
+            <view class="feed-image-grid" wx:if="{{post.images.length > 0}}">
+              <image class="feed-image" wx:for="{{post.images}}" wx:for-item="img" wx:key="*this" src="{{img}}" mode="aspectFill" bind:tap="previewPostImage" data-post-id="{{post.id}}" data-current="{{img}}" />
+            </view>
+
+            <view class="comments-block" wx:if="{{post.comments && post.comments.length}}">
+              <view class="comment-row" wx:for="{{post.comments}}" wx:key="id">
+                <text class="comment-name">{{item.user.nickName}}：</text>
+                <text class="comment-text">{{item.content}}</text>
+                <text class="comment-time">{{item.displayTime}}</text>
+              </view>
+            </view>
+
+            <view class="comment-action-row">
+              <view class="comment-input-row">
+                <input class="comment-input" placeholder="写评论..." value="{{commentDrafts[post.id] || ''}}" data-id="{{post.id}}" bindinput="onCommentInput" />
+                <button class="comment-send" data-id="{{post.id}}" bind:tap="submitComment">发送</button>
+              </view>
+
+              <view class="like-btn {{post.liked ? 'liked' : ''}}" bind:tap="toggleLike" data-id="{{post.id}}">
+                <image class="like-icon" src="{{post.liked ? '/styles/icon/like-filled.svg' : '/styles/icon/like-outline.svg'}}" mode="aspectFit" />
+                <text class="like-text">{{post.likeCount}}</text>
+              </view>
+            </view>
+          </view>
         </view>
-        <view class="trend-value" wx:if="{{item.trendValue > 0}}">{{item.trendValue}}</view>
+
+        <view class="empty-state glass-card" wx:else><text class="empty-text">暂无动态</text></view>
       </view>
-    </view>
-
-    <!-- 加载状态 -->
-    <view class="loading" wx:if="{{loading}}">
-      <text>加载中...</text>
-    </view>
-
-    <!-- 空状态 -->
-    <view class="empty-state" wx:if="{{!loading && rankingList.length === 0}}">
-      <image class="empty-image" src="/images/foods/gongbao-chicken.jpg" />
-      <text class="empty-text">暂无排行数据</text>
     </view>
   </scroll-view>
 </view>
-

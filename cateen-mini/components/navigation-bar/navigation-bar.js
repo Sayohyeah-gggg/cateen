@@ -9,19 +9,15 @@ Component({
       type: Boolean,
       value: false
     },
-    bgColor: {
+    theme: {
       type: String,
-      value: '#FF6B35'
-    },
-    textColor: {
-      type: String,
-      value: '#ffffff'
+      value: 'light'
     }
   },
 
   data: {
     statusBarHeight: 0,
-    navBarHeight: 0
+    navBarHeight: 44
   },
 
   lifetimes: {
@@ -31,24 +27,28 @@ Component({
   },
 
   methods: {
-    // 设置导航栏信息
     setNavBarInfo: function() {
-      var windowInfo = wx.getWindowInfo();
-      var statusBarHeight = windowInfo.statusBarHeight;
-      
-      // 获取胶囊按钮信息
-      var menuButton = wx.getMenuButtonBoundingClientRect();
-      
-      // 计算导航栏高度
-      var navBarHeight = (menuButton.top - statusBarHeight) * 2 + menuButton.height;
-      
+      var statusBarHeight = 20;
+      var navBarHeight = 44;
+
+      try {
+        var windowInfo = wx.getWindowInfo();
+        statusBarHeight = windowInfo.statusBarHeight || statusBarHeight;
+
+        var menuButton = wx.getMenuButtonBoundingClientRect();
+        if (menuButton && menuButton.height) {
+          navBarHeight = (menuButton.top - statusBarHeight) * 2 + menuButton.height;
+        }
+      } catch (error) {
+        navBarHeight = 44;
+      }
+
       this.setData({
         statusBarHeight: statusBarHeight,
         navBarHeight: navBarHeight
       });
     },
 
-    // 返回上一页
     goBack: function() {
       var pages = getCurrentPages();
       if (pages.length > 1) {

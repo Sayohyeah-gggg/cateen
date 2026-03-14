@@ -1,6 +1,22 @@
 // pages/collections/collections.js
 var api = require('../../utils/api');
 
+function normalizeFood(item) {
+  var image = item.image_url || item.imageUrl || (item.images && item.images[0]) || '/images/foods/gongbao-chicken.jpg';
+
+  return {
+    id: item.id,
+    food: {
+      id: item.id,
+      name: item.name || '未命名菜品',
+      images: [image],
+      category: item.category_name || item.categoryName || item.category || '未分类',
+      avgRating: Number(item.rating || item.avgRating || 0),
+      price: item.price || 0
+    }
+  };
+}
+
 Page({
   data: {
     collections: [],
@@ -12,148 +28,102 @@ Page({
   },
 
   onLoad: function() {
-    this.loadCollections();
-  },
-
-  onShow: function() {
-    // 页面显示时刷新数据
     this.loadCollections(true);
   },
 
-  // 加载收藏列表
-  loadCollections: function(refresh) {
-    var self = this;
-    if (refresh === undefined) refresh = false;
-    
-    if (refresh) {
-      this.setData({ 
-        page: 1, 
-        noMore: false,
-        refreshing: true 
-      });
-    }
-
-    try {
-      var params = {
-        page: this.data.page,
-        pageSize: this.data.pageSize
-      };
-      
-      api.user.getCollections(params).then(function(collectionsData) {
-        console.log('收藏API返回数据:', collectionsData);
-        console.log('收藏列表:', collectionsData.list);
-        
-        // 转换snake_case字段为camelCase，并转换为前端期望的格式
-        var newCollections = collectionsData.list.map(function(food) {
-          return {
-            id: food.id,
-            food: {
-              id: food.id,
-              name: food.name,
-              images: [food.image_url || food.imageUrl], // 处理snake_case字段
-              category: food.category_name || food.categoryName,
-              avgRating: food.rating,
-              price: food.price
-            }
-          };
-        });
-        
-        console.log('处理后的收藏数据:', newCollections);
-        
-        newCollections = refresh ? newCollections : self.data.collections.concat(newCollections);
-
-        self.setData({
-          collections: newCollections,
-          noMore: !collectionsData.hasMore,
-          page: refresh ? 2 : self.data.page + 1,
-          loading: false,
-          refreshing: false
-        });
-      }).catch(function(error) {
-        console.error('加载收藏列表失败:', error);
-        self.setData({ 
-          loading: false, 
-          refreshing: false
-        });
-      });
-    } catch (error) {
-      console.error('加载收藏列表失败:', error);
-      this.setData({ 
-        loading: false, 
-        refreshing: false
-      });
-    }
+  onShow: function() {
+    this.loadCollections(true);
   },
 
-  // 跳转详情页
-  goToDetail: function(e) {
-    var foodId = e.currentTarget.dataset.id;
-    wx.navigateTo({
-      url: '/pages/detail/detail?id=' + foodId
+  onPullDownRefresh: function() {
+    var self = this;
+    this.loadCollections(true).finally(function() {
+      wx.stopPullDownRefresh();
     });
   },
 
-  // 取消收藏
+  loadCollections: function(refresh) {
+    var self = this;
+    var isRefresh = !!refresh;
+
+    if (isRefresh) {
+      this.setData({ page: 1, noMore: false, refreshing: true, loading: true });
+    }
+
+    return api.user.getCollections({ page: this.data.page, pageSize: this.data.pageSize }).then(function(result) {
+      var list = (result.list || []).map(normalizeFood);
+      var merged = isRefresh ? list : self.data.collections.concat(list);
+
+      self.setData({
+        collections: merged,
+        noMore: !result.hasMore,
+        page: isRefresh ? 2 : self.data.page + 1,
+        loading: false,
+        refreshing: false
+      });
+    }).catch(function(error) {
+      console.error('load collections failed:', error);
+      self.setData({ loading: false, refreshing: false });
+      wx.showToast({ title: '加载失败', icon: 'none' });
+    });
+  },
+
+  goToDetail: function(e) {
+    var foodId = e.currentTarget.dataset.id;
+    if (!foodId) {
+      return;
+    }
+
+    wx.navigateTo({ url: '/pages/detail/detail?id=' + foodId });
+  },
+
   removeCollection: function(e) {
     var self = this;
     var foodId = e.currentTarget.dataset.foodId;
     var collectionId = e.currentTarget.dataset.collectionId;
-    
-    wx.showModal({
-      title: '确认取消收藏',
-      content: '确定要取消收藏这道美食吗？',
-      success: function(res) {
-        if (res.confirm) {
-          try {
-            wx.showLoading({ title: '处理中...' });
-            
-            api.user.removeCollection(foodId).then(function() {
-              // 更新本地数据
-              var collections = self.data.collections.filter(function(item) { return item.id !== collectionId; });
-              self.setData({ collections: collections });
 
-              wx.hideLoading();
-              wx.showToast({
-                title: '取消收藏成功',
-                icon: 'success'
-              });
-            }).catch(function(error) {
-              wx.hideLoading();
-              console.error('取消收藏失败:', error);
-            });
-          } catch (error) {
-            wx.hideLoading();
-            console.error('取消收藏失败:', error);
-          }
+    wx.showModal({
+      title: '取消收藏',
+      content: '确定要取消收藏这道菜吗？',
+      success: function(res) {
+        if (!res.confirm) {
+          return;
         }
+
+        wx.showLoading({ title: '处理中...' });
+
+        api.user.removeCollection(foodId).then(function() {
+          var list = self.data.collections.filter(function(item) { return item.id !== collectionId; });
+          self.setData({ collections: list });
+          wx.hideLoading();
+          wx.showToast({ title: '已取消', icon: 'success' });
+        }).catch(function(error) {
+          wx.hideLoading();
+          console.error('remove failed:', error);
+          wx.showToast({ title: '操作失败', icon: 'none' });
+        });
       }
     });
   },
 
-  // 下拉刷新
-  onRefresh: function() {
-    this.loadCollections(true);
-  },
-
-  // 加载更多
   loadMore: function() {
-    if (this.data.noMore) return;
-    this.loadCollections();
+    if (this.data.noMore) {
+      return;
+    }
+    this.loadCollections(false);
   },
 
-  // 跳转到首页
   goToIndex: function() {
-    wx.switchTab({
-      url: '/pages/index/index'
-    });
+    wx.switchTab({ url: '/pages/index/index' });
   },
 
-  // 分享
+  onNoop: function() {},
+
   onShareAppMessage: function() {
     return {
-      title: '我的美食收藏 - 美食评估系统',
+      title: '我的收藏',
       path: '/pages/collections/collections',
-      imageUrl: '/images/share-collections.jpg'
+      imageUrl: '/images/foods/gongbao-chicken.jpg'
     };
   }
 });

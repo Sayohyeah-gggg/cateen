@@ -1,54 +1,67 @@
 /* pages/lucky/lucky.wxss */
 .lucky-container {
-  background: #f5f5f5;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #ffd7b5 0%, #ffe8cb 42%, #fff3e5 72%, #f5ffe8 100%);
   min-height: 100vh;
   padding: 40rpx;
-  padding-top: 216rpx; /* 导航栏高度 + 额外间距 */
+  padding-top: 216rpx;
 }
 
-/* 页面标题 */
+.bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  object-fit: cover;
+  opacity: 0.75;
+}
+
+/* 婵犵绱曢崑鎴﹀磹濡ゅ懎鏋侀悹鍥ф▕閻掕棄霉閸忓吋缍戦柛鎰ㄥ亾闂備焦鎮堕崕娲礈閿曞倸姹?*/
 .page-header {
   text-align: center;
   padding: 40rpx 30rpx;
-  color: #333;
+  color: #1f2937;
 }
 
 .title {
-  font-size: 48rpx;
-  font-weight: bold;
+  font-size: 52rpx;
+  font-weight: 700;
   display: block;
   margin-bottom: 10rpx;
 }
 
 .subtitle {
-  font-size: 28rpx;
-  opacity: 0.8;
+  font-size: 30rpx;
+  color: #6b7280;
 }
 
-/* 自定义转盘控制 */
+/* 闂傚倷鑳堕崢褔銆冩惔銏㈩洸婵犲﹤鐗婇崑鈺呮煟閹伴潧澧伴柍缁樻礀椤法鎹勯崫鍕靛妷缂備椒绶￠崳锝夊蓟閿濆鐓涢柛瀣仛閸ㄥ綊寮鈧畷濂稿即閻愭妲?*/
 .custom-controls {
   padding: 40rpx 30rpx 20rpx;
   text-align: center;
 }
 
 .custom-btn {
-  background: #FF6B35;
+  background: linear-gradient(135deg, #ff6b35 0%, #ff7f2a 100%);
   color: white;
   border: none;
   border-radius: 30rpx;
-  padding: 20rpx 40rpx;
+  padding: 20rpx 44rpx;
   font-size: 28rpx;
   font-weight: bold;
-  box-shadow: 0 4rpx 16rpx rgba(255, 107, 53, 0.3);
-  width: 200rpx;
+  box-shadow: 0 12rpx 28rpx rgba(255, 107, 53, 0.3);
+  width: 220rpx;
 }
 
 .custom-btn:active {
-  background: #E55A2B;
+  background: #e55a2b;
   transform: scale(0.98);
 }
 
-/* 转盘区域 */
+/* 闂備礁鎼ˇ閬嶅磿閹版澘绀堟繛鎴炩棨妤﹁法鐤€婵炴垶顭囬ˇ閬嶆⒑閸涘﹦绠撻悗姘煎櫍瀹?*/
 .wheel-section {
   display: flex;
   justify-content: center;
@@ -61,18 +74,19 @@
   height: 600rpx;
 }
 
-/* 转盘背景 */
+/* 闂備礁鎼ˇ閬嶅磿閹版澘绀堟繛鎴炩棨妤﹁法鐤€婵炴垶鐟ュ▓鎴︽煟韫囨洖浠ч柛瀣崌閹?*/
 .wheel-bg {
   width: 100%;
   height: 100%;
   border-radius: 50%;
   position: relative;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0 18rpx 48rpx rgba(15, 23, 42, 0.16);
   overflow: hidden;
   transition: transform 3s cubic-bezier(0.23, 1, 0.32, 1);
+  border: 8rpx solid #ffffff;
 }
 
-/* 菜品名称层 */
+/* 闂傚倷绀侀崥瀣偓绗涘懎鍨濈€光偓閸曨偆顔愰悷婊勬煥閻ｇ兘濡烽妷顔兼倯闂佹悶鍎卞Λ娑㈠磻閻斿摜顩?*/
 .food-names-layer {
   position: absolute;
   top: 0;
@@ -99,36 +113,36 @@
   justify-content: center;
 }
 
-/* 美食名称 */
+/* 缂傚倸鍊搁崐绋棵洪妶澶嬬厐闁挎繂锛嗘径鎰у璺猴龚琚濋柣搴＄畭閸庡崬鈻?*/
 .food-name {
-  font-size: 16rpx;
-  color: #ffffff;
+  font-size: 18rpx;
+  color: #0f172a;
   text-align: center;
   font-weight: bold;
-  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.8);
+  text-shadow: 0 2rpx 4rpx rgba(255, 255, 255, 0.7);
   line-height: 1.2;
   max-width: 120rpx;
   overflow: hidden;
   white-space: nowrap;
-  transform: rotate(0deg); /* 将被内联样式覆盖为反向旋转 */
+  transform: rotate(0deg); /* 闂備浇顕х换鎰崲閹邦儵娑橆煥閸剛绋忛梺鎸庢礀閸婂摜绮堥崘顔界厱婵炴垯鍩勯弳鎺旂磼椤旇姤宕岄柡灞糕偓鎰佸悑闁告侗鍘戒簺缂傚倷鐒﹂崬鑽ゆ閺囥垹绠熷ù鍏兼綑楠炪垺绻涢崱妯哄闁挎稒鍔栫换娑㈠箣閻愭潙纰嶉梺鍦拡閸嬪嫰顢氶敐鍡欘浄閻庯綆浜ｈ闂備胶鎳撻顓㈠磻閻愭牳澶屸偓锝庡枛缁?*/
 }
 
-/* 中心按钮 */
+/* 婵犵數鍋為崹鍫曞箹閳哄懎鍌ㄩ柤娴嬫櫇缁憋箑螖閿濆懎鏆欑紒鐘虫緲椤潡鎳滈棃娑橆潔闁?*/
 .center-button {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 120rpx;
-  height: 120rpx;
+  width: 128rpx;
+  height: 128rpx;
   border-radius: 50%;
-  background: #FF4757;
-  border: 4rpx solid #ffffff;
+  background: linear-gradient(135deg, #ff6b35 0%, #f97316 100%);
+  border: 6rpx solid #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 100;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.2);
+  box-shadow: 0 12rpx 32rpx rgba(249, 115, 22, 0.35);
   transition: all 0.3s ease;
 }
 
@@ -138,11 +152,11 @@
 
 .button-text {
   color: #ffffff;
-  font-size: 32rpx;
-  font-weight: bold;
+  font-size: 34rpx;
+  font-weight: 700;
 }
 
-/* 指针 */
+/* 闂傚倷绀佸﹢閬嶁€﹂崼婢濇椽顢橀姀鐘殿唵?*/
 .wheel-pointer {
   position: absolute;
   top: -40rpx;
@@ -152,7 +166,7 @@
   height: 0;
   border-left: 25rpx solid transparent;
   border-right: 25rpx solid transparent;
-  border-bottom: 50rpx solid #FF4757;
+  border-bottom: 50rpx solid #ff6b35;
   z-index: 200;
   filter: drop-shadow(0 4rpx 8rpx rgba(0, 0, 0, 0.3));
 }
@@ -169,7 +183,7 @@
   border-top: 20rpx solid #FF4757;
 }
 
-/* 结果弹窗 */
+/* 缂傚倸鍊搁崐鐑芥倿閿曞倸绠板┑鐘崇閸婅泛顭跨捄渚叕闁搞倖娲熼弻娑㈡晜鐠囨彃绠婚悗?*/
 .result-modal {
   position: fixed;
   top: 0;
@@ -291,7 +305,7 @@
   transform: scale(0.98);
 }
 
-/* 今日推荐 */
+/* 婵犵數鍋涢顓熸叏閹绢喗鏅濋柕澶堝剻濞戙垹鐓涢柛娑卞幘椤斿﹪姊洪棃娑辩劸闁告柨鐬肩划?*/
 .recommendations-section {
   margin-top: 60rpx;
   padding: 0 30rpx;
@@ -357,7 +371,7 @@
   color: #FF9500;
 }
 
-/* 历史记录 */
+/* 闂傚倷绀侀幉锟犳晪濠碘槅鍋呴〃澶愬Φ閹版澘绀堝ù锝囨嚀椤庢盯姊洪崫鍕垫Ъ婵炲娲滅划?*/
 .history-section {
   margin-top: 60rpx;
   padding: 0 30rpx;
@@ -404,7 +418,7 @@
   border-radius: 8rpx;
 }
 
-/* 自定义转盘弹窗 */
+/* 闂傚倷鑳堕崢褔銆冩惔銏㈩洸婵犲﹤鐗婇崑鈺呮煟閹伴潧澧伴柍缁樻礀椤法鎹勯崫鍕靛妷缂備椒绶￠崳锝夊蓟閿濆鐓涢柛瀣靛灱娴滎亪骞婂Ο鑽ょ瘈闁告洦鍘鹃獮?*/
 .custom-modal {
   position: fixed;
   top: 0;
@@ -452,7 +466,7 @@
   padding: 10rpx;
 }
 
-/* 输入区域 */
+/* 闂備礁鎼ˇ顖炴偋婵犲洤绠伴柟闂寸閻鏌涢埄鍐槈缂佲偓瀹€鍕厱婵犻潧妫楅顐︽煕?*/
 .input-section {
   padding: 30rpx;
   border-bottom: 2rpx solid #f0f0f0;
@@ -478,7 +492,7 @@
   border-color: #FF6B35;
 }
 
-/* 菜品选择区域 */
+/* 闂傚倷绀侀崥瀣偓绗涘懎鍨濈€光偓閸曨偆顔愰悷婊勬瀵宕ㄩ鑲╃獮闁诲函缍嗘禍鑸电閹绢喗鈷戦柛娑橈功婢ь亪鏌熺喊鍗炰喊闁?*/
 .food-selector {
   padding: 30rpx;
 }
@@ -550,7 +564,7 @@
   border-color: #FF6B35;
 }
 
-/* 操作按钮 */
+/* 闂傚倷鑳堕幊鎾绘倶濠靛牏鐭撶€规洖娲ㄧ粈濠囨煛閸愩劎澧曠紒鐘虫緲椤潡鎳滈棃娑橆潔闁?*/
 .custom-actions {
   display: flex;
   gap: 20rpx;
@@ -592,7 +606,7 @@
   background: #E55A2B;
 }
 
-/* 响应式设计 */
+/* 闂傚倷绀侀幉锛勬崲閸屾粎鐭撻悗鍨摃婵娊鏌熺紒妯轰刊闁搞倖娲熼悡顐﹀炊閵娿儱姣堥梺鍝ュ枎闁帮綁骞?*/
 @media (max-width: 750rpx) {
   .wheel-container {
     width: 500rpx;

@@ -20,7 +20,7 @@
   pointer-events: none;
 }
 
-/* 遮罩层 */
+/* 闂傚倸鍊风欢锟犲礈閿曞倸绐楁慨妯挎硾绾句粙鏌ｉ姀鐘叉倎婵?*/
 .modal-mask {
   position: absolute;
   top: 0;
@@ -31,7 +31,7 @@
   backdrop-filter: blur(4rpx);
 }
 
-/* 聊天框主体 */
+/* 闂傚倷鑳堕崢褍鐣烽鍕櫇闁靛牆顦婵犮垼娉涢…顒€霉閺嶎厽鐓曢柍鈺佸暞缁€鈧梺浼欓檮缁矂婀?*/
 .chat-container {
   width: 100%;
   height: 80vh;
@@ -44,7 +44,7 @@
   transition: transform 0.3s ease;
 }
 
-/* 聊天头部 */
+/* 闂傚倷鑳堕崢褍鐣烽鍕櫇闁靛牆顦婵犮垼娉涢鍛閻愮儤鐓欑紓浣靛灩閺嬫盯鏌?*/
 .chat-header {
   display: flex;
   align-items: center;
@@ -120,7 +120,7 @@
   font-weight: bold;
 }
 
-/* 消息列表 */
+/* 濠电姷鏁搁崑鐐哄垂閻㈠憡鍋嬪┑鐘插暙椤曢亶鏌涘☉娆愮稇缂佲偓閸℃ü绻嗛柕鍫濇噹椤忋儵鏌?*/
 .message-list {
   flex: 1;
   padding: 20rpx;
@@ -137,7 +137,7 @@
   max-width: 80%;
 }
 
-/* 用户消息 */
+/* 闂傚倷鐒﹀鍨焽閸ф绀夌€广儱顦弰銉︾箾閹寸們姘ｉ崼銉︾厱妞ゆ劑鍊曢弸宥囩磼?*/
 .user-message {
   flex-direction: row-reverse;
   margin-left: auto;
@@ -157,7 +157,7 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
-/* AI消息 */
+/* AI濠电姷鏁搁崑鐐哄垂閻㈠憡鍋嬪┑鐘插暙椤?*/
 .assistant-message {
   flex-direction: row;
   margin-right: auto;
@@ -178,7 +178,7 @@
   color: #999;
 }
 
-/* 消息内容 */
+/* 濠电姷鏁搁崑鐐哄垂閻㈠憡鍋嬪┑鐘插暙椤曢亶鏌涘☉娆愮稇缂佲偓閸愵喗鐓曟繛鎴濆船瀵箖鏌?*/
 .message-content {
   padding: 20rpx 24rpx;
   border-radius: 20rpx;
@@ -198,7 +198,7 @@
   display: block;
 }
 
-/* 消息头像 */
+/* 濠电姷鏁搁崑鐐哄垂閻㈠憡鍋嬪┑鐘插暙椤曢亶鏌涘☉鍗炴灈缂佸墎鍋ら弻鈩冨緞鐎ｎ亞浠撮梺?*/
 .message-avatar {
   width: 60rpx;
   height: 60rpx;
@@ -231,7 +231,7 @@
   justify-content: center;
 }
 
-/* 正在输入提示 */
+/* 濠电姵顔栭崰妤冩崲閹邦喖绶ら柦妯侯檧閼版寧銇勮箛鎾村櫤缂傚秴娲弻鐔煎箚瑜嶉弳杈┾偓娈垮枟婵炲﹪寮婚悢铏圭＜婵☆垰鎼～搴ㄦ⒑?*/
 .typing-indicator {
   display: flex;
   align-items: flex-start;
@@ -286,7 +286,7 @@
   color: #999;
 }
 
-/* 输入区域 */
+/* 闂備礁鎼ˇ顖炴偋婵犲洤绠伴柟闂寸閻鏌涢埄鍐槈缂佲偓瀹€鍕厱婵犻潧妫楅顐︽煕?*/
 .input-area {
   padding: 20rpx 30rpx 40rpx;
   background: white;
@@ -378,12 +378,12 @@
   font-size: 24rpx;
 }
 
-/* 底部占位 */
+/* 闂備礁婀遍崢褔鎮洪妸銉冩椽鎮㈤悡搴ｏ紵闂佸湱铏庨崰鏍兜閳ь剟姊虹紒姗嗙劸濞存粠鍓涚划?*/
 .bottom-placeholder {
   height: 20rpx;
 }
 
-/* 响应式适配 */
+/* 闂傚倷绀侀幉锛勬崲閸屾粎鐭撻悗鍨摃婵娊鏌熺紒妯轰刊闁搞倖娲熼悡顐﹀炊閵娧€鏋旈梺绋款儐閹瑰洤鐣烽幒妤佸€烽柟缁樺笩缁?*/
 @media (max-width: 375px) {
   .chat-container {
     height: 85vh;
