@@ -318,17 +318,11 @@ public class AdminDatabaseTools {
         }
     }
 
-    @Tool("生成Excel报表，type参数指定类型：users=用户列表, foods=美食列表, comments=评论列表, posts=帖子列表")
-    public String generateExcel(String type) {
+    @Tool("生成Excel报表。types参数为逗号分隔的类型，支持：users=用户, foods=美食, comments=评论, posts=帖子。可组合，如 users,foods 或 users,foods,comments,posts")
+    public String generateExcel(String types) {
         try {
-            log.info("AI调用工具：生成Excel，类型={}", type);
-            String url = switch (type) {
-                case "users"   -> excelGeneratorService.generateUserExcel();
-                case "foods"   -> excelGeneratorService.generateFoodExcel();
-                case "comments"-> excelGeneratorService.generateCommentExcel();
-                case "posts"   -> excelGeneratorService.generateForumPostExcel();
-                default        -> throw new IllegalArgumentException("不支持的类型：" + type + "，可选：users/foods/comments/posts");
-            };
+            log.info("AI调用工具：生成Excel，类型={}", types);
+            String url = excelGeneratorService.generate(types);
             return "Excel 已生成，下载地址：" + url;
         } catch (Exception e) {
             log.error("生成Excel失败", e);
@@ -336,11 +330,11 @@ public class AdminDatabaseTools {
         }
     }
 
-    @Tool("生成系统数据概览PPT报告，包含用户、美食、评论、帖子的统计数据")
-    public String generatePpt() {
+    @Tool("生成PPT报告。types参数为逗号分隔的类型，支持：users=用户, foods=美食, comments=评论, posts=帖子。可组合，如 foods,posts 或 users,foods,comments,posts")
+    public String generatePpt(String types) {
         try {
-            log.info("AI调用工具：生成PPT报告");
-            String url = pptGeneratorService.generateOverviewPpt();
+            log.info("AI调用工具：生成PPT，类型={}", types);
+            String url = pptGeneratorService.generate(types);
             return "PPT 已生成，下载地址：" + url;
         } catch (Exception e) {
             log.error("生成PPT失败", e);
