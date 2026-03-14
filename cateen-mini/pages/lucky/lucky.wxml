@@ -7,13 +7,22 @@
 
   <view class="wheel-section">
     <view class="wheel-container">
-      <view class="wheel-pointer"></view>
-      <view class="wheel-bg" style="transform: rotate({{wheelRotation}}deg); background: {{wheelBackground}};"></view>
+      <!-- 转盘背景 -->
+      <view class="wheel-bg" style="transform: rotate({{wheelRotation}}deg); background: {{wheelBackground}};">
+        <!-- 高亮层 - 显示哪个区域在发光 -->
+        <view class="highlight-layer" wx:if="{{showGlow && highlightIndex >= 0}}">
+          <view class="highlight-segment" style="transform: rotate({{highlightAngle}}deg); background: {{highlightColor}}; opacity: {{glowOpacity}};"></view>
+        </view>
+      </view>
+      <!-- 食物名称层 -->
       <view class="food-names-layer" style="transform: rotate({{wheelRotation}}deg);">
         <view class="food-name-item" wx:for="{{wheelFoods}}" wx:key="id" style="transform: rotate({{item.labelAngle}}deg) translateY(-{{labelRadius}}rpx) rotate(-{{item.labelAngle}}deg);">
           <text class="food-name">{{item.name}}</text>
         </view>
       </view>
+      <!-- 固定指针 - 顶部指示器 -->
+      <view class="fixed-pointer"></view>
+      <!-- 中心按钮 -->
       <view class="center-button {{spinning ? 'spinning' : ''}}" bind:tap="startSpin"><text class="button-text">{{spinning ? '...' : '开转'}}</text></view>
     </view>
   </view>

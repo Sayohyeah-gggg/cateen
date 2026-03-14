@@ -74,7 +74,28 @@
   height: 600rpx;
 }
 
-/* 闂備礁鎼ˇ閬嶅磿閹版澘绀堟繛鎴炩棨妤﹁法鐤€婵炴垶鐟ュ▓鎴︽煟韫囨洖浠ч柛瀣崌閹?*/
+/* 高亮层 - 覆盖在转盘上显示哪个区域发光 */
+.highlight-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.highlight-segment {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.3s ease;
+}
+
+/* 转盘背景 */
 .wheel-bg {
   width: 100%;
   height: 100%;
@@ -84,6 +105,20 @@
   overflow: hidden;
   transition: transform 3s cubic-bezier(0.23, 1, 0.32, 1);
   border: 8rpx solid #ffffff;
+}
+
+/* 固定指针 - 顶部指示器 */
+.fixed-pointer {
+  position: absolute;
+  top: -20rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40rpx;
+  height: 50rpx;
+  background: linear-gradient(180deg, #FF4757 0%, #FF3742 100%);
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+  z-index: 30;
+  filter: drop-shadow(0 4rpx 8rpx rgba(255, 71, 87, 0.4));
 }
 
 /* 闂傚倷绀侀崥瀣偓绗涘懎鍨濈€光偓閸曨偆顔愰悷婊勬煥閻ｇ兘濡烽妷顔兼倯闂佹悶鍎卞Λ娑㈠磻閻斿摜顩?*/

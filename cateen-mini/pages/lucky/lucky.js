@@ -41,6 +41,13 @@ Page({
     wheelBackground: '',
     labelRadius: 200,
 
+    // 光效相关
+    showGlow: false,
+    highlightIndex: -1, // 当前高亮的区域索引
+    highlightAngle: 0,  // 高亮区域的角度位置
+    highlightColor: 'rgba(255, 215, 0, 0.6)', // 金色半透明高亮
+    glowOpacity: 0,
+
     showCustomModal: false,
     customCount: 0,
     customCountInput: '',
@@ -141,22 +148,22 @@ Page({
     var foods = this.data.wheelFoods;
     var index = Math.floor(Math.random() * foods.length);
     var selected = foods[index];
-    var per = 360 / foods.length;
-    var target = selected.startAngle + per / 2;
-    var finalRotation = this.data.wheelRotation + 360 * 5 + (360 - target);
-
+    
+    // 设置目标索引
     this.setData({
       spinning: true,
-      wheelRotation: finalRotation,
-      spinResult: selected
+      spinResult: selected,
+      highlightIndex: index,
+      showGlow: true,
+      glowOpacity: 1
     });
 
     var self = this;
+    
+    // 第一阶段：显示目标区域发光（0.5 秒）
     setTimeout(function() {
-      self.setData({ spinning: false, showResult: true });
-      self.addToHistory(selected);
-      wx.vibrateShort();
-    }, this.data.spinDuration * 1000);
+      self.startHighlightRotation(index);
+    }, 500);
   },
 
   addToHistory: function(food) {
@@ -171,6 +178,90 @@ Page({
     wx.setStorageSync(STORAGE_KEY, history);
   },
 
+  /** 开始高亮区域旋转 */
+  startHighlightRotation: function(targetIndex) {
+    var self = this;
+    var foods = this.data.wheelFoods;
+    var per = 360 / foods.length;
+    
+    // 计算目标区域的角度（从顶部指针位置开始）
+    // 顶部是 0 度，顺时针旋转
+    var targetSegmentAngle = targetIndex * per;
+    
+    // 总旋转圈数（至少 5 圈）
+    var totalRotations = 360 * 5;
+    
+    // 最终需要到达的角度（让目标区域停在顶部指针位置）
+    // 转盘逆时针旋转，所以角度要反过来算
+    var finalAngle = totalRotations + (360 - targetSegmentAngle);
+    
+    // 当前已旋转角度
+    var currentRotation = 0;
+    
+    // 初始速度（每帧移动的度数）
+    var speed = 15;
+    
+    // 减速系数
+    var deceleration = 0.98;
+    
+    // 最小速度阈值
+    var minSpeed = 0.2;
+    
+    function animate() {
+      // 计算剩余距离
+      var remaining = finalAngle - currentRotation;
+      
+      // 当接近目标时减速（最后 2 圈）
+      if (remaining < 720) {
+        speed = speed * deceleration;
+      }
+      
+      // 如果速度太慢或已到达目标，停止动画并显示结果
+      if (speed < minSpeed || currentRotation >= finalAngle) {
+        // 强制设置到最终位置
+        currentRotation = finalAngle;
+        
+        // 一次性更新所有状态：转盘位置、停止转动、显示结果
+        self.setData({
+          wheelRotation: currentRotation,  // 转盘精确停在目标位置
+          spinning: false,                  // 停止转动状态
+          showResult: true,                 // 显示结果框
+          showGlow: false,                  // 隐藏高亮
+          glowOpacity: 0                    // 透明度归零
+        });
+        
+        // 记录历史和震动反馈
+        self.addToHistory(self.data.wheelFoods[targetIndex]);
+        wx.vibrateShort();
+        return;
+      }
+      
+      // 更新旋转角度
+      currentRotation += speed;
+      if (currentRotation > finalAngle) {
+        currentRotation = finalAngle;
+      }
+      
+      // 计算当前应该高亮的区域索引
+      // 随着转盘旋转，高亮区域也在变化
+      var normalizedRotation = currentRotation % 360;
+      var currentIndex = Math.floor(((360 - normalizedRotation) % 360) / per);
+      
+      // 更新高亮区域和转盘角度
+      self.setData({
+        wheelRotation: currentRotation,
+        highlightIndex: currentIndex,
+        highlightAngle: currentIndex * per
+      });
+      
+      // 继续下一帧
+      setTimeout(animate, 16); // 约 60fps
+    }
+    
+    // 开始动画
+    animate();
+  },
+
   loadTodayRecommendations: function() {
     var list = (mockData.todayRecommendations || mockData.foods || []).map(withSelected);
     this.setData({ todayRecommendations: list.slice(0, 4) });
@@ -182,7 +273,11 @@ Page({
   },
 
   hideResult: function() {
-    this.setData({ showResult: false });
+    // 关闭结果框时，确保 spinning 状态为 false（防止转盘继续转动）
+    this.setData({ 
+      showResult: false,
+      spinning: false
+    });
   },
 
   stopPropagation: function() {},
