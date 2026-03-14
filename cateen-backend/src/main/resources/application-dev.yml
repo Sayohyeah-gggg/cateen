@@ -47,7 +47,7 @@ spring:
 
 # 文件上传配置（开发环境使用绝对路径，避免 Tomcat 临时目录问题）
 upload:
-  path: C:/uploads/cateen
+  path: D:/xawl_total/xawl_cateen/uploads
   base-url: http://localhost:8080
 
 # 日志配置（开发环境打印详细日志）
