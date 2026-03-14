@@ -3,6 +3,7 @@
     "pages/index/index",
     "pages/detail/detail",
     "pages/ranking/ranking",
+    "pages/publish/publish",
     "pages/ai-assistant/ai-assistant",
     "pages/lucky/lucky",
     "pages/profile/profile",

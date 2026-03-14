@@ -8,31 +8,12 @@
 
   <scroll-view class="page-scroll" scroll-y="{{true}}">
     <view class="page-content page-inner">
-      <view class="composer glass-card">
-        <view class="composer-user">
-          <image class="avatar" src="{{(userInfo && userInfo.avatarUrl) || '/images/default-avatar.jpg'}}" mode="aspectFill" />
-          <view class="user-meta">
-            <text class="user-name">{{(userInfo && userInfo.nickName) || '食客'}}</text>
-            <text class="user-tip">发布文字和图片</text>
-          </view>
-        </view>
-
-        <textarea class="composer-input" placeholder="想说点什么..." placeholder-class="composer-placeholder" value="{{draftText}}" maxlength="300" bindinput="onDraftInput" />
-
-        <view class="selected-grid" wx:if="{{selectedImages.length > 0}}">
-          <view class="selected-item" wx:for="{{selectedImages}}" wx:key="*this">
-            <image class="selected-image" src="{{item}}" mode="aspectFill" bind:tap="previewSelectedImage" data-current="{{item}}" />
-            <view class="remove-btn" bind:tap="removeSelectedImage" data-index="{{index}}">x</view>
-          </view>
-        </view>
-
-        <view class="composer-actions">
-          <view class="pick-btn motion-press" bind:tap="chooseImages">
-            <text class="pick-icon">+</text>
-            <text class="pick-text">图片</text>
-          </view>
-
-          <button class="publish-btn {{canPublish ? 'enabled' : ''}}" bind:tap="publishPost" disabled="{{!canPublish || publishing}}">{{publishing ? '发布中...' : '发布'}}</button>
+      <!-- 发布入口 -->
+      <view class="composer-entry glass-card" bind:tap="goPublish">
+        <image class="entry-avatar" src="{{(userInfo && userInfo.avatarUrl) || '/images/default-avatar.jpg'}}" mode="aspectFill" />
+        <text class="entry-placeholder">想说点什么...</text>
+        <view class="entry-btn">
+          <text class="entry-btn-text">发布</text>
         </view>
       </view>
 

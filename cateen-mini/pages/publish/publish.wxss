@@ -1,0 +1,167 @@
+/* pages/publish/publish.wxss */
+.publish-page {
+  min-height: 100vh;
+}
+
+.page-scroll {
+  height: 100vh;
+}
+
+.page-inner {
+  padding: 190rpx 24rpx calc(48rpx + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.user-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  border: 1rpx solid var(--border-soft);
+  flex-shrink: 0;
+}
+
+.user-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.user-name {
+  font-size: var(--font-14);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.user-tip {
+  font-size: var(--font-12);
+  color: var(--text-muted);
+}
+
+.content-input {
+  width: 100%;
+  min-height: 240rpx;
+  padding: 20rpx;
+  border-radius: 20rpx;
+  border: 1rpx solid var(--border-soft);
+  background: var(--bg-surface-strong);
+  color: var(--text-primary);
+  font-size: var(--font-16);
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+.input-placeholder {
+  color: var(--text-muted);
+}
+
+/* 图片网格 */
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12rpx;
+}
+
+.image-item {
+  position: relative;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.preview-image {
+  width: 100%;
+  height: 200rpx;
+}
+
+.remove-btn {
+  position: absolute;
+  top: 8rpx;
+  right: 8rpx;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  font-size: 28rpx;
+  text-align: center;
+  line-height: 40rpx;
+}
+
+.add-more {
+  height: 200rpx;
+  border-radius: 16rpx;
+  border: 2rpx dashed var(--border-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-soft);
+}
+
+.add-icon {
+  font-size: 56rpx;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+/* 底部操作栏 */
+.action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  padding-top: 8rpx;
+}
+
+.pick-btn {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  height: 72rpx;
+  padding: 0 24rpx;
+  border-radius: var(--radius-pill);
+  border: 1rpx solid var(--border-soft);
+  background: var(--bg-glass-strong);
+}
+
+.pick-icon {
+  font-size: 32rpx;
+}
+
+.pick-text {
+  font-size: var(--font-14);
+  color: var(--text-secondary);
+}
+
+.publish-btn {
+  margin: 0;
+  width: 180rpx;
+  height: 72rpx;
+  border-radius: var(--radius-pill);
+  border: 1rpx solid var(--border-soft);
+  background: rgba(148,163,184,0.28);
+  color: var(--text-muted);
+  font-size: var(--font-16);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.publish-btn.enabled {
+  background: linear-gradient(135deg, rgba(37,99,235,0.92), rgba(20,184,166,0.86));
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 4rpx 16rpx rgba(37,99,235,0.3);
+}
+
+.publish-btn::after {
+  border: none;
+}

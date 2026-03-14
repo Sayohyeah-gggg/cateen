@@ -62,11 +62,6 @@ Page({
     isLoggedIn: false,
     userInfo: null,
 
-    draftText: '',
-    selectedImages: [],
-    canPublish: false,
-    publishing: false,
-
     posts: [],
     total: 0,
     page: 1,
@@ -74,8 +69,7 @@ Page({
     loading: false,
     noMore: false,
 
-    commentDrafts: {},
-    uploadingImages: false
+    commentDrafts: {}
   },
 
   onLoad: function() {
@@ -88,6 +82,11 @@ Page({
     this.syncTheme();
     this.syncUser();
     this.syncCustomTabBar();
+    // 从发布页返回后刷新列表
+    if (this._needRefresh) {
+      this._needRefresh = false;
+      this.loadPosts(true);
+    }
   },
 
   onPullDownRefresh: function() {
@@ -121,66 +120,7 @@ Page({
     });
   },
 
-  updatePublishState: function() {
-    var content = (this.data.draftText || '').trim();
-    var hasImage = this.data.selectedImages.length > 0;
-    this.setData({ canPublish: !!content || hasImage });
-  },
-
-  onDraftInput: function(e) {
-    this.setData({ draftText: e.detail.value || '' });
-    this.updatePublishState();
-  },
-
-  chooseImages: function() {
-    var self = this;
-    var left = 9 - this.data.selectedImages.length;
-    if (left <= 0) {
-      wx.showToast({ title: '最多选择9张图片', icon: 'none' });
-      return;
-    }
-
-    wx.chooseMedia({
-      count: left,
-      mediaType: ['image'],
-      sourceType: ['album', 'camera'],
-      success: function(res) {
-        var files = (res.tempFiles || []).map(function(f) { return f.tempFilePath; });
-        self.setData({ selectedImages: self.data.selectedImages.concat(files) });
-        self.updatePublishState();
-      }
-    });
-  },
-
-  removeSelectedImage: function(e) {
-    var index = Number(e.currentTarget.dataset.index);
-    var images = this.data.selectedImages.slice();
-    images.splice(index, 1);
-    this.setData({ selectedImages: images });
-    this.updatePublishState();
-  },
-
-  previewSelectedImage: function(e) {
-    var current = e.currentTarget.dataset.current;
-    wx.previewImage({ current: current, urls: this.data.selectedImages });
-  },
-
-  /** 上传图片到服务器，返回 URL 数组 */
-  uploadImages: function(localPaths) {
-    if (!localPaths || !localPaths.length) return Promise.resolve([]);
-
-    var tasks = localPaths.map(function(path) {
-      return api.upload.image(path, 'forum');
-    });
-
-    return Promise.all(tasks).then(function(results) {
-      return results.map(function(r) {
-        return typeof r === 'string' ? r : (r.url || r.imageUrl || r);
-      });
-    });
-  },
-
-  /** 加载帖子列表 */
+  /** 跳转到发布页 */
   loadPosts: function(refresh) {
     var self = this;
     if (this.data.loading) return Promise.resolve();
@@ -209,45 +149,21 @@ Page({
       });
   },
 
-  /** 发布帖子 */
-  publishPost: function() {
-    var self = this;
-    if (!this.data.canPublish || this.data.publishing) return;
-
+  /** 跳转到发布页 */
+  goPublish: function() {
     if (!this.data.isLoggedIn) {
       wx.showToast({ title: '请先登录', icon: 'none' });
       return;
     }
-
-    var content = (this.data.draftText || '').trim();
-    var localImages = this.data.selectedImages.slice();
-
-    this.setData({ publishing: true });
-    wx.showLoading({ title: '发布中...' });
-
-    // 先上传图片，再发布帖子
-    this.uploadImages(localImages)
-      .then(function(imageUrls) {
-        return api.forum.createPost({ content: content, images: imageUrls });
-      })
-      .then(function() {
-        wx.hideLoading();
-        self.setData({
-          draftText: '',
-          selectedImages: [],
-          canPublish: false,
-          publishing: false
-        });
-        wx.showToast({ title: '发布成功', icon: 'success' });
-        // 刷新列表
-        return self.loadPosts(true);
-      })
-      .catch(function(err) {
-        wx.hideLoading();
-        console.error('发布失败:', err);
-        self.setData({ publishing: false });
-        wx.showToast({ title: err.message || '发布失败', icon: 'none' });
-      });
+    var self = this;
+    wx.navigateTo({
+      url: '/pages/publish/publish',
+      events: {
+        onPublished: function() {
+          self._needRefresh = true;
+        }
+      }
+    });
   },
 
   /** 点赞/取消点赞 */
