@@ -11,7 +11,6 @@ import com.xawl.cateen.vo.PageVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -22,7 +21,6 @@ import java.util.Map;
  * 食友分享（论坛）接口
  */
 @Api(tags = "11. 食友分享")
-@Slf4j
 @RestController
 @RequestMapping("/api/mini/forum")
 @RequiredArgsConstructor
