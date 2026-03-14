@@ -2,14 +2,14 @@
 
 var ENVIRONMENTS = {
   local: 'http://localhost:8080/api/mini',
-  lan: 'http://192.168.182.1:8080/api/mini',
+  lan: 'http://192.168.10.4:8080/api/mini',
   prod: 'https://your-domain.com/api/mini'
 };
 
 function getMode() {
-  var mode = wx.getStorageSync('API_ENV') || 'local';
+  var mode = wx.getStorageSync('API_ENV') || 'lan';
   if (!ENVIRONMENTS[mode]) {
-    mode = 'local';
+    mode = 'lan';
   }
   return mode;
 }
