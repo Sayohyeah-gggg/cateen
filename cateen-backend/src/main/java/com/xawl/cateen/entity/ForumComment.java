@@ -24,6 +24,11 @@ public class ForumComment implements Serializable {
 
     private Integer likeCount;
 
+    /**
+     * 审核状态：pending/approved/rejected
+     */
+    private String status;
+
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 

@@ -26,15 +26,12 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
 
-  # Jackson配置
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
     default-property-inclusion: NON_NULL
-    # 将Java驼峰命名转换为下划线命名（与前端保持一致）
     property-naming-strategy: SNAKE_CASE
   
-  # Redis配置
   data:
     redis:
       host: localhost
@@ -100,18 +97,8 @@ knife4j:
 # 微信小程序配置
 wechat:
   mini:
-    # 小程序AppID（替换为你的真实AppID）
     appid: wx101c1092f799a3a5
-    # 小程序AppSecret（替换为你的真实AppSecret）
     secret: 1f856ce46c9dc673ee330987620a067c
-
-# 文件上传配置
-upload:
-  # 本地存储路径
-  path: D:/cateen_images
-  # 文件访问基础URL
-  base-url: http://localhost:8080
-
 # MinIO 配置（用于图片上传；桶：small=小程序，admin=管理端）
 minio:
   enabled: true

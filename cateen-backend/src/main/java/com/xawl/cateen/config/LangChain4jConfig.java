@@ -108,6 +108,8 @@ public class LangChain4jConfig {
             "- getForumPostStatistics: 帖子统计（总数、状态分布、最近帖子）",
             "- searchForumPosts: 按关键词搜索帖子",
             "- getForumCommentsByPost: 指定帖子的评论",
+            "- getForumPostDetail: 指定帖子详情/内容",
+            "- getLatestForumPosts: 查询最新帖子列表",
             "- getForumActivityStatistics: 帖子活跃度统计",
             "- generateExcel(types): 生成Excel，types为逗号分隔类型，如 users 或 users,foods,comments,posts",
             "- generatePpt(types): 生成PPT，types为逗号分隔类型，如 foods 或 users,foods,posts",

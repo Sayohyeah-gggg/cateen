@@ -11,4 +11,10 @@ import org.apache.ibatis.annotations.Param;
 public interface ForumCommentMapper extends BaseMapper<ForumComment> {
 
     Page<ForumCommentVO> selectCommentPage(Page<ForumCommentVO> page, @Param("postId") String postId);
+
+    Page<ForumCommentVO> adminSelectCommentPage(Page<ForumCommentVO> page,
+                                                @Param("keyword") String keyword,
+                                                @Param("postId") String postId,
+                                                @Param("userId") String userId,
+                                                @Param("status") String status);
 }

@@ -9,13 +9,12 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-  # 数据源配置（根据你本地MySQL配置修改）
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/cateen?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: 666Shiyuhang  # 👈 修改为你本地MySQL的密码
+    password: 666Shiyuhang
     druid:
       initial-size: 5
       min-idle: 5
@@ -35,13 +34,6 @@ spring:
         url-pattern: /druid/*
         login-username: admin
         login-password: admin
-
-
-# 文件上传配置（开发环境使用绝对路径，避免 Tomcat 临时目录问题）
-# 注意：小程序无法访问 localhost，需改为本机局域网IP，例如 http://192.168.x.x:8080
-upload:
-  path: D:/xawl_total/xawl_cateen/uploads
-  base-url: http://192.168.56.1:8080
 
 # MinIO 配置（用于图片上传；桶：small=小程序，admin=管理端）
 minio:

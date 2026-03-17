@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xawl.cateen.constant.CommentStatusConstants;
 import com.xawl.cateen.entity.ForumComment;
 import com.xawl.cateen.entity.ForumLike;
 import com.xawl.cateen.entity.ForumPost;
@@ -125,11 +126,11 @@ public class ForumService {
         comment.setUserId(userId);
         comment.setContent(content);
         comment.setLikeCount(0);
+        comment.setStatus(CommentStatusConstants.APPROVED);
         commentMapper.insert(comment);
 
         // 更新帖子评论数
-        post.setCommentCount(post.getCommentCount() + 1);
-        postMapper.updateById(post);
+        refreshPostCommentCount(postId);
 
         return comment;
     }
@@ -212,6 +213,48 @@ public class ForumService {
         postMapper.deleteById(postId);
     }
 
+    /**
+     * 管理端分页查询帖子评论
+     */
+    public PageVO<ForumCommentVO> adminGetCommentPage(int page, int limit, String keyword, String postId, String userId, String status) {
+        Page<ForumCommentVO> pageParam = new Page<>(page, limit);
+        Page<ForumCommentVO> result = commentMapper.adminSelectCommentPage(pageParam, keyword, postId, userId, status);
+        return PageVO.<ForumCommentVO>builder()
+                .list(result.getRecords())
+                .pageNum(result.getCurrent())
+                .pageSize(result.getSize())
+                .total(result.getTotal())
+                .pages(result.getPages())
+                .build();
+    }
+
+    /**
+     * 管理端更新帖子评论状态
+     */
+    @Transactional
+    public void adminUpdateCommentStatus(String commentId, String status) {
+        ForumComment comment = commentMapper.selectById(commentId);
+        if (comment == null) {
+            throw new RuntimeException("评论不存在");
+        }
+        comment.setStatus(status);
+        commentMapper.updateById(comment);
+        refreshPostCommentCount(comment.getPostId());
+    }
+
+    /**
+     * 管理端删除帖子评论
+     */
+    @Transactional
+    public void adminDeleteComment(String commentId) {
+        ForumComment comment = commentMapper.selectById(commentId);
+        if (comment == null) {
+            throw new RuntimeException("评论不存在");
+        }
+        commentMapper.deleteById(commentId);
+        refreshPostCommentCount(comment.getPostId());
+    }
+
     private List<String> parseImages(String imagesJson) {
         if (!StringUtils.hasText(imagesJson)) {
             return Collections.emptyList();
@@ -221,6 +264,28 @@ public class ForumService {
         } catch (Exception e) {
             log.warn("解析图片JSON失败: {}", imagesJson);
             return Collections.emptyList();
+        }
+    }
+
+    /**
+     * 重新统计帖子评论数（仅统计已通过，兼容旧数据空状态）
+     */
+    private void refreshPostCommentCount(String postId) {
+        if (!StringUtils.hasText(postId)) {
+            return;
+        }
+        LambdaQueryWrapper<ForumComment> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(ForumComment::getPostId, postId)
+                .eq(ForumComment::getDeleted, 0)
+                .and(w -> w.eq(ForumComment::getStatus, CommentStatusConstants.APPROVED)
+                        .or()
+                        .isNull(ForumComment::getStatus));
+        Long count = commentMapper.selectCount(wrapper);
+
+        ForumPost post = postMapper.selectById(postId);
+        if (post != null) {
+            post.setCommentCount(count.intValue());
+            postMapper.updateById(post);
         }
     }
 }

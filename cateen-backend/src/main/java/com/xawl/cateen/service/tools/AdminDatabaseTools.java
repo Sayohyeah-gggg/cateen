@@ -299,6 +299,71 @@ public class AdminDatabaseTools {
         }
     }
 
+    @Tool("根据帖子ID读取帖子详细内容")
+    public String getForumPostDetail(String postId) {
+        try {
+            log.info("AI调用工具：读取帖子详情，帖子ID={}", postId);
+            ForumPost post = forumPostMapper.selectById(postId);
+            if (post == null || post.getDeleted() != null && post.getDeleted() == 1) {
+                return "未找到ID为 " + postId + " 的帖子";
+            }
+            Profile user = profileMapper.selectById(post.getUserId());
+            String nickname = user != null && user.getNickname() != null ? user.getNickname() : "未知";
+            String content = post.getContent() != null ? post.getContent() : "";
+            if (content.length() > 1000) {
+                content = content.substring(0, 1000) + "...(内容过长，已截断)";
+            }
+            String images = post.getImages() != null ? post.getImages() : "无";
+            return String.format("帖子详情：\nID：%s\n作者：%s\n状态：%s\n点赞：%d  评论：%d\n发布时间：%s\n图片：%s\n内容：\n%s",
+                    post.getId(),
+                    nickname,
+                    post.getStatus(),
+                    post.getLikeCount() != null ? post.getLikeCount() : 0,
+                    post.getCommentCount() != null ? post.getCommentCount() : 0,
+                    post.getCreatedAt() != null ? post.getCreatedAt().format(formatter) : "未知",
+                    images,
+                    content);
+        } catch (Exception e) {
+            log.error("读取帖子详情失败", e);
+            return "读取帖子详情失败：" + e.getMessage();
+        }
+    }
+
+    @Tool("读取最新发布的帖子列表，limit为返回数量，建议1-20")
+    public String getLatestForumPosts(int limit) {
+        try {
+            int safeLimit = Math.max(1, Math.min(limit, 20));
+            log.info("AI调用工具：读取最新帖子列表，limit={}", safeLimit);
+            List<ForumPost> posts = forumPostMapper.selectList(
+                new LambdaQueryWrapper<ForumPost>()
+                    .orderByDesc(ForumPost::getCreatedAt)
+                    .last("LIMIT " + safeLimit)
+            );
+            if (posts.isEmpty()) {
+                return "暂无帖子";
+            }
+            StringBuilder result = new StringBuilder(String.format("最新%d条帖子：\n\n", posts.size()));
+            for (ForumPost post : posts) {
+                Profile user = profileMapper.selectById(post.getUserId());
+                String nickname = user != null && user.getNickname() != null ? user.getNickname() : "未知";
+                String preview = post.getContent() != null && post.getContent().length() > 80
+                    ? post.getContent().substring(0, 80) + "..." : post.getContent();
+                result.append(String.format("- ID: %s\n  作者：%s\n  状态：%s\n  点赞：%d  评论：%d\n  时间：%s\n  内容：%s\n\n",
+                    post.getId(),
+                    nickname,
+                    post.getStatus(),
+                    post.getLikeCount() != null ? post.getLikeCount() : 0,
+                    post.getCommentCount() != null ? post.getCommentCount() : 0,
+                    post.getCreatedAt() != null ? post.getCreatedAt().format(formatter) : "未知",
+                    preview));
+            }
+            return result.toString();
+        } catch (Exception e) {
+            log.error("读取最新帖子列表失败", e);
+            return "读取最新帖子列表失败：" + e.getMessage();
+        }
+    }
+
     @Tool("查询指定时间段内新增的帖子和帖子评论数量")
     public String getForumActivityStatistics(int days) {
         try {
