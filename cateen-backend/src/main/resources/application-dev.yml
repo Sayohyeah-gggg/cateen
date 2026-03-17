@@ -38,6 +38,17 @@ upload:
   path: D:/xawl_total/xawl_cateen/uploads
   base-url: http://192.168.56.1:8080
 
+# MinIO 配置（用于图片上传；桶：small=小程序，admin=管理端）
+minio:
+  enabled: true
+  endpoint: http://192.168.10.4:9000
+  public-url: http://192.168.10.4:9000
+  access-key: minioadmin
+  secret-key: minioadmin
+  bucket:
+    small: small
+    admin: admin
+
 # 日志配置（开发环境打印详细日志）
 logging:
   level:

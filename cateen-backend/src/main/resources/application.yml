@@ -109,6 +109,17 @@ upload:
   # 文件访问基础URL
   base-url: http://localhost:8080
 
+# MinIO 配置（用于图片上传；桶：small=小程序，admin=管理端）
+minio:
+  enabled: true
+  endpoint: http://192.168.10.4:9000
+  public-url: http://192.168.10.4:9000
+  access-key: minioadmin
+  secret-key: minioadmin
+  bucket:
+    small: small
+    admin: admin
+
 # AI配置 - 使用阿里云通义千问
 langchain4j:
   open-ai:
