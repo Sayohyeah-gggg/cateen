@@ -3,6 +3,10 @@
 # ============================================
 server:
   port: 8080
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 spring:
   # 数据源配置（根据你本地MySQL配置修改）
   datasource:
