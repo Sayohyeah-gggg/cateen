@@ -18,6 +18,10 @@ spring:
   # 激活环境配置（本地测试使用dev）
   profiles:
     active: dev
+  
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
   # Jackson配置
   jackson:
@@ -101,9 +105,9 @@ wechat:
 # 文件上传配置
 upload:
   # 本地存储路径
-  path: ./uploads
+  path: D:/cateen_images
   # 文件访问基础URL
-  base-url: ${UPLOAD_BASE_URL:http://localhost:8080}
+  base-url: http://localhost:8080
 
 # AI配置 - 使用阿里云通义千问
 langchain4j:
