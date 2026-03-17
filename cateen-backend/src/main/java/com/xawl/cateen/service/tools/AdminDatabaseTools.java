@@ -10,7 +10,9 @@ import com.xawl.cateen.mapper.FoodMapper;
 import com.xawl.cateen.mapper.ForumCommentMapper;
 import com.xawl.cateen.mapper.ForumPostMapper;
 import com.xawl.cateen.mapper.ProfileMapper;
+import com.xawl.cateen.service.CommentService;
 import com.xawl.cateen.service.ExcelGeneratorService;
+import com.xawl.cateen.service.ForumService;
 import com.xawl.cateen.service.PptGeneratorService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import dev.langchain4j.agent.tool.Tool;
@@ -36,6 +38,8 @@ public class AdminDatabaseTools {
     private final CommentMapper commentMapper;
     private final ForumPostMapper forumPostMapper;
     private final ForumCommentMapper forumCommentMapper;
+    private final CommentService commentService;
+    private final ForumService forumService;
     private final ExcelGeneratorService excelGeneratorService;
     private final PptGeneratorService pptGeneratorService;
 
@@ -94,8 +98,8 @@ public class AdminDatabaseTools {
             result.append(String.format("评论统计：\n总评论数：%d\n\n", totalComments));
             result.append("最近的5条评论：\n");
             for (Comment comment : recentComments) {
-                result.append(String.format("- 用户ID: %s\n  美食ID: %s\n  评分：%.1f\n  内容：%s\n  时间：%s\n\n",
-                    comment.getUserId(), comment.getFoodId(),
+                result.append(String.format("- 评论ID: %s\n  用户ID: %s\n  美食ID: %s\n  评分：%.1f\n  内容：%s\n  时间：%s\n\n",
+                    comment.getId(), comment.getUserId(), comment.getFoodId(),
                     comment.getRating() != null ? comment.getRating().doubleValue() : 0.0,
                     comment.getContent() != null && comment.getContent().length() > 50
                         ? comment.getContent().substring(0, 50) + "..." : comment.getContent(),
@@ -121,7 +125,8 @@ public class AdminDatabaseTools {
             }
             StringBuilder result = new StringBuilder(String.format("美食ID %s 的评论（共%d条）：\n\n", foodId, comments.size()));
             for (Comment comment : comments) {
-                result.append(String.format("- 评分：%.1f\n  内容：%s\n  时间：%s\n\n",
+                result.append(String.format("- 评论ID: %s\n  评分：%.1f\n  内容：%s\n  时间：%s\n\n",
+                    comment.getId(),
                     comment.getRating() != null ? comment.getRating().doubleValue() : 0.0,
                     comment.getContent(),
                     comment.getCreatedAt() != null ? comment.getCreatedAt().format(formatter) : "未知"));
@@ -287,8 +292,8 @@ public class AdminDatabaseTools {
             }
             StringBuilder result = new StringBuilder(String.format("帖子 %s 的评论（共%d条）：\n\n", postId, comments.size()));
             for (ForumComment comment : comments) {
-                result.append(String.format("- 用户ID: %s\n  内容：%s\n  点赞：%d\n  时间：%s\n",
-                    comment.getUserId(), comment.getContent(),
+                result.append(String.format("- 评论ID: %s\n  用户ID: %s\n  内容：%s\n  点赞：%d\n  时间：%s\n",
+                    comment.getId(), comment.getUserId(), comment.getContent(),
                     comment.getLikeCount() != null ? comment.getLikeCount() : 0,
                     comment.getCreatedAt() != null ? comment.getCreatedAt().format(formatter) : "未知"));
             }
@@ -296,6 +301,30 @@ public class AdminDatabaseTools {
         } catch (Exception e) {
             log.error("查询帖子评论失败", e);
             return "查询帖子评论失败：" + e.getMessage();
+        }
+    }
+
+    @Tool("删除美食评论，参数为评论ID")
+    public String deleteFoodComment(String commentId) {
+        try {
+            log.info("AI调用工具：删除美食评论，评论ID={}", commentId);
+            commentService.deleteComment(commentId);
+            return "已删除美食评论：" + commentId;
+        } catch (Exception e) {
+            log.error("删除美食评论失败", e);
+            return "删除美食评论失败：" + e.getMessage();
+        }
+    }
+
+    @Tool("删除帖子评论，参数为评论ID")
+    public String deleteForumComment(String commentId) {
+        try {
+            log.info("AI调用工具：删除帖子评论，评论ID={}", commentId);
+            forumService.adminDeleteComment(commentId);
+            return "已删除帖子评论：" + commentId;
+        } catch (Exception e) {
+            log.error("删除帖子评论失败", e);
+            return "删除帖子评论失败：" + e.getMessage();
         }
     }
 
@@ -361,6 +390,67 @@ public class AdminDatabaseTools {
         } catch (Exception e) {
             log.error("读取最新帖子列表失败", e);
             return "读取最新帖子列表失败：" + e.getMessage();
+        }
+    }
+
+    @Tool("获取最新评论（包含美食评论和帖子评论），limit为返回数量，建议1-20")
+    public String getRecentAllComments(int limit) {
+        try {
+            int safeLimit = Math.max(1, Math.min(limit, 20));
+            log.info("AI调用工具：获取最新评论（美食+帖子），limit={}", safeLimit);
+
+            List<Comment> foodComments = commentMapper.selectList(
+                new LambdaQueryWrapper<Comment>()
+                    .orderByDesc(Comment::getCreatedAt)
+                    .last("LIMIT " + safeLimit)
+            );
+
+            List<ForumComment> forumComments = forumCommentMapper.selectList(
+                new LambdaQueryWrapper<ForumComment>()
+                    .orderByDesc(ForumComment::getCreatedAt)
+                    .last("LIMIT " + safeLimit)
+            );
+
+            StringBuilder result = new StringBuilder();
+            result.append(String.format("最新评论汇总（每类最多%d条）：\n\n", safeLimit));
+
+            result.append("美食评论：\n");
+            if (foodComments.isEmpty()) {
+                result.append("暂无美食评论\n\n");
+            } else {
+                for (Comment comment : foodComments) {
+                    String content = comment.getContent() != null && comment.getContent().length() > 80
+                        ? comment.getContent().substring(0, 80) + "..." : comment.getContent();
+                    result.append(String.format("- 类型: food\n  评论ID: %s\n  用户ID: %s\n  美食ID: %s\n  评分: %.1f\n  内容: %s\n  时间: %s\n\n",
+                        comment.getId(),
+                        comment.getUserId(),
+                        comment.getFoodId(),
+                        comment.getRating() != null ? comment.getRating().doubleValue() : 0.0,
+                        content,
+                        comment.getCreatedAt() != null ? comment.getCreatedAt().format(formatter) : "未知"));
+                }
+            }
+
+            result.append("帖子评论：\n");
+            if (forumComments.isEmpty()) {
+                result.append("暂无帖子评论\n");
+            } else {
+                for (ForumComment comment : forumComments) {
+                    String content = comment.getContent() != null && comment.getContent().length() > 80
+                        ? comment.getContent().substring(0, 80) + "..." : comment.getContent();
+                    result.append(String.format("- 类型: forum\n  评论ID: %s\n  用户ID: %s\n  帖子ID: %s\n  内容: %s\n  时间: %s\n\n",
+                        comment.getId(),
+                        comment.getUserId(),
+                        comment.getPostId(),
+                        content,
+                        comment.getCreatedAt() != null ? comment.getCreatedAt().format(formatter) : "未知"));
+                }
+            }
+
+            return result.toString();
+        } catch (Exception e) {
+            log.error("获取最新评论汇总失败", e);
+            return "获取最新评论汇总失败：" + e.getMessage();
         }
     }
 

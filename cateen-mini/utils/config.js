@@ -7,9 +7,9 @@ var ENVIRONMENTS = {
 };
 
 function getMode() {
-  var mode = wx.getStorageSync('API_ENV') || 'lan';
+  var mode = wx.getStorageSync('API_ENV') || 'local';
   if (!ENVIRONMENTS[mode]) {
-    mode = 'lan';
+    mode = 'local';
   }
   return mode;
 }

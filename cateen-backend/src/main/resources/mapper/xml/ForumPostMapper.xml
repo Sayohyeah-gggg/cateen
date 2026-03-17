@@ -66,4 +66,10 @@
         ORDER BY p.created_at DESC
     </select>
 
+    <select id="sumCommentCount" resultType="java.lang.Long">
+        SELECT COALESCE(SUM(p.comment_count), 0)
+        FROM forum_posts p
+        WHERE p.deleted = 0
+    </select>
+
 </mapper>

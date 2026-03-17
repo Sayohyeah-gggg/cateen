@@ -20,19 +20,21 @@ function formatTime(dateStr) {
   return mm + '-' + dd + ' ' + hh + ':' + mi;
 }
 
+function normalizeComment(item) {
+  return {
+    id: item.id,
+    content: item.content,
+    displayTime: formatTime(item.created_at || item.createdAt),
+    user: {
+      nickName: item.user_nickname || item.userNickname || '食客',
+      avatarUrl: item.user_avatar || item.userAvatar || DEFAULT_AVATAR
+    }
+  };
+}
+
 /** 将后端返回的帖子数据规范化为前端格式（兼容驼峰和下划线字段） */
 function normalizePost(item) {
-  var comments = (item.comments || []).map(function(c) {
-    return {
-      id: c.id,
-      content: c.content,
-      displayTime: formatTime(c.created_at || c.createdAt),
-      user: {
-        nickName: c.user_nickname || c.userNickname || '食客',
-        avatarUrl: c.user_avatar || c.userAvatar || DEFAULT_AVATAR
-      }
-    };
-  });
+  var comments = Array.isArray(item.comments) ? item.comments.map(normalizeComment) : [];
 
   // 图片列表：兼容 image_list（下划线）和 imageList（驼峰）
   var imageList = item.image_list || item.imageList;
@@ -142,12 +144,43 @@ Page({
           noMore: posts.length >= total,
           loading: false
         });
+
+        self.loadCommentsForPosts(posts);
       })
       .catch(function(err) {
         console.error('加载帖子失败:', err);
         self.setData({ loading: false });
         wx.showToast({ title: '加载失败', icon: 'none' });
       });
+  },
+
+  loadCommentsForPosts: function(postList) {
+    var self = this;
+    if (!postList || !postList.length) {
+      return Promise.resolve();
+    }
+
+    var tasks = postList.map(function(post, index) {
+      return api.forum.getComments(post.id, { page: 1, pageSize: 3 })
+        .then(function(result) {
+          var list = (result && result.list) ? result.list : [];
+          var comments = list.map(normalizeComment);
+          postList[index] = Object.assign({}, post, {
+            comments: comments,
+            commentsLoaded: true
+          });
+        })
+        .catch(function() {
+          postList[index] = Object.assign({}, post, {
+            comments: post.comments || [],
+            commentsLoaded: true
+          });
+        });
+    });
+
+    return Promise.all(tasks).then(function() {
+      self.setData({ posts: postList });
+    });
   },
 
   /** 跳转到发布页 */

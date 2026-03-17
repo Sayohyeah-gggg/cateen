@@ -3,6 +3,8 @@ package com.xawl.cateen.controller.admin;
 import com.xawl.cateen.common.Result;
 import com.xawl.cateen.mapper.CommentMapper;
 import com.xawl.cateen.mapper.FoodMapper;
+import com.xawl.cateen.mapper.ForumCommentMapper;
+import com.xawl.cateen.mapper.ForumPostMapper;
 import com.xawl.cateen.mapper.ProfileMapper;
 import com.xawl.cateen.mapper.RankingMapper;
 import io.swagger.annotations.Api;
@@ -29,6 +31,8 @@ public class AdminStatsController {
     private final FoodMapper foodMapper;
     private final ProfileMapper profileMapper;
     private final CommentMapper commentMapper;
+    private final ForumCommentMapper forumCommentMapper;
+    private final ForumPostMapper forumPostMapper;
     private final RankingMapper rankingMapper;
 
     /**
@@ -48,9 +52,16 @@ public class AdminStatsController {
             Long totalUsers = profileMapper.selectCount(null);
             stats.put("total_users", totalUsers);
             
-            // 统计评论总数
-            Long totalComments = commentMapper.selectCount(null);
-            stats.put("total_comments", totalComments);
+            // 统计美食评论总数
+            Long totalFoodComments = commentMapper.selectCount(null);
+            stats.put("total_food_comments", totalFoodComments);
+
+            // 统计帖子评论总数（以帖子comment_count求和为准，避免统计异常）
+            Long totalForumComments = forumPostMapper.sumCommentCount();
+            stats.put("total_forum_comments", totalForumComments != null ? totalForumComments : 0L);
+
+            // 评论总数（兼容旧字段）
+            stats.put("total_comments", totalFoodComments + (totalForumComments != null ? totalForumComments : 0L));
             
             // 统计榜单总数
             Long totalRankings = rankingMapper.selectCount(null);

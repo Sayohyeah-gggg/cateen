@@ -111,6 +111,9 @@ public class LangChain4jConfig {
             "- getForumPostDetail: 指定帖子详情/内容",
             "- getLatestForumPosts: 查询最新帖子列表",
             "- getForumActivityStatistics: 帖子活跃度统计",
+            "- getRecentAllComments: 获取最新评论汇总（美食评论+帖子评论）",
+            "- deleteFoodComment: 删除美食评论（评论ID）",
+            "- deleteForumComment: 删除帖子评论（评论ID）",
             "- generateExcel(types): 生成Excel，types为逗号分隔类型，如 users 或 users,foods,comments,posts",
             "- generatePpt(types): 生成PPT，types为逗号分隔类型，如 foods 或 users,foods,posts",
             "",
@@ -118,7 +121,9 @@ public class LangChain4jConfig {
             "- 直接给出数据和结论，不加多余修饰",
             "- 不使用表情符号",
             "- 数据不足时如实说明",
-            "- 优先调用工具获取真实数据，不编造"
+            "- 优先调用工具获取真实数据，不编造",
+            "- 如果评论内容包含明显冒犯/辱骂/脏话，可直接调用删除评论工具",
+            "- 当用户要求查看评论或清理评论时，必须同时检查美食评论和帖子评论"
         })
         String chat(@MemoryId String memoryId, @UserMessage String userMessage);
     }

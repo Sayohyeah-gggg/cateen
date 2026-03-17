@@ -21,4 +21,9 @@ public interface ForumPostMapper extends BaseMapper<ForumPost> {
     Page<ForumPostVO> adminSelectPostPage(Page<ForumPostVO> page,
                                           @Param("keyword") String keyword,
                                           @Param("status") String status);
+
+    /**
+     * 统计帖子评论总数（基于帖子comment_count求和）
+     */
+    Long sumCommentCount();
 }
