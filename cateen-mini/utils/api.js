@@ -137,6 +137,9 @@ var api = {
     updateProfile: function(data) {
       return request('/user/profile', { method: 'PUT', data: data });
     },
+    getTasteProfile: function() {
+      return request('/user/taste-profile');
+    },
     getCollections: function(params) {
       return request('/user/collections', { data: mapPageParams(params) });
     },

@@ -7,15 +7,21 @@ import com.xawl.cateen.entity.Comment;
 import com.xawl.cateen.entity.Food;
 import com.xawl.cateen.entity.Profile;
 import com.xawl.cateen.mapper.CommentMapper;
+import com.xawl.cateen.mapper.CommentPreferenceMapper;
 import com.xawl.cateen.mapper.FoodMapper;
+import com.xawl.cateen.mapper.FoodTagRelationMapper;
 import com.xawl.cateen.mapper.ProfileMapper;
 import com.xawl.cateen.vo.mini.MiniCommentVO;
 import com.xawl.cateen.vo.mini.MiniUserProfileVO;
+import com.xawl.cateen.vo.mini.MiniTasteProfileVO;
+import com.xawl.cateen.vo.mini.MiniTastePreferenceVO;
+import com.xawl.cateen.vo.mini.MiniTasteTagVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,7 +39,9 @@ public class MiniUserService {
     
     private final ProfileMapper profileMapper;
     private final CommentMapper commentMapper;
+    private final CommentPreferenceMapper commentPreferenceMapper;
     private final FoodMapper foodMapper;
+    private final FoodTagRelationMapper foodTagRelationMapper;
     private final CollectionService collectionService;
     private final CommentLikeService commentLikeService;
     
@@ -145,5 +153,68 @@ public class MiniUserService {
         result.setRecords(commentVOs);
         
         return result;
+    }
+
+    /**
+     * 获取个性化口味画像
+     */
+    public MiniTasteProfileVO getTasteProfile(String userId) {
+        if (userId == null) {
+            return MiniTasteProfileVO.builder()
+                    .commentCount(0)
+                    .avgRating(0.0)
+                    .preferences(java.util.Collections.emptyList())
+                    .tags(java.util.Collections.emptyList())
+                    .build();
+        }
+
+        LambdaQueryWrapper<Comment> commentWrapper = new LambdaQueryWrapper<>();
+        commentWrapper.eq(Comment::getUserId, userId);
+        List<Comment> comments = commentMapper.selectList(commentWrapper);
+        int commentCount = comments.size();
+
+        double avgRating = comments.stream()
+                .map(Comment::getRating)
+                .filter(r -> r != null && r > 0)
+                .mapToInt(Integer::intValue)
+                .average()
+                .orElse(0.0);
+
+        List<Map<String, Object>> prefStats = commentPreferenceMapper.statisticsPreferencesByUser(userId);
+        List<MiniTastePreferenceVO> preferences = new ArrayList<>();
+        if (prefStats != null) {
+            for (Map<String, Object> row : prefStats) {
+                MiniTastePreferenceVO vo = MiniTastePreferenceVO.builder()
+                        .type(row.get("preference_type") != null ? row.get("preference_type").toString() : null)
+                        .label(row.get("preference") != null ? row.get("preference").toString() : null)
+                        .count(row.get("count") != null ? Integer.parseInt(row.get("count").toString()) : 0)
+                        .avgScore(row.get("avg_score") != null ? Double.parseDouble(row.get("avg_score").toString()) : 0.0)
+                        .percentage(row.get("percentage") != null ? Double.parseDouble(row.get("percentage").toString()) : 0.0)
+                        .color(row.get("color") != null ? row.get("color").toString() : null)
+                        .build();
+                preferences.add(vo);
+            }
+        }
+
+        List<Map<String, Object>> tagStats = foodTagRelationMapper.statisticsTagsByUser(userId, 8);
+        List<MiniTasteTagVO> tags = new ArrayList<>();
+        if (tagStats != null) {
+            for (Map<String, Object> row : tagStats) {
+                MiniTasteTagVO vo = MiniTasteTagVO.builder()
+                        .id(row.get("tag_id") != null ? row.get("tag_id").toString() : null)
+                        .name(row.get("tag_name") != null ? row.get("tag_name").toString() : null)
+                        .color(row.get("tag_color") != null ? row.get("tag_color").toString() : null)
+                        .count(row.get("count") != null ? Integer.parseInt(row.get("count").toString()) : 0)
+                        .build();
+                tags.add(vo);
+            }
+        }
+
+        return MiniTasteProfileVO.builder()
+                .commentCount(commentCount)
+                .avgRating(Math.round(avgRating * 10.0) / 10.0)
+                .preferences(preferences)
+                .tags(tags)
+                .build();
     }
 }

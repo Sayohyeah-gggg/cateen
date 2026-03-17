@@ -55,8 +55,8 @@
             COUNT(*) AS count,
             ROUND(AVG(cp.score), 2) AS avg_score,
             CASE 
-                WHEN total.cnt > 0 
-                THEN ROUND(COUNT(*) * 100.0 / total.cnt, 2)
+                WHEN MAX(total.cnt) > 0 
+                THEN ROUND(COUNT(*) * 100.0 / MAX(total.cnt), 2)
                 ELSE 0
             END AS percentage
         FROM comment_preferences cp
@@ -86,8 +86,8 @@
             COUNT(*) AS count,
             ROUND(AVG(cp.score), 2) AS avg_score,
             CASE 
-                WHEN total.cnt > 0 
-                THEN ROUND(COUNT(*) * 100.0 / total.cnt, 2)
+                WHEN MAX(total.cnt) > 0 
+                THEN ROUND(COUNT(*) * 100.0 / MAX(total.cnt), 2)
                 ELSE 0
             END AS percentage
         FROM comment_preferences cp
@@ -101,6 +101,44 @@
             WHERE f2.category_id = #{categoryId}
         ) AS total
         WHERE f.category_id = #{categoryId}
+        GROUP BY cp.preference_type
+        ORDER BY count DESC
+    </select>
+
+    <!-- 根据用户ID统计关注点 -->
+    <select id="statisticsPreferencesByUser" resultType="java.util.HashMap">
+        SELECT
+            cp.preference_type,
+            CASE cp.preference_type
+                WHEN 'taste' THEN '口味'
+                WHEN 'price' THEN '价格'
+                WHEN 'environment' THEN '环境'
+                WHEN 'service' THEN '服务'
+                ELSE '其他'
+            END AS preference,
+            COUNT(*) AS count,
+            ROUND(AVG(cp.score), 2) AS avg_score,
+            CASE
+                WHEN MAX(total.cnt) > 0
+                THEN ROUND(COUNT(*) * 100.0 / MAX(total.cnt), 2)
+                ELSE 0
+            END AS percentage,
+            CASE cp.preference_type
+                WHEN 'taste' THEN '#3b82f6'
+                WHEN 'price' THEN '#10b981'
+                WHEN 'environment' THEN '#f59e0b'
+                WHEN 'service' THEN '#8b5cf6'
+                ELSE '#6b7280'
+            END AS color
+        FROM comment_preferences cp
+        INNER JOIN comments c ON cp.comment_id = c.id
+        CROSS JOIN (
+            SELECT COUNT(*) AS cnt
+            FROM comment_preferences cp2
+            INNER JOIN comments c2 ON cp2.comment_id = c2.id
+            WHERE c2.user_id = #{userId}
+        ) AS total
+        WHERE c.user_id = #{userId}
         GROUP BY cp.preference_type
         ORDER BY count DESC
     </select>

@@ -25,5 +25,23 @@
         WHERE food_id = #{foodId}
     </delete>
 
+    <!-- 根据用户ID统计标签偏好 -->
+    <select id="statisticsTagsByUser" resultType="java.util.HashMap">
+        SELECT
+            t.id AS tag_id,
+            t.name AS tag_name,
+            t.color AS tag_color,
+            COUNT(*) AS count
+        FROM comments c
+        INNER JOIN food_tag_relations r ON c.food_id = r.food_id
+        INNER JOIN food_tags t ON r.tag_id = t.id
+        WHERE c.user_id = #{userId}
+        GROUP BY t.id, t.name, t.color
+        ORDER BY count DESC
+        <if test="limit != null">
+            LIMIT #{limit}
+        </if>
+    </select>
+
 </mapper>
 

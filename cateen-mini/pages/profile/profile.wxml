@@ -34,6 +34,42 @@
         <view class="menu-item" bind:tap="goToComments"><text class="menu-title">我的评论</text><text class="menu-extra">{{userInfo.commentCount || 0}}</text><text class="menu-arrow">></text></view>
       </view>
 
+      <view class="taste-card glass-card" wx:if="{{tasteProfile}}">
+        <view class="section-row">
+          <text class="section-title">口味画像</text>
+          <text class="section-sub">{{tasteProfile.summaryText || '基于历史评分'}}</text>
+        </view>
+
+        <view class="taste-summary">
+          <view class="summary-item">
+            <text class="summary-num">{{tasteProfile.avgRating || 0}}</text>
+            <text class="summary-label">平均评分</text>
+          </view>
+          <view class="summary-item">
+            <text class="summary-num">{{tasteProfile.tagCount || 0}}</text>
+            <text class="summary-label">偏好标签</text>
+          </view>
+        </view>
+
+        <view class="taste-block" wx:if="{{tasteProfile.preferences && tasteProfile.preferences.length}}">
+          <text class="block-title">偏好维度</text>
+          <view class="chip-row">
+            <view class="chip" wx:for="{{tasteProfile.preferences}}" wx:for-item="pref" wx:key="type">
+              <text class="chip-text">{{pref.label || pref.preference}} {{pref.avgScore}}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="taste-block" wx:if="{{tasteProfile.tags && tasteProfile.tags.length}}">
+          <text class="block-title">偏好标签</text>
+          <view class="chip-row">
+            <view class="chip chip-tag" wx:for="{{tasteProfile.tags}}" wx:for-item="tag" wx:key="id" style="background: {{tag.color || '#f2f2f2'}};">
+              <text class="chip-text">{{tag.name}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
       <view class="menu-card glass-card">
         <view class="menu-item" bind:tap="showAbout"><text class="menu-title">关于</text><text class="menu-extra">v1.0.0</text><text class="menu-arrow">></text></view>
         <view class="menu-item" bind:tap="showAgreement"><text class="menu-title">用户协议</text><text class="menu-arrow">></text></view>

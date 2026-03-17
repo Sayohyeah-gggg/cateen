@@ -6,6 +6,7 @@ import com.xawl.cateen.dto.mini.UserProfileDTO;
 import com.xawl.cateen.service.mini.MiniUserService;
 import com.xawl.cateen.util.SecurityUtils;
 import com.xawl.cateen.vo.mini.MiniCommentVO;
+import com.xawl.cateen.vo.mini.MiniTasteProfileVO;
 import com.xawl.cateen.vo.mini.MiniUserProfileVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -78,5 +79,16 @@ public class MiniUserController {
         Page<MiniCommentVO> comments = miniUserService.getComments(userId, page, limit);
         
         return Result.success(comments);
+    }
+
+    /**
+     * 获取个性化口味画像
+     */
+    @ApiOperation(value = "获取个性化口味画像", notes = "根据用户历史评分与偏好标签生成画像")
+    @GetMapping("/taste-profile")
+    public Result<MiniTasteProfileVO> getTasteProfile() {
+        String userId = SecurityUtils.getCurrentUserId();
+        MiniTasteProfileVO profile = miniUserService.getTasteProfile(userId);
+        return Result.success(profile);
     }
 }

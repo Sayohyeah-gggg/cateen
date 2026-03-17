@@ -30,5 +30,15 @@ public interface FoodTagRelationMapper extends BaseMapper<FoodTagRelation> {
      */
     int deleteByFoodId(@Param("foodId") String foodId);
 
+    /**
+     * 根据用户ID统计偏好标签
+     *
+     * @param userId 用户ID
+     * @param limit 返回数量
+     * @return 标签统计列表
+     */
+    List<java.util.Map<String, Object>> statisticsTagsByUser(@Param("userId") String userId,
+                                                             @Param("limit") Integer limit);
+
 }
 

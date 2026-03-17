@@ -41,6 +41,14 @@ public interface CommentPreferenceMapper extends BaseMapper<CommentPreference> {
     List<Map<String, Object>> statisticsPreferencesByCategory(@Param("categoryId") String categoryId);
 
     /**
+     * 根据用户ID统计关注点
+     *
+     * @param userId 用户ID
+     * @return 关注点统计列表
+     */
+    List<Map<String, Object>> statisticsPreferencesByUser(@Param("userId") String userId);
+
+    /**
      * 根据评论ID批量删除关注点
      *
      * @param commentId 评论ID

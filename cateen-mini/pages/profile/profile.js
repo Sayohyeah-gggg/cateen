@@ -2,6 +2,41 @@
 var auth = require('../../utils/auth');
 var api = require('../../utils/api');
 
+function normalizeTasteProfile(profile) {
+  if (!profile) return null;
+
+  var prefs = profile.preferences || [];
+  var tags = profile.tags || [];
+
+  var commentCount = profile.commentCount != null ? profile.commentCount : (profile.comment_count || 0);
+  var summaryText = commentCount > 0 ? ('基于' + commentCount + '条评论') : '基于历史评分';
+
+  return {
+    avgRating: profile.avgRating != null ? profile.avgRating : (profile.avg_rating || 0),
+    commentCount: commentCount,
+    summaryText: summaryText,
+    tagCount: tags.length,
+    preferences: prefs.map(function(pref) {
+      return {
+        type: pref.type || pref.preference_type,
+        label: pref.label || pref.preference,
+        count: pref.count || 0,
+        avgScore: pref.avgScore != null ? pref.avgScore : (pref.avg_score || 0),
+        percentage: pref.percentage != null ? pref.percentage : (pref.percentage || 0),
+        color: pref.color
+      };
+    }),
+    tags: tags.map(function(tag) {
+      return {
+        id: tag.id || tag.tag_id,
+        name: tag.name || tag.tag_name,
+        color: tag.color || tag.tag_color,
+        count: tag.count || 0
+      };
+    })
+  };
+}
+
 Page({
   data: {
     theme: 'light',
@@ -15,6 +50,8 @@ Page({
       collectCount: 0,
       commentCount: 0
     },
+
+    tasteProfile: null,
 
     showAboutModal: false
   },
@@ -76,14 +113,17 @@ Page({
 
     Promise.all([
       api.user.getCollections({ page: 1, pageSize: 1 }),
-      api.user.getComments({ page: 1, pageSize: 1 })
+      api.user.getComments({ page: 1, pageSize: 1 }),
+      api.user.getTasteProfile()
     ]).then(function(results) {
       var collections = results[0] || {};
       var comments = results[1] || {};
+      var tasteProfile = normalizeTasteProfile(results[2] || null);
 
       self.setData({
         'userInfo.collectCount': collections.total || 0,
-        'userInfo.commentCount': comments.total || 0
+        'userInfo.commentCount': comments.total || 0,
+        tasteProfile: tasteProfile
       });
     }).catch(function(error) {
       console.warn('load stats failed:', error);
