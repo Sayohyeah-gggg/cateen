@@ -23,6 +23,9 @@ public class ForumPost implements Serializable {
     /** 图片URL列表，JSON数组格式 */
     private String images;
 
+    /** 视频URL */
+    private String video;
+
     private Integer likeCount;
 
     private Integer commentCount;

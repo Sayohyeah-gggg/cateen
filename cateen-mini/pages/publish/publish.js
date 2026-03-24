@@ -9,8 +9,12 @@ Page({
     userInfo: null,
     draftText: '',
     selectedImages: [],
+    selectedVideo: null, // 选中的视频
     canPublish: false,
-    publishing: false
+    publishing: false,
+    mediaType: 'image', // 当前选择类型: image 或 video
+    showUploadProgress: false,
+    uploadProgress: 0
   },
 
   onLoad: function() {
@@ -34,11 +38,16 @@ Page({
   updatePublishState: function() {
     var content = (this.data.draftText || '').trim();
     var hasImage = this.data.selectedImages.length > 0;
-    this.setData({ canPublish: !!content || hasImage });
+    var hasVideo = !!this.data.selectedVideo;
+    this.setData({ canPublish: !!content || hasImage || hasVideo });
   },
 
   chooseImages: function() {
     var self = this;
+    if (this.data.selectedVideo) {
+      wx.showToast({ title: '图片和视频只能选择一个', icon: 'none' });
+      return;
+    }
     var left = 9 - this.data.selectedImages.length;
     if (left <= 0) {
       wx.showToast({ title: '最多选择9张图片', icon: 'none' });
@@ -50,9 +59,62 @@ Page({
       sourceType: ['album', 'camera'],
       success: function(res) {
         var files = (res.tempFiles || []).map(function(f) { return f.tempFilePath; });
-        self.setData({ selectedImages: self.data.selectedImages.concat(files) });
+        self.setData({ selectedImages: self.data.selectedImages.concat(files), mediaType: 'image' });
         self.updatePublishState();
       }
+    });
+  },
+
+  chooseVideo: function() {
+    var self = this;
+    if (this.data.selectedImages.length > 0) {
+      wx.showToast({ title: '图片和视频只能选择一个', icon: 'none' });
+      return;
+    }
+    if (this.data.selectedVideo) {
+      wx.showModal({
+        title: '提示',
+        content: '是否更换视频？',
+        success: function(res) {
+          if (res.confirm) {
+            self._selectVideo();
+          }
+        }
+      });
+      return;
+    }
+    this._selectVideo();
+  },
+
+  _selectVideo: function() {
+    var self = this;
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['video'],
+      sourceType: ['album', 'camera'],
+      maxDuration: 60, // 限制60秒
+      camera: 'back',
+      success: function(res) {
+        var videoFile = res.tempFiles && res.tempFiles[0];
+        if (videoFile) {
+          self.setData({ selectedVideo: videoFile.tempFilePath, mediaType: 'video' });
+          self.updatePublishState();
+        }
+      }
+    });
+  },
+
+  removeVideo: function() {
+    this.setData({ selectedVideo: null, mediaType: 'image' });
+    this.updatePublishState();
+  },
+
+  previewVideo: function() {
+    wx.previewMedia({
+      sources: [{
+        url: this.data.selectedVideo,
+        type: 'video'
+      }]
     });
   },
 
@@ -81,6 +143,29 @@ Page({
     });
   },
 
+  uploadVideo: function(localPath) {
+    var self = this;
+    if (!localPath) return Promise.resolve(null);
+
+    return new Promise(function(resolve, reject) {
+      self.setData({ showUploadProgress: true, uploadProgress: 0 });
+
+      api.upload.video(localPath, function(progress) {
+        self.setData({ uploadProgress: Math.min(progress, 99) });
+      }).then(function(r) {
+        self.setData({ uploadProgress: 100 });
+        setTimeout(function() {
+          self.setData({ showUploadProgress: false, uploadProgress: 0 });
+        }, 500);
+        var result = typeof r === 'string' ? r : (r.url || r.videoUrl || r);
+        resolve(result);
+      }).catch(function(err) {
+        self.setData({ showUploadProgress: false, uploadProgress: 0 });
+        reject(err);
+      });
+    });
+  },
+
   publishPost: function() {
     var self = this;
     if (!this.data.canPublish || this.data.publishing) return;
@@ -92,13 +177,30 @@ Page({
 
     var content = (this.data.draftText || '').trim();
     var localImages = this.data.selectedImages.slice();
+    var localVideo = this.data.selectedVideo;
 
     this.setData({ publishing: true });
     wx.showLoading({ title: '发布中...' });
 
-    this.uploadImages(localImages)
-      .then(function(imageUrls) {
-        return api.forum.createPost({ content: content, images: imageUrls });
+    // 根据媒体类型选择上传方式
+    var uploadPromise;
+    if (localVideo) {
+      uploadPromise = this.uploadVideo(localVideo).then(function(videoUrl) {
+        return { video: videoUrl };
+      });
+    } else {
+      uploadPromise = this.uploadImages(localImages).then(function(imageUrls) {
+        return { images: imageUrls };
+      });
+    }
+
+    uploadPromise
+      .then(function(mediaData) {
+        return api.forum.createPost({
+          content: content,
+          images: mediaData.images || [],
+          video: mediaData.video || ''
+        });
       })
       .then(function() {
         wx.hideLoading();

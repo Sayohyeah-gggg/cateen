@@ -36,11 +36,31 @@
         </view>
       </view>
 
+      <!-- 已选视频 -->
+      <view class="video-container" wx:if="{{selectedVideo}}">
+        <video class="preview-video" src="{{selectedVideo}}" bind:tap="previewVideo" />
+        <view class="remove-video-btn" bind:tap="removeVideo">×</view>
+      </view>
+
+      <!-- 上传进度条 -->
+      <view class="upload-progress-container" wx:if="{{showUploadProgress}}">
+        <view class="progress-label">视频上传中 {{uploadProgress}}%</view>
+        <view class="progress-bar-bg">
+          <view class="progress-bar-fill" style="width: {{uploadProgress}}%"></view>
+        </view>
+        <view class="progress-hint" wx:if="{{uploadProgress < 100}}">大视频上传中，请勿关闭页面</view>
+        <view class="progress-hint" wx:else>上传完成，正在处理...</view>
+      </view>
+
       <!-- 底部操作栏 -->
       <view class="action-bar">
-        <view class="pick-btn motion-press" bind:tap="chooseImages" wx:if="{{selectedImages.length === 0}}">
+        <view class="pick-btn motion-press" bind:tap="chooseImages" wx:if="{{selectedImages.length === 0 && !selectedVideo}}">
           <text class="pick-icon">🖼</text>
           <text class="pick-text">添加图片</text>
+        </view>
+        <view class="pick-btn motion-press" bind:tap="chooseVideo" wx:if="{{!selectedVideo && selectedImages.length === 0}}">
+          <text class="pick-icon">🎥</text>
+          <text class="pick-text">添加视频</text>
         </view>
         <view wx:else style="flex:1" />
 

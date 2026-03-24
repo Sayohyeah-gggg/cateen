@@ -29,6 +29,12 @@
 
             <text class="feed-content" wx:if="{{post.content}}">{{post.content}}</text>
 
+            <!-- 视频显示 -->
+            <view class="feed-video-container" wx:if="{{post.video}}">
+              <video class="feed-video" src="{{post.video}}" object-fit="contain" show-center-play-btn="{{true}}" show-play-btn="{{true}}" enable-play-gesture="{{true}}" />
+            </view>
+
+            <!-- 图片显示 -->
             <view class="feed-image-grid" wx:if="{{post.images.length > 0}}">
               <image class="feed-image" wx:for="{{post.images}}" wx:for-item="img" wx:key="*this" src="{{img}}" mode="aspectFill" bind:tap="previewPostImage" data-post-id="{{post.id}}" data-current="{{img}}" />
             </view>

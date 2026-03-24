@@ -44,6 +44,11 @@ public class MinioProperties {
          * Bucket for mini program uploads.
          */
         private String small = "small";
+
+        /**
+         * Bucket for video uploads.
+         */
+        private String video = "video";
     }
 }
 

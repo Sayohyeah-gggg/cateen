@@ -39,10 +39,14 @@ function normalizePost(item) {
   // 图片列表：兼容 image_list（下划线）和 imageList（驼峰）
   var imageList = item.image_list || item.imageList;
 
+  // 视频链接：兼容 video（下划线和驼峰相同）
+  var videoUrl = item.video || '';
+
   return {
     id: item.id,
     content: item.content || '',
     images: Array.isArray(imageList) ? imageList : [],
+    video: videoUrl,
     displayTime: formatTime(item.created_at || item.createdAt),
     author: {
       nickName: item.user_nickname || item.userNickname || '食客',

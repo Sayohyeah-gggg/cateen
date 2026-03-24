@@ -20,6 +20,8 @@ public class ForumPostVO {
     /** 原始JSON字符串，仅内部使用 */
     @JsonIgnore
     private String images;
+    /** 视频URL */
+    private String video;
     private Integer likeCount;
     private Integer commentCount;
     private String status;

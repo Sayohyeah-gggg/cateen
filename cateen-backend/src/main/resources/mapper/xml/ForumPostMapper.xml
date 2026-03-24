@@ -8,6 +8,7 @@
         <result column="user_id" property="userId"/>
         <result column="content" property="content"/>
         <result column="images" property="images"/>
+        <result column="video" property="video"/>
         <result column="like_count" property="likeCount"/>
         <result column="comment_count" property="commentCount"/>
         <result column="status" property="status"/>
@@ -22,6 +23,7 @@
             p.user_id,
             p.content,
             p.images,
+            p.video,
             p.like_count,
             p.comment_count,
             p.status,
@@ -47,6 +49,7 @@
             p.user_id,
             p.content,
             p.images,
+            p.video,
             p.like_count,
             p.comment_count,
             p.status,

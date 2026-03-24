@@ -7,8 +7,8 @@ spring:
   # 文件上传配置
   servlet:
     multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
+      max-file-size: 200MB
+      max-request-size: 200MB
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -35,16 +35,17 @@ spring:
         login-username: admin
         login-password: admin
 
-# MinIO 配置（用于图片上传；桶：small=小程序，admin=管理端）
+# MinIO 配置（用于图片上传；桶：small=小程序，admin=管理端，video=视频）
 minio:
   enabled: true
-  endpoint: http://192.168.10.4:9000
-  public-url: http://192.168.10.4:9000
+  endpoint: http://localhost:9000
+  public-url: http://localhost:9000
   access-key: minioadmin
   secret-key: minioadmin
   bucket:
     small: small
     admin: admin
+    video: video
 
 # 日志配置（开发环境打印详细日志）
 logging:

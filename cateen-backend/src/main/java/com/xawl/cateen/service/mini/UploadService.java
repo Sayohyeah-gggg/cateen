@@ -26,5 +26,10 @@ public class UploadService {
         String bucket = minioProperties.getBucket().getSmall();
         return imageUploadService.uploadImage(file, bucket, type);
     }
+
+    public UploadResultVO uploadVideo(MultipartFile file) {
+        String bucket = minioProperties.getBucket().getVideo();
+        return imageUploadService.uploadVideo(file, bucket, "forum");
+    }
 }
 

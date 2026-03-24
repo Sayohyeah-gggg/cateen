@@ -45,7 +45,7 @@ public class ForumController {
     /**
      * 发布帖子
      * POST /forum/posts
-     * body: { content, images: [] }
+     * body: { content, images: [], video: "" }
      */
     @ApiOperation("发布帖子")
     @PostMapping("/posts")
@@ -58,12 +58,18 @@ public class ForumController {
         String content = (String) body.get("content");
         @SuppressWarnings("unchecked")
         List<String> images = (List<String>) body.get("images");
+        String video = (String) body.get("video");
 
         if (content == null || content.trim().isEmpty()) {
             return Result.error("内容不能为空");
         }
 
-        ForumPost post = forumService.createPost(userId, content.trim(), images);
+        // 图片和视频只能选择一个
+        if (images != null && !images.isEmpty() && video != null && !video.isEmpty()) {
+            return Result.error("图片和视频只能选择一个");
+        }
+
+        ForumPost post = forumService.createPost(userId, content.trim(), images, video);
         return Result.success("发布成功", post);
     }
 

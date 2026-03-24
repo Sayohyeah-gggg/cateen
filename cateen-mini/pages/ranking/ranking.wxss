@@ -192,7 +192,19 @@
   width: 100%;
   height: 180rpx;
   border-radius: 14rpx;
-  transition: transform var(--motion-fast) var(--ease-out);
+}
+
+/* 视频显示 */
+.feed-video-container {
+  width: 100%;
+  border-radius: 14rpx;
+  overflow: hidden;
+  background: #000;
+}
+
+.feed-video {
+  width: 100%;
+  height: 400rpx;
 }
 
 .feed-image:hover {

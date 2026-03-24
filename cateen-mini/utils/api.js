@@ -230,6 +230,41 @@ var api = {
           }
         });
       });
+    },
+    video: function(filePath, onProgress) {
+      return new Promise(function(resolve, reject) {
+        var token = wx.getStorageSync('token');
+
+        var task = wx.uploadFile({
+          url: config.getBaseUrl() + '/upload/video',
+          filePath: filePath,
+          name: 'file',
+          header: {
+            Authorization: token ? 'Bearer ' + token : ''
+          },
+          success: function(res) {
+            try {
+              var data = JSON.parse(res.data);
+              if (data.code === 200) {
+                resolve(data.data);
+              } else {
+                reject(data);
+              }
+            } catch (error) {
+              reject(error);
+            }
+          },
+          fail: function(error) {
+            reject(error);
+          }
+        });
+
+        if (typeof onProgress === 'function') {
+          task.onProgressUpdate(function(res) {
+            onProgress(res.progress, res.totalBytesSent, res.totalBytesExpectedToSend);
+          });
+        }
+      });
     }
   },
 
