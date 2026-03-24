@@ -64,4 +64,32 @@ public class AdminForumController {
         forumService.adminDeletePost(id);
         return Result.success("删除成功", null);
     }
+
+    /**
+     * 获取帖子评论列表
+     */
+    @ApiOperation("获取帖子评论列表")
+    @GetMapping("/posts/{postId}/comments")
+    public Result<PageVO<com.xawl.cateen.vo.ForumCommentVO>> getPostComments(
+            @ApiParam("帖子ID") @PathVariable String postId,
+            @ApiParam("页码") @RequestParam(defaultValue = "1") int page,
+            @ApiParam("每页数量") @RequestParam(defaultValue = "100") int pageSize) {
+        log.info("获取帖子评论列表: postId={}, page={}", postId, page);
+        com.xawl.cateen.vo.PageVO<com.xawl.cateen.vo.ForumCommentVO> result = forumService.getCommentPage(postId, page, pageSize);
+        return Result.success(result);
+    }
+
+    /**
+     * 获取帖子点赞列表
+     */
+    @ApiOperation("获取帖子点赞列表")
+    @GetMapping("/posts/{postId}/likes")
+    public Result<com.xawl.cateen.vo.PageVO<com.xawl.cateen.vo.ForumLikeVO>> getPostLikes(
+            @ApiParam("帖子ID") @PathVariable String postId,
+            @ApiParam("页码") @RequestParam(defaultValue = "1") int page,
+            @ApiParam("每页数量") @RequestParam(defaultValue = "100") int pageSize) {
+        log.info("获取帖子点赞列表: postId={}, page={}", postId, page);
+        com.xawl.cateen.vo.PageVO<com.xawl.cateen.vo.ForumLikeVO> result = forumService.getLikePage(postId, page, pageSize);
+        return Result.success(result);
+    }
 }

@@ -14,6 +14,7 @@ import com.xawl.cateen.mapper.ForumLikeMapper;
 import com.xawl.cateen.mapper.ForumPostMapper;
 import com.xawl.cateen.service.storage.ImageUploadService;
 import com.xawl.cateen.vo.ForumCommentVO;
+import com.xawl.cateen.vo.ForumLikeVO;
 import com.xawl.cateen.vo.ForumPostVO;
 import com.xawl.cateen.vo.PageVO;
 import lombok.RequiredArgsConstructor;
@@ -277,6 +278,21 @@ public class ForumService {
         }
         commentMapper.deleteById(commentId);
         refreshPostCommentCount(comment.getPostId());
+    }
+
+    /**
+     * 获取帖子点赞列表
+     */
+    public PageVO<ForumLikeVO> getLikePage(String postId, int page, int limit) {
+        Page<ForumLikeVO> pageParam = new Page<>(page, limit);
+        Page<ForumLikeVO> result = likeMapper.selectLikePage(pageParam, postId);
+        return PageVO.<ForumLikeVO>builder()
+                .list(result.getRecords())
+                .pageNum(result.getCurrent())
+                .pageSize(result.getSize())
+                .total(result.getTotal())
+                .pages(result.getPages())
+                .build();
     }
 
     private List<String> parseImages(String imagesJson) {
