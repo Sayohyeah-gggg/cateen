@@ -2,6 +2,7 @@ package com.xawl.cateen.controller.mini;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xawl.cateen.common.Result;
+import com.xawl.cateen.common.ResultCode;
 import com.xawl.cateen.dto.mini.MiniCommentDTO;
 import com.xawl.cateen.service.mini.CommentService;
 import com.xawl.cateen.service.mini.MiniFoodService;
@@ -155,10 +156,14 @@ public class MiniFoodController {
             @Valid @RequestBody MiniCommentDTO commentDTO
     ) {
         log.info("发表评论，foodId: {}, rating: {}", id, commentDTO.getRating());
-        
+
         String userId = SecurityUtils.getCurrentUserId();
+        if (userId == null) {
+            return Result.error(ResultCode.UNAUTHORIZED, "请先登录后再发表评论");
+        }
+
         commentService.addComment(userId, id, commentDTO);
-        
+
         return Result.success("评论成功");
     }
 }

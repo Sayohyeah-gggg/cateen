@@ -87,17 +87,22 @@ public class CommentService {
      */
     @Transactional
     public void addComment(String userId, String foodId, MiniCommentDTO commentDTO) {
+        // 检查用户是否登录
+        if (userId == null) {
+            throw new RuntimeException("请先登录后再发表评论");
+        }
+
         Comment comment = Comment.builder()
                 .userId(userId)
                 .foodId(foodId)
                 .rating(commentDTO.getRating())
                 .content(commentDTO.getContent())
-                .images(commentDTO.getImages() != null ? 
+                .images(commentDTO.getImages() != null ?
                         String.join(",", commentDTO.getImages()) : null)
                 .status("approved") // 小程序评论默认审核通过
                 .createdAt(LocalDateTime.now())
                 .build();
-        
+
         commentMapper.insert(comment);
         log.info("发表评论成功，userId: {}, foodId: {}, commentId: {}", userId, foodId, comment.getId());
     }

@@ -6,9 +6,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xawl.cateen.entity.Comment;
 import com.xawl.cateen.entity.Food;
 import com.xawl.cateen.entity.FoodCategory;
+import com.xawl.cateen.entity.FoodTag;
+import com.xawl.cateen.entity.FoodTagRelation;
 import com.xawl.cateen.mapper.CommentMapper;
 import com.xawl.cateen.mapper.FoodCategoryMapper;
 import com.xawl.cateen.mapper.FoodMapper;
+import com.xawl.cateen.mapper.FoodTagMapper;
+import com.xawl.cateen.mapper.FoodTagRelationMapper;
 import com.xawl.cateen.service.SearchHistoryService;
 import com.xawl.cateen.vo.mini.MiniFoodVO;
 import com.xawl.cateen.vo.mini.MiniFoodDetailVO;
@@ -33,12 +37,14 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class MiniFoodService {
-    
+
     private final FoodMapper foodMapper;
     private final FoodCategoryMapper foodCategoryMapper;
     private final CommentMapper commentMapper;
     private final CollectionService collectionService;
     private final SearchHistoryService searchHistoryService;
+    private final FoodTagMapper foodTagMapper;
+    private final FoodTagRelationMapper foodTagRelationMapper;
     
     /**
      * 获取美食列表
@@ -95,11 +101,14 @@ public class MiniFoodService {
                 .map(food -> {
                     // 获取最热评论
                     String hotComment = getHotComment(food.getId());
-                    
+
                     // 实时计算评分
                     BigDecimal realRating = calculateRealRating(food.getId());
                     Integer realRatingCount = calculateRealRatingCount(food.getId());
-                    
+
+                    // 获取标签
+                    List<String> tags = getFoodTags(food.getId());
+
                     return MiniFoodVO.builder()
                             .id(food.getId())
                             .name(food.getName())
@@ -109,6 +118,7 @@ public class MiniFoodService {
                             .rating(realRating)
                             .ratingCount(realRatingCount)
                             .price(food.getPrice())
+                            .tags(tags)
                             .isCollected(collectedMap.getOrDefault(food.getId(), false))
                             .hotComment(hotComment)
                             .build();
@@ -149,7 +159,10 @@ public class MiniFoodService {
         // 实时计算评分
         BigDecimal realRating = calculateRealRating(foodId);
         Integer realRatingCount = calculateRealRatingCount(foodId);
-        
+
+        // 获取标签
+        List<String> tags = getFoodTags(foodId);
+
         return MiniFoodDetailVO.builder()
                 .id(food.getId())
                 .name(food.getName())
@@ -160,6 +173,7 @@ public class MiniFoodService {
                 .price(food.getPrice())
                 .rating(realRating)
                 .ratingCount(realRatingCount)
+                .tags(tags)
                 .isCollected(isCollected)
                 .collectionCount(collectionCount)
                 .commentCount(commentCount.intValue())
@@ -233,7 +247,36 @@ public class MiniFoodService {
         FoodCategory category = foodCategoryMapper.selectById(categoryId);
         return category != null ? category.getName() : "";
     }
-    
+
+    /**
+     * 获取美食标签
+     */
+    private List<String> getFoodTags(String foodId) {
+        if (StrUtil.isBlank(foodId)) {
+            return List.of();
+        }
+
+        // 查询该美食的标签关联
+        LambdaQueryWrapper<FoodTagRelation> relationWrapper = new LambdaQueryWrapper<>();
+        relationWrapper.eq(FoodTagRelation::getFoodId, foodId);
+        List<FoodTagRelation> relations = foodTagRelationMapper.selectList(relationWrapper);
+
+        if (relations.isEmpty()) {
+            return List.of();
+        }
+
+        // 批量获取标签名称
+        List<String> tagIds = relations.stream()
+                .map(FoodTagRelation::getTagId)
+                .collect(Collectors.toList());
+
+        List<FoodTag> tags = foodTagMapper.selectBatchIds(tagIds);
+
+        return tags.stream()
+                .map(FoodTag::getName)
+                .collect(Collectors.toList());
+    }
+
     /**
      * 获取最热评论
      */
@@ -242,11 +285,11 @@ public class MiniFoodService {
         wrapper.eq(Comment::getFoodId, foodId)
                 .orderByDesc(Comment::getRating)
                 .last("LIMIT 1");
-        
+
         Comment comment = commentMapper.selectOne(wrapper);
         return comment != null ? comment.getContent() : null;
     }
-    
+
     /**
      * 实时计算评分
      */
@@ -255,20 +298,20 @@ public class MiniFoodService {
         wrapper.eq(Comment::getFoodId, foodId)
                 .isNotNull(Comment::getRating)
                 .gt(Comment::getRating, 0);
-        
+
         List<Comment> comments = commentMapper.selectList(wrapper);
-        
+
         if (comments.isEmpty()) {
             return BigDecimal.ZERO;
         }
-        
+
         double totalRating = comments.stream()
                 .mapToDouble(Comment::getRating)
                 .sum();
-        
+
         return BigDecimal.valueOf(totalRating / comments.size()).setScale(1, RoundingMode.HALF_UP);
     }
-    
+
     /**
      * 实时计算评分人数
      */
@@ -277,7 +320,7 @@ public class MiniFoodService {
         wrapper.eq(Comment::getFoodId, foodId)
                 .isNotNull(Comment::getRating)
                 .gt(Comment::getRating, 0);
-        
+
         return commentMapper.selectCount(wrapper).intValue();
     }
 }
