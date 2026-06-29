@@ -155,15 +155,28 @@ public class MiniFoodController {
             @ApiParam(value = "美食ID", required = true) @PathVariable String id,
             @Valid @RequestBody MiniCommentDTO commentDTO
     ) {
-        log.info("发表评论，foodId: {}, rating: {}", id, commentDTO.getRating());
+        log.info("收到发表评论请求，foodId: {}, rating: {}, content: {}",
+                id, commentDTO.getRating(), commentDTO.getContent());
 
         String userId = SecurityUtils.getCurrentUserId();
-        if (userId == null) {
+
+        if (userId == null || userId.trim().isEmpty()) {
+            log.error("发表评论失败：用户未登录，userId为空");
             return Result.error(ResultCode.UNAUTHORIZED, "请先登录后再发表评论");
         }
 
-        commentService.addComment(userId, id, commentDTO);
+        log.info("用户已认证，准备插入评论，userId: {}, foodId: {}", userId, id);
 
-        return Result.success("评论成功");
+        try {
+            commentService.addComment(userId, id, commentDTO);
+            log.info("评论发表成功，userId: {}, foodId: {}", userId, id);
+            return Result.success("评论成功");
+        } catch (RuntimeException e) {
+            log.error("评论发表失败，userId: {}, foodId: {}, 错误信息: {}", userId, id, e.getMessage(), e);
+            return Result.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("评论发表出现未知错误，userId: {}, foodId: {}, 错误信息: {}", userId, id, e.getMessage(), e);
+            return Result.error("发表评论失败，请稍后重试");
+        }
     }
 }

@@ -13,8 +13,8 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/cateen?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
-    username: root
-    password: 666Shiyuhang
+    username: your-db-username
+    password: your-db-password
     druid:
       initial-size: 5
       min-idle: 5
@@ -32,16 +32,16 @@ spring:
       stat-view-servlet:
         enabled: true
         url-pattern: /druid/*
-        login-username: admin
-        login-password: admin
+        login-username: your-druid-user
+        login-password: your-druid-password
 
 # MinIO 配置（用于图片上传；桶：small=小程序，admin=管理端，video=视频）
 minio:
   enabled: true
   endpoint: http://localhost:9000
   public-url: http://localhost:9000
-  access-key: minioadmin
-  secret-key: minioadmin
+  access-key: your-minio-access-key
+  secret-key: your-minio-secret-key
   bucket:
     small: small
     admin: admin

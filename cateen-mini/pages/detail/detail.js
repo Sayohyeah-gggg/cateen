@@ -185,17 +185,30 @@ Page({
       return;
     }
 
+    var app = getApp();
+    if (!app.globalData.isLoggedIn) {
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      return;
+    }
+
     wx.showLoading({ title: '提交中...' });
 
-    api.foods.addComment(this.data.foodId, { rating: rating, content: content }).then(function() {
+    api.foods.addComment(this.data.foodId, { rating: rating, content: content }).then(function(result) {
       wx.hideLoading();
+      console.log('评论提交成功:', result);
+
       self.setData({ userRating: 0, commentText: '' });
+
+      // 刷新评论列表和详情数据，确保从后端获取最新数据
       self.loadComments(1);
+      self.loadFoodDetail();
+
       wx.showToast({ title: '评论已提交', icon: 'success' });
     }).catch(function(error) {
       wx.hideLoading();
-      console.error('submit failed:', error);
-      wx.showToast({ title: '提交失败', icon: 'none' });
+      console.error('评论提交失败:', error);
+      var errorMsg = error && error.message ? error.message : '提交失败';
+      wx.showToast({ title: errorMsg, icon: 'none', duration: 2000 });
     });
   },
 

@@ -48,25 +48,25 @@ function normalizePage(data) {
 function request(path, options) {
   options = options || {};
 
+  var method = options.method || 'GET';
+  var data = options.data || {};
+  var token = wx.getStorageSync('token');
+
+  var headers = Object.assign({}, options.header || {}, {
+    Authorization: token ? 'Bearer ' + token : ''
+  });
+
+  var url = config.getBaseUrl() + path;
+  var body = data;
+
+  if (method === 'GET') {
+    url = buildQuery(url, data);
+    body = {};
+  } else {
+    headers['Content-Type'] = 'application/json';
+  }
+
   return new Promise(function(resolve, reject) {
-    var method = options.method || 'GET';
-    var data = options.data || {};
-    var token = wx.getStorageSync('token');
-
-    var headers = Object.assign({}, options.header || {}, {
-      Authorization: token ? 'Bearer ' + token : ''
-    });
-
-    var url = config.getBaseUrl() + path;
-    var body = data;
-
-    if (method === 'GET') {
-      url = buildQuery(url, data);
-      body = {};
-    } else {
-      headers['Content-Type'] = 'application/json';
-    }
-
     wx.request({
       url: url,
       method: method,
@@ -74,8 +74,98 @@ function request(path, options) {
       header: headers,
       success: function(res) {
         if (res.statusCode === 401) {
-          wx.removeStorageSync('token');
-          reject({ code: 401, message: 'Unauthorized', statusCode: 401 });
+          if (!api.isRefreshing && token) {
+            api.isRefreshing = true;
+
+            api.auth.refresh().then(function(refreshRes) {
+              var newToken = refreshRes.token;
+              wx.setStorageSync('token', newToken);
+              api.isRefreshing = false;
+              api.onRefreshed(newToken);
+
+              var app = getApp();
+              if (app && app.globalData) {
+                app.globalData.token = newToken;
+              }
+
+              var retryHeaders = Object.assign({}, options.header || {}, {
+                Authorization: 'Bearer ' + newToken
+              });
+
+              wx.request({
+                url: url,
+                method: method,
+                data: body,
+                header: retryHeaders,
+                success: function(retryRes) {
+                  if (retryRes.statusCode === 401) {
+                    handleTokenExpired();
+                    reject({ code: 401, message: 'Token已过期', statusCode: 401 });
+                    return;
+                  }
+
+                  if (retryRes.statusCode !== 200) {
+                    reject({ code: retryRes.statusCode, message: 'Network error', raw: retryRes });
+                    return;
+                  }
+
+                  var payload = retryRes.data || {};
+                  if (payload.code !== undefined && payload.code !== 200) {
+                    reject(payload);
+                    return;
+                  }
+
+                  resolve(normalizePage(payload.data));
+                },
+                fail: function(error) {
+                  reject(error);
+                }
+              });
+            }).catch(function() {
+              api.isRefreshing = false;
+              handleTokenExpired();
+              reject({ code: 401, message: 'Token刷新失败', statusCode: 401 });
+            });
+          } else if (api.isRefreshing) {
+            api.addRefreshSubscriber(function(newToken) {
+              var retryHeaders = Object.assign({}, options.header || {}, {
+                Authorization: 'Bearer ' + newToken
+              });
+
+              wx.request({
+                url: url,
+                method: method,
+                data: body,
+                header: retryHeaders,
+                success: function(retryRes) {
+                  if (retryRes.statusCode === 401) {
+                    handleTokenExpired();
+                    reject({ code: 401, message: 'Token已过期', statusCode: 401 });
+                    return;
+                  }
+
+                  if (retryRes.statusCode !== 200) {
+                    reject({ code: retryRes.statusCode, message: 'Network error', raw: retryRes });
+                    return;
+                  }
+
+                  var payload = retryRes.data || {};
+                  if (payload.code !== undefined && payload.code !== 200) {
+                    reject(payload);
+                    return;
+                  }
+
+                  resolve(normalizePage(payload.data));
+                },
+                fail: function(error) {
+                  reject(error);
+                }
+              });
+            });
+          } else {
+            handleTokenExpired();
+            reject({ code: 401, message: 'Token已过期', statusCode: 401 });
+          }
           return;
         }
 
@@ -97,6 +187,30 @@ function request(path, options) {
       }
     });
   });
+}
+
+function handleTokenExpired() {
+  wx.removeStorageSync('token');
+  wx.removeStorageSync('isLoggedIn');
+  wx.removeStorageSync('userInfo');
+
+  var app = getApp();
+  if (app && app.globalData) {
+    app.globalData.token = null;
+    app.globalData.userInfo = null;
+    app.globalData.isLoggedIn = false;
+  }
+
+  var pages = getCurrentPages();
+  var currentPage = pages[pages.length - 1];
+  if (currentPage && currentPage.data && currentPage.data.isLoggedIn !== undefined) {
+    currentPage.setData({ isLoggedIn: false });
+  }
+
+  var auth = require('./auth');
+  if (auth && auth.clearUserInfo) {
+    auth.clearUserInfo();
+  }
 }
 
 function mapPageParams(params) {
@@ -128,6 +242,20 @@ var api = {
     refresh: function() {
       return request('/auth/refresh', { method: 'POST' });
     }
+  },
+
+  isRefreshing: false,
+  refreshSubscribers: [],
+
+  addRefreshSubscriber: function(callback) {
+    this.refreshSubscribers.push(callback);
+  },
+
+  onRefreshed: function(token) {
+    this.refreshSubscribers.forEach(function(callback) {
+      callback(token);
+    });
+    this.refreshSubscribers = [];
   },
 
   user: {

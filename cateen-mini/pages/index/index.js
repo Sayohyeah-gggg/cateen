@@ -134,6 +134,14 @@ Page({
   onShow: function() {
     this.syncTheme();
     this.syncCustomTabBar();
+
+    // 页面显示时刷新数据，确保评分是最新的
+    if (this.data.foodList.length > 0) {
+      this.loadFoodList(true);
+    }
+    if (this.data.popularFoods.length > 0) {
+      this.loadPopularFoods();
+    }
   },
 
   onUnload: function() {

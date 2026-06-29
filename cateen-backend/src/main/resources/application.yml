@@ -68,7 +68,7 @@ mybatis-plus:
 # JWT配置
 jwt:
   # 密钥
-  secret: xawl-cateen-secret-key-2025-spring-boot-jwt-token
+  secret: your-jwt-secret-key
   # 过期时间（毫秒）24小时
   expiration: 86400000
   # Token前缀
@@ -97,15 +97,15 @@ knife4j:
 # 微信小程序配置
 wechat:
   mini:
-    appid: wx101c1092f799a3a5
-    secret: 1f856ce46c9dc673ee330987620a067c
+    appid: your-appid
+    secret: your-appsecret
 # MinIO 配置（用于图片上传；桶：small=小程序，admin=管理端，video=视频）
 minio:
   enabled: true
   endpoint: http://localhost:9000
   public-url: http://localhost:9000
-  access-key: minioadmin
-  secret-key: minioadmin
+  access-key: your-minio-access-key
+  secret-key: your-minio-secret-key
   bucket:
     small: small
     admin: admin
@@ -116,19 +116,19 @@ langchain4j:
   open-ai:
     chat-model:
       base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
-      api-key: sk-a4ce547127ec45cba447231ea7e213b3
+      api-key: your-qwen-api-key
       model-name: qwen-plus
       log-requests: true
       log-responses: true
     streaming-chat-model:
       base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
-      api-key: sk-a4ce547127ec45cba447231ea7e213b3
+      api-key: your-qwen-api-key
       model-name: qwen-plus
       log-requests: true
       log-responses: true
     embedding-model:
       base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
-      api-key: sk-a4ce547127ec45cba447231ea7e213b3
+      api-key: your-qwen-api-key
       model-name: text-embedding-v3
       log-requests: true
       log-responses: true
